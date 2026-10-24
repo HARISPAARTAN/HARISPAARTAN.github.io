@@ -1,0 +1,3 @@
+User-agent: *
+Allow: /
+Sitemap: https://harispaartan.github.io/sitemap.xml
