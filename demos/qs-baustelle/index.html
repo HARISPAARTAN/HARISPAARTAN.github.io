@@ -1,0 +1,713 @@
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>QS Baustelle – App-Konzept rev03 (Klick-Demo)</title>
+<style>
+  /* ── Design-System rev03 (QSBaustelle Modell Process_rev03.pptx, Folie 2/3) ── */
+  :root{
+    --teal:#003C50;        /* Slate Teal · Primär, Header, Aktionen */
+    --teal-press:#1A4E60;  /* gedrückte Zustände */
+    --lime:#E6FF80;        /* Lime Accent · nur ein Akzent je Screen */
+    --ink:#262C30;         /* Fließtext */
+    --muted:#6E7672;       /* Sekundärtext, Labels */
+    --line:#E6E2DC;        /* Rahmen, Trenner */
+    --surface:#F8F8F6;     /* Flächen, Listenzeilen */
+    --icon-muted:#9CA09C;  /* Tab-Bar inaktiv, Platzhalter */
+    --teal-light:#8FB2BE;  /* Plan- und Medienflächen */
+    --sand:#DED0BE;        /* stille Fläche */
+    --hint-fg:#8A6A2F; --hint-bg:#FDF3E0; --hint-line:#E8C98A; /* Hinweis-Status */
+    --font:"Segoe UI", -apple-system, "Helvetica Neue", Arial, sans-serif;
+  }
+  *{box-sizing:border-box; margin:0; padding:0}
+  html,body{height:100%}
+  body{
+    font-family:var(--font); background:#EFECE6; color:var(--ink);
+    display:flex; min-height:100vh;
+  }
+
+  /* ── Demo-Rahmen (außerhalb des Telefons) ─────────────────────────── */
+  .side{
+    width:288px; flex:0 0 288px; background:var(--teal); color:#fff;
+    padding:28px 0 20px; display:flex; flex-direction:column; gap:0;
+    overflow-y:auto;
+  }
+  .side h1{font-size:19px; font-weight:700; padding:0 24px; letter-spacing:.2px}
+  .side .sub{font-size:11px; color:var(--teal-light); padding:4px 24px 18px; line-height:1.5}
+  .side .grp{font-size:9px; letter-spacing:.14em; color:var(--lime); padding:16px 24px 6px; text-transform:uppercase; font-weight:600}
+  .side button.nav{
+    display:flex; align-items:baseline; gap:8px; width:100%;
+    background:none; border:none; color:#fff; font-family:var(--font);
+    font-size:12.5px; text-align:left; padding:8px 24px; cursor:pointer;
+  }
+  .side button.nav:hover{background:var(--teal-press)}
+  .side button.nav.act{background:var(--teal-press); box-shadow:inset 3px 0 0 var(--lime)}
+  .side button.nav .no{color:var(--teal-light); font-size:10.5px; min-width:24px}
+  .side button.nav .f{margin-left:auto; color:var(--teal-light); font-size:9.5px}
+  .side .foot{margin-top:auto; padding:20px 24px 0; font-size:9.5px; color:var(--teal-light); line-height:1.6}
+
+  .stage{flex:1; display:flex; flex-direction:column; align-items:center; justify-content:center; padding:28px 20px; gap:14px}
+  .caption{font-size:11.5px; color:var(--muted); text-align:center; max-width:420px; line-height:1.5}
+  .caption b{color:var(--teal)}
+
+  /* ── Telefon ──────────────────────────────────────────────────────── */
+  .phone{
+    width:390px; height:800px; background:#fff; border-radius:38px;
+    border:10px solid #10181c; box-shadow:0 24px 60px rgba(0,30,40,.35);
+    overflow:hidden; position:relative; display:flex; flex-direction:column;
+  }
+
+  /* App-Header · Fläche #003C50 · 86px inkl. Statusleiste */
+  .hdr{background:var(--teal); color:#fff; height:86px; flex:0 0 86px; padding:0 16px; position:relative}
+  .statusbar{height:34px; display:flex; align-items:flex-end; padding-bottom:2px; justify-content:space-between; font-size:11px; font-weight:600}
+  .statusbar .ic{display:flex; gap:5px; align-items:center}
+  .appbar{height:52px; display:flex; align-items:center; justify-content:center; position:relative}
+  .appbar .title{font-size:14px; font-weight:600}           /* Titel 10,5pt */
+  .appbar .back{
+    position:absolute; left:0; top:0; height:52px; width:44px; border:none; background:none;
+    color:#fff; font-size:17px; cursor:pointer; font-family:var(--font); display:flex; align-items:center; justify-content:flex-start;
+  }
+  .appbar .back:active{color:var(--lime)}
+
+  /* Inhalt · 16px Seitenrand */
+  .body{flex:1; overflow-y:auto; padding:20px 16px 12px; background:#fff}
+
+  /* Status-Chip · 6,5pt Versalien · #E6FF80 auf #003C50 */
+  .chip{display:inline-block; background:var(--teal); color:var(--lime); font-size:9px; font-weight:600;
+        letter-spacing:.14em; text-transform:uppercase; padding:4px 9px; border-radius:4px}
+  /* Screen-Titel 15pt Bold #003C50 · 8px unter dem Chip */
+  .stitle{font-size:20px; font-weight:700; color:var(--teal); margin-top:8px; line-height:1.25}
+  /* Datum/Zeitraum · 7pt Versalien #9CA09C · zweizeilig unter dem Titel */
+  .meta{margin-top:6px; font-size:9.5px; letter-spacing:.12em; text-transform:uppercase; color:var(--icon-muted); line-height:1.7}
+
+  /* Label 7pt Versalien #6E7672 · 16px über dem Feld */
+  .lbl{font-size:9.5px; letter-spacing:.12em; text-transform:uppercase; color:var(--muted); font-weight:600; margin:16px 0 6px}
+  .lbl:first-child{margin-top:0}
+
+  /* Feld 44px, weiß, Rahmen #E6E2DC, Radius 8px */
+  .field{width:100%; height:44px; background:#fff; border:1px solid var(--line); border-radius:8px;
+         padding:0 12px; font-family:var(--font); font-size:12.5px; color:var(--ink)}
+  .field::placeholder{color:var(--icon-muted)}
+  textarea.field{height:76px; padding:11px 12px; resize:none; line-height:1.45}
+  .dd{position:relative}
+  .dd .field{display:flex; align-items:center; justify-content:space-between; cursor:pointer; user-select:none}
+  .dd .field .ph{color:var(--icon-muted)} .dd .field .val{color:var(--ink)}
+  .dd .field .chev{color:var(--icon-muted); font-size:12.5px}
+  .dd .menu{display:none; position:absolute; left:0; right:0; top:47px; background:#fff; border:1px solid var(--line);
+            border-radius:8px; box-shadow:0 8px 22px rgba(0,30,40,.14); z-index:20; overflow:hidden}
+  .dd.open .menu{display:block}
+  .dd .menu button{display:block; width:100%; text-align:left; background:none; border:none; border-bottom:1px solid var(--surface);
+                   font-family:var(--font); font-size:12.5px; color:var(--ink); padding:12px; cursor:pointer}
+  .dd .menu button:last-child{border-bottom:none}
+  .dd .menu button:hover{background:var(--surface)}
+
+  /* Listenzeile 46px · Fläche #F8F8F6 · Rahmen #E6E2DC */
+  .row{display:flex; align-items:center; gap:10px; min-height:46px; background:var(--surface);
+       border:1px solid var(--line); border-radius:8px; padding:0 12px; margin-bottom:8px;
+       width:100%; font-family:var(--font); font-size:12px; color:var(--ink); cursor:pointer; text-align:left}
+  .row:active{background:#F1F0EC}
+  .row .grow{flex:1; line-height:1.35; padding:8px 0}
+  .row .st{font-size:9.5px; color:var(--muted)}
+  .row .st.done{color:var(--teal)}
+  .row .chev{color:var(--icon-muted); font-size:12.5px}
+  .row .plus{color:var(--teal); font-weight:700; font-size:14px}
+  .row.plusrow{background:#fff; border-style:dashed}
+
+  /* Buttons · Primär 48px, genau einmal je Screen · Paar je 44px */
+  .btn-primary{display:block; width:100%; height:48px; background:var(--teal); color:#fff; border:none; border-radius:8px;
+               font-family:var(--font); font-size:13px; font-weight:600; cursor:pointer; margin-top:20px}
+  .btn-primary:active{background:var(--teal-press)}
+  .btn-pair{display:flex; gap:10px; margin-top:20px}
+  .btn-pair button{flex:1; height:44px; border-radius:8px; font-family:var(--font); font-size:12.5px; font-weight:600; cursor:pointer}
+  .btn-sec{background:#fff; color:var(--ink); border:1px solid var(--line)}
+  .btn-sec:active{background:var(--surface)}
+  .btn-save{background:var(--teal); color:#fff; border:none}
+  .btn-save:active{background:var(--teal-press)}
+
+  /* Medien · Aufnahme-Buttons paarweise 44px · Hinweisfläche */
+  .media-pair{display:flex; gap:10px}
+  .media-pair button{flex:1; height:44px; border-radius:8px; border:1px solid var(--teal); background:#fff; color:var(--teal);
+                     font-family:var(--font); font-size:12.5px; font-weight:600; cursor:pointer; display:flex; align-items:center; justify-content:center; gap:7px}
+  .media-pair button:active{background:var(--surface)}
+  .hint{margin-top:10px; background:var(--hint-bg); border:1px solid var(--hint-line); color:var(--hint-fg);
+        font-size:10.5px; border-radius:8px; padding:9px 12px; line-height:1.45}
+  .media-empty{border:1.5px dashed var(--teal-light); border-radius:8px; background:var(--surface);
+               color:var(--icon-muted); font-size:11px; text-align:center; padding:22px 12px}
+  .media-grid{display:flex; gap:8px; flex-wrap:wrap}
+  .thumb{width:74px; height:74px; border-radius:8px; background:var(--teal-light); display:flex; align-items:center; justify-content:center}
+  .thumb svg{opacity:.85}
+
+  /* Plan-Block (read-only, Terminabgleich-Vorgang) */
+  .plan{background:var(--surface); border:1px solid var(--line); border-radius:8px; padding:12px; font-size:11.5px; line-height:1.7; color:var(--ink)}
+  .plan .tag{float:right; font-size:9px; letter-spacing:.12em; text-transform:uppercase; color:var(--muted);
+             border:1px solid var(--line); background:#fff; padding:2px 7px; border-radius:4px}
+  .plan b{color:var(--teal)}
+
+  /* Fortschritt-Slider */
+  .slider-wrap{display:flex; align-items:center; gap:14px}
+  .slider-wrap input[type=range]{flex:1; accent-color:#003C50; height:24px}
+  .slider-val{font-size:20px; font-weight:700; color:var(--teal); min-width:52px; text-align:right}
+
+  /* Stat-Kacheln (Bericht-Screens) */
+  .tiles{display:flex; gap:10px}
+  .tile{flex:1; background:var(--surface); border:1px solid var(--line); border-radius:8px; padding:14px 12px; text-align:center}
+  .tile .v{font-size:20px; font-weight:700; color:var(--teal)}
+  .tile .k{font-size:9.5px; letter-spacing:.12em; text-transform:uppercase; color:var(--muted); margin-top:3px}
+
+  /* Karte (AUS QS-BEGEHUNG / AUS TERMINABGLEICH) */
+  .card{background:var(--surface); border:1px solid var(--line); border-radius:8px; padding:12px; font-size:12px; line-height:1.7}
+  .card b{color:var(--teal)}
+  .note{font-size:10px; color:var(--muted); line-height:1.5; margin-top:8px}
+  .subtext{font-size:10px; color:var(--icon-muted); margin-top:5px}
+
+  /* Tab-Bar · 58px · Trennlinie oben · aktiv #003C50 mit Lime-Indikator */
+  .tabbar{flex:0 0 58px; height:58px; border-top:1px solid var(--line); background:#fff; display:flex}
+  .tab{flex:1; border:none; background:none; cursor:pointer; font-family:var(--font);
+       display:flex; flex-direction:column; align-items:center; justify-content:center; gap:3px;
+       color:var(--icon-muted); position:relative; padding-top:2px}
+  .tab .tlbl{font-size:8px; letter-spacing:.08em; text-transform:uppercase; font-weight:600}
+  .tab svg{stroke:currentColor}
+  .tab.act{color:var(--teal)}
+  .tab.act::before{content:""; position:absolute; top:0; left:50%; transform:translateX(-50%); width:26px; height:3px; background:var(--lime); border-radius:0 0 3px 3px}
+
+  /* Screens ein-/ausblenden */
+  .screen{display:none}
+  .screen.act{display:block}
+
+  /* Toast */
+  .toast{position:absolute; left:16px; right:16px; bottom:74px; background:var(--teal); color:#fff;
+         border-radius:8px; padding:12px 14px; font-size:11.5px; display:none; z-index:40; box-shadow:0 10px 26px rgba(0,30,40,.3)}
+  .toast.show{display:block}
+  .toast .lime{color:var(--lime); font-weight:700}
+
+  @media (max-width:860px){
+    body{flex-direction:column}
+    .side{width:100%; flex:0 0 auto; padding:16px 0}
+    .side .foot{display:none}
+    .side nav{display:flex; overflow-x:auto; padding:0 12px}
+    .side .grp{display:none}
+    .side button.nav{width:auto; white-space:nowrap; padding:8px 12px; border-radius:8px}
+    .side button.nav.act{box-shadow:inset 0 -3px 0 var(--lime)}
+    .side button.nav .f{display:none}
+    .stage{padding:16px 8px}
+    .phone{width:100%; max-width:390px; height:78vh; min-height:600px}
+  }
+</style>
+</head>
+<body>
+
+<!-- ── Seitenleiste (Demo-Navigation, nicht Teil der App) ─────────────── -->
+<aside class="side">
+  <h1>QS Baustelle</h1>
+  <div class="sub">App-Konzept rev03 · Klick-Demo<br>Screens, Userflow und Designsystem<br>Stand 21.08.2026 · statisch, ohne Backend</div>
+  <nav id="sideNav">
+    <div class="grp">Start</div>
+    <button class="nav" data-s="s-1"><span class="no">1</span>Home – Projekte<span class="f">F5</span></button>
+    <button class="nav" data-s="s-1-1"><span class="no">1.1</span>Projektübersicht<span class="f">F6</span></button>
+    <button class="nav" data-s="s-1-2"><span class="no">1.2</span>Neues Projekt<span class="f">F7</span></button>
+    <div class="grp">QS-Begehung</div>
+    <button class="nav" data-s="s-2"><span class="no">2</span>Neue QS-Begehung<span class="f">F8</span></button>
+    <button class="nav" data-s="s-2-1"><span class="no">2.1</span>Begehung offen<span class="f">F9</span></button>
+    <button class="nav" data-s="s-2-2"><span class="no">2.2</span>Beobachtung erfassen<span class="f">F10</span></button>
+    <button class="nav" data-s="s-2-3"><span class="no">2.3</span>Begehung geschlossen<span class="f">F11</span></button>
+    <button class="nav" data-s="s-4-1"><span class="no">4.1</span>Bericht QS-Begehung<span class="f">F16</span></button>
+    <div class="grp">Terminabgleich</div>
+    <button class="nav" data-s="s-3"><span class="no">3</span>Neuer Terminabgleich<span class="f">F12</span></button>
+    <button class="nav" data-s="s-3-1"><span class="no">3.1</span>Abgleich offen<span class="f">F13</span></button>
+    <button class="nav" data-s="s-3-2"><span class="no">3.2</span>Abgleich geschlossen<span class="f">F14</span></button>
+    <button class="nav" data-s="s-3-3"><span class="no">3.3</span>Vorgang bearbeiten<span class="f">F15</span></button>
+    <button class="nav" data-s="s-4-2"><span class="no">4.2</span>Bericht Terminabgleich<span class="f">F17</span></button>
+  </nav>
+  <div class="foot">
+    Designsystem rev03:<br>
+    Slate Teal #003C50 · Lime #E6FF80<br>
+    Segoe UI · 8-pt-Raster · Touch 44–48 px<br><br>
+    Nordstern Projektmanagement GmbH · PROJ02
+  </div>
+</aside>
+
+<!-- ── Bühne mit Telefon ──────────────────────────────────────────────── -->
+<main class="stage">
+  <div class="phone">
+    <header class="hdr">
+      <div class="statusbar">
+        <span>9:41</span>
+        <span class="ic">
+          <svg width="15" height="10" viewBox="0 0 15 10" fill="#fff"><rect x="0" y="6" width="2.5" height="4" rx=".6"/><rect x="4" y="4" width="2.5" height="6" rx=".6"/><rect x="8" y="2" width="2.5" height="8" rx=".6"/><rect x="12" y="0" width="2.5" height="10" rx=".6"/></svg>
+          <svg width="14" height="10" viewBox="0 0 14 10" fill="none" stroke="#fff" stroke-width="1.4" stroke-linecap="round"><path d="M1 3.4a8.6 8.6 0 0 1 12 0"/><path d="M3.2 5.8a5.4 5.4 0 0 1 7.6 0"/><circle cx="7" cy="8.4" r="1" fill="#fff" stroke="none"/></svg>
+          <svg width="20" height="10" viewBox="0 0 20 10"><rect x="0" y="0" width="17" height="10" rx="2.5" fill="none" stroke="#fff" stroke-width="1"/><rect x="1.8" y="1.8" width="11" height="6.4" rx="1.2" fill="#fff"/><rect x="18" y="3" width="2" height="4" rx="1" fill="#fff"/></svg>
+        </span>
+      </div>
+      <div class="appbar">
+        <button class="back" id="btnBack" onclick="goBack()" aria-label="Zurück">‹</button>
+        <span class="title">QS Baustelle</span>
+      </div>
+    </header>
+
+    <div class="body" id="appBody">
+
+      <!-- ═══ 1 · Home Screen (F5) ═══ -->
+      <section class="screen" id="s-1">
+        <h2 class="stitle" style="margin-top:0">Projekte</h2>
+        <div class="meta">3 Projekte verfügbar</div>
+        <div class="lbl" style="margin-top:22px">Projekt auswählen</div>
+        <div class="dd" id="ddProjekt">
+          <div class="field" onclick="toggleDD('ddProjekt')">
+            <span id="projVal" class="ph">Projekt auswählen</span><span class="chev">⌄</span>
+          </div>
+          <div class="menu">
+            <button onclick="pickProjekt('UW Lindenhorst – 380-kV-Schaltanlage','NORDWIND NETZ · STATUS AKTIV')">UW Lindenhorst – 380-kV-Schaltanlage</button>
+            <button onclick="pickProjekt('BV Ortsumgehung B27 – 2. BA','DB INFRAGO · STATUS AKTIV')">BV Ortsumgehung B27 – 2. BA</button>
+            <button onclick="pickProjekt('Netzverstärkung PST Ost','ELBNETZ · STATUS AKTIV')">Netzverstärkung PST Ost</button>
+          </div>
+        </div>
+        <button class="row plusrow" style="margin-top:16px" onclick="go('s-1-2')">
+          <span class="plus">+</span><span class="grow">Neues Projekt erstellen</span><span class="chev">›</span>
+        </button>
+      </section>
+
+      <!-- ═══ 1.1 · Projektübersicht (F6) ═══ -->
+      <section class="screen" id="s-1-1">
+        <h2 class="stitle" style="margin-top:0" id="projTitle">BV Ortsumgehung B27 – 2. BA</h2>
+        <div class="meta" id="projMeta">DB InfraGO · Status aktiv</div>
+
+        <div class="lbl" style="margin-top:22px">QS-Begehung</div>
+        <button class="row plusrow" onclick="go('s-2')">
+          <span class="plus">+</span><span class="grow">Neue QS-Begehung</span><span class="chev">›</span>
+        </button>
+        <button class="row" onclick="toggleFold('foldQsOffen', this)">
+          <span class="grow">Offene QS-Begehungen</span><span class="chev fold-chev">⌄</span>
+        </button>
+        <div id="foldQsOffen" style="display:none">
+          <button class="row" style="margin-left:14px; width:calc(100% - 14px)" onclick="go('s-2-1')">
+            <span class="grow">QS-Begehung Nr. 30 · Monatsbericht August 2026</span><span class="st">offen</span><span class="chev">›</span>
+          </button>
+        </div>
+        <button class="row" onclick="toggleFold('foldQsZu', this)">
+          <span class="grow">Geschlossene QS-Begehungen</span><span class="chev fold-chev">⌄</span>
+        </button>
+        <div id="foldQsZu" style="display:none">
+          <button class="row" style="margin-left:14px; width:calc(100% - 14px)" onclick="go('s-2-3')">
+            <span class="grow">QS-Begehung Nr. 29 · Monatsbericht Juli 2026</span><span class="st done">erledigt</span><span class="chev">›</span>
+          </button>
+        </div>
+
+        <div class="lbl" style="margin-top:22px">Terminabgleich</div>
+        <button class="row plusrow" onclick="go('s-3')">
+          <span class="plus">+</span><span class="grow">Neuer Terminabgleich</span><span class="chev">›</span>
+        </button>
+        <button class="row" onclick="toggleFold('foldTaOffen', this)">
+          <span class="grow">Offene Terminabgleiche</span><span class="chev fold-chev">⌄</span>
+        </button>
+        <div id="foldTaOffen" style="display:none">
+          <button class="row" style="margin-left:14px; width:calc(100% - 14px)" onclick="go('s-3-1')">
+            <span class="grow">Terminabgleich August 2026</span><span class="st">offen</span><span class="chev">›</span>
+          </button>
+        </div>
+        <button class="row" onclick="toggleFold('foldTaZu', this)">
+          <span class="grow">Geschlossene Terminabgleiche</span><span class="chev fold-chev">⌄</span>
+        </button>
+        <div id="foldTaZu" style="display:none">
+          <button class="row" style="margin-left:14px; width:calc(100% - 14px)" onclick="go('s-3-2')">
+            <span class="grow">Terminabgleich Juli 2026</span><span class="st done">erledigt</span><span class="chev">›</span>
+          </button>
+        </div>
+      </section>
+
+      <!-- ═══ 1.2 · Neues Projekt anlegen (F7) ═══ -->
+      <section class="screen" id="s-1-2">
+        <h2 class="stitle" style="margin-top:0">Neues Projekt</h2>
+        <div class="lbl" style="margin-top:22px">Projektname</div>
+        <input class="field" placeholder="Text eingeben">
+        <div class="lbl">Auftraggeber</div>
+        <input class="field" placeholder="Text eingeben">
+        <div class="lbl">Projektbeschreibung</div>
+        <textarea class="field" placeholder="Text eingeben"></textarea>
+        <button class="btn-primary" onclick="goDone('s-1-1')">Projekt erstellen</button>
+      </section>
+
+      <!-- ═══ 2 · Neue QS-Begehung anlegen (F8) ═══ -->
+      <section class="screen" id="s-2">
+        <h2 class="stitle" style="margin-top:0">Neue QS-Begehung</h2>
+        <div class="lbl" style="margin-top:22px">Name der QS-Begehung</div>
+        <input class="field" placeholder="Text eingeben" value="QS-Begehung Nr. 30">
+        <div class="lbl">Datum der Begehung</div>
+        <input class="field" value="21.08.2026">
+        <div class="lbl">Zeitraum</div>
+        <input class="field" placeholder="z. B. Monatsbericht Juli 2026" value="Monatsbericht August 2026">
+        <div class="lbl">Beschreibung</div>
+        <textarea class="field" placeholder="Text eingeben"></textarea>
+        <button class="btn-primary" onclick="goDone('s-2-1')">QS-Begehung erstellen</button>
+      </section>
+
+      <!-- ═══ 2.1 · QS-Begehung offen (F9) ═══ -->
+      <section class="screen" id="s-2-1">
+        <span class="chip">Offen</span>
+        <h2 class="stitle">QS-Begehung Nr. 30</h2>
+        <div class="meta">Datum: 21.08.2026<br>Zeitraum: Monatsbericht August 2026</div>
+        <div class="lbl" style="margin-top:22px">Prüfpunkte</div>
+        <button class="row" onclick="go('s-2-2')"><span class="grow">Prüfpunkt 1 · Achse 12, BW 03</span><span class="st">offen</span><span class="chev">›</span></button>
+        <button class="row" onclick="go('s-2-2')"><span class="grow">Prüfpunkt 2 · Widerlager Nord</span><span class="st">offen</span><span class="chev">›</span></button>
+        <button class="row" onclick="go('s-2-2')"><span class="grow">Prüfpunkt 3 · Entwässerung Los 2</span><span class="st">offen</span><span class="chev">›</span></button>
+        <button class="btn-primary" onclick="go('s-4-1')">Bericht QS-Begehung erstellen</button>
+      </section>
+
+      <!-- ═══ 2.2 · Beobachtung erfassen (F10) ═══ -->
+      <section class="screen" id="s-2-2">
+        <h2 class="stitle" style="margin-top:0">QS-Begehung Nr. 30</h2>
+        <div class="meta">Datum: 21.08.2026<br>Zeitraum: Monatsbericht August 2026</div>
+
+        <div style="display:flex; align-items:center; justify-content:space-between; margin-top:18px">
+          <button class="row" style="width:46px; min-height:38px; justify-content:center; margin:0"><span class="chev">‹</span></button>
+          <span style="font-size:11.5px; color:var(--muted); font-weight:600">Beobachtung 1 von 1</span>
+          <button class="row" style="width:46px; min-height:38px; justify-content:center; margin:0"><span class="chev">›</span></button>
+        </div>
+
+        <div class="media-pair" style="margin-top:18px">
+          <button onclick="addFoto()">
+            <svg width="15" height="13" viewBox="0 0 15 13" fill="none" stroke="currentColor" stroke-width="1.4"><rect x=".7" y="2.7" width="13.6" height="9.6" rx="1.6"/><circle cx="7.5" cy="7.5" r="2.6"/><path d="M4.5 2.7 5.8.7h3.4l1.3 2"/></svg>
+            Foto
+          </button>
+          <button onclick="showToast('Video wird nach der Synchronisierung hochgeladen.')">
+            <svg width="16" height="11" viewBox="0 0 16 11" fill="none" stroke="currentColor" stroke-width="1.4"><rect x=".7" y=".7" width="10" height="9.6" rx="1.6"/><path d="m10.7 4 4.6-2.6v8.2L10.7 7"/></svg>
+            Video hochladen
+          </button>
+        </div>
+        <div class="hint">Video erst nach Sync – „Fertig“ drücken</div>
+        <div class="lbl">Medien (<span id="medCount">0</span>)</div>
+        <div class="media-empty" id="medEmpty">Noch keine Medien – Foto oder Video aufnehmen</div>
+        <div class="media-grid" id="medGrid" style="display:none"></div>
+
+        <div class="lbl">Standort</div>
+        <input class="field" placeholder="z. B. Achse 12, BW 03">
+        <div class="lbl">Kategorie</div>
+        <div class="dd" id="ddKat">
+          <div class="field" onclick="toggleDD('ddKat')">
+            <span id="katVal" class="ph">Bitte auswählen</span><span class="chev">⌄</span>
+          </div>
+          <div class="menu">
+            <button onclick="pickKat('Status')">Status</button>
+            <button onclick="pickKat('Beobachtung / SOP')">Beobachtung / SOP</button>
+            <button onclick="pickKat('Abweichung')">Abweichung</button>
+            <button onclick="pickKat('Mangel')">Mangel</button>
+          </div>
+        </div>
+        <div class="lbl">Beschreibung</div>
+        <textarea class="field" placeholder="Beobachtung kurz beschreiben …"></textarea>
+
+        <div class="btn-pair">
+          <button class="btn-sec" onclick="goBack()">Verwerfen</button>
+          <button class="btn-save" onclick="goBack()">Speichern</button>
+        </div>
+      </section>
+
+      <!-- ═══ 2.3 · QS-Begehung geschlossen (F11) ═══ -->
+      <section class="screen" id="s-2-3">
+        <span class="chip">Geschlossen</span>
+        <h2 class="stitle">QS-Begehung Nr. 29</h2>
+        <div class="meta">Datum: 19.08.2026<br>Zeitraum: Monatsbericht Juli 2026</div>
+        <div class="lbl" style="margin-top:22px">Prüfpunkte</div>
+        <button class="row"><span class="grow">Prüfpunkt 1 · Achse 12, BW 03</span><span class="st done">erledigt</span><span class="chev">›</span></button>
+        <button class="row"><span class="grow">Prüfpunkt 2 · Widerlager Nord</span><span class="st done">erledigt</span><span class="chev">›</span></button>
+        <button class="row"><span class="grow">Prüfpunkt 3 · Entwässerung Los 2</span><span class="st done">erledigt</span><span class="chev">›</span></button>
+        <button class="btn-primary" onclick="go('s-4-1')">Bericht QS-Begehung erstellen</button>
+      </section>
+
+      <!-- ═══ 3 · Neuen Terminabgleich anlegen (F12) ═══ -->
+      <section class="screen" id="s-3">
+        <h2 class="stitle" style="margin-top:0">Neuer Terminabgleich</h2>
+        <div class="lbl" style="margin-top:22px">Name des Terminabgleichs</div>
+        <input class="field" placeholder="Text eingeben" value="Terminabgleich August 2026">
+        <div class="lbl">Datum des Terminabgleichs</div>
+        <input class="field" value="21.08.2026">
+        <div class="lbl">Zeitraum</div>
+        <input class="field" placeholder="z. B. Monatsbericht Juli 2026" value="Monatsbericht August 2026">
+        <div class="lbl">Terminplan</div>
+        <button class="row" id="rowExcel" onclick="pickExcel()">
+          <span class="grow" id="excelLbl">Excel-Datei importieren</span><span class="chev" id="excelChev">›</span>
+        </button>
+        <div class="lbl">Beschreibung</div>
+        <textarea class="field" placeholder="Text eingeben"></textarea>
+        <button class="btn-primary" onclick="goDone('s-3-1')">Terminabgleich erstellen</button>
+      </section>
+
+      <!-- ═══ 3.1 · Offener Terminabgleich (F13) ═══ -->
+      <section class="screen" id="s-3-1">
+        <span class="chip">Offen</span>
+        <h2 class="stitle">Terminabgleich August 2026</h2>
+        <div class="meta">Datum: 21.08.2026<br>Zeitraum: Monatsbericht August 2026</div>
+        <div class="lbl" style="margin-top:22px">Vorgänge</div>
+        <button class="row" onclick="go('s-3-3')"><span class="grow">2645 – 110kV Relaisgebäuden (3 Stück) – Fertigstellung</span><span class="st">offen</span><span class="chev">›</span></button>
+        <button class="row" onclick="go('s-3-3')"><span class="grow">2652 – Kabelzug 110 kV – Abschnitt Süd</span><span class="st">offen</span><span class="chev">›</span></button>
+        <button class="row" onclick="go('s-3-3')"><span class="grow">2688 – Inbetriebnahme Trafo T2</span><span class="st">offen</span><span class="chev">›</span></button>
+        <button class="row" onclick="go('s-3-3')"><span class="grow">2701 – Rückbau Provisorium Q112</span><span class="st">offen</span><span class="chev">›</span></button>
+      </section>
+
+      <!-- ═══ 3.2 · Geschlossener Terminabgleich (F14) ═══ -->
+      <section class="screen" id="s-3-2">
+        <span class="chip">Geschlossen</span>
+        <h2 class="stitle">Terminabgleich Juli 2026</h2>
+        <div class="meta">Datum: 22.07.2026<br>Zeitraum: Monatsbericht Juli 2026</div>
+        <div class="lbl" style="margin-top:22px">Vorgänge</div>
+        <button class="row"><span class="grow">2601 – Fundamente Portale Feld 3</span><span class="st done">erledigt</span><span class="chev">›</span></button>
+        <button class="row"><span class="grow">2612 – Stahlbau Schaltanlage Nord</span><span class="st done">erledigt</span><span class="chev">›</span></button>
+        <button class="row"><span class="grow">2619 – Erdung und Blitzschutz Los 1</span><span class="st done">erledigt</span><span class="chev">›</span></button>
+        <button class="row"><span class="grow">2624 – Montage Sammelschiene Feld 1–4</span><span class="st done">erledigt</span><span class="chev">›</span></button>
+        <button class="btn-primary" onclick="go('s-4-2')">Bericht Terminabgleich erstellen</button>
+      </section>
+
+      <!-- ═══ 3.3 · Vorgang bearbeiten (F15) ═══ -->
+      <section class="screen" id="s-3-3">
+        <h2 class="stitle" style="margin-top:0">110kV Relaisgebäuden (3 Stück) – Fertigstellung</h2>
+        <div style="margin-top:14px" class="plan">
+          <span class="tag">Plan</span>
+          <b>UID: 2645</b><br>
+          Soll-Start 22.07.2026 &nbsp;·&nbsp; Soll-Ende 01.09.2026<br>
+          Bereich &nbsp;—
+        </div>
+        <div class="lbl">Fortschritt (Ist)</div>
+        <div class="slider-wrap">
+          <input type="range" min="0" max="100" step="5" value="0" id="sldProg" oninput="document.getElementById('progVal').textContent=this.value+' %'">
+          <span class="slider-val" id="progVal">0 %</span>
+        </div>
+        <div class="lbl">Bemerkung</div>
+        <textarea class="field" placeholder="Ist-Stand kurz beschreiben …"></textarea>
+        <div class="lbl">Medien (0)</div>
+        <div class="media-pair">
+          <button onclick="showToast('Foto aufgenommen – wird beim nächsten Sync hochgeladen.')">
+            <svg width="15" height="13" viewBox="0 0 15 13" fill="none" stroke="currentColor" stroke-width="1.4"><rect x=".7" y="2.7" width="13.6" height="9.6" rx="1.6"/><circle cx="7.5" cy="7.5" r="2.6"/><path d="M4.5 2.7 5.8.7h3.4l1.3 2"/></svg>
+            Foto
+          </button>
+          <button onclick="showToast('Video wird nach der Synchronisierung hochgeladen.')">
+            <svg width="16" height="11" viewBox="0 0 16 11" fill="none" stroke="currentColor" stroke-width="1.4"><rect x=".7" y=".7" width="10" height="9.6" rx="1.6"/><path d="m10.7 4 4.6-2.6v8.2L10.7 7"/></svg>
+            Video
+          </button>
+        </div>
+        <div class="media-empty" style="margin-top:10px">Noch keine Medien zu diesem Vorgang</div>
+        <div class="btn-pair">
+          <button class="btn-sec" onclick="goBack()">Verwerfen</button>
+          <button class="btn-save" onclick="goBack()">Speichern</button>
+        </div>
+      </section>
+
+      <!-- ═══ 4.1 · Bericht QS-Begehung (F16) ═══ -->
+      <section class="screen" id="s-4-1">
+        <h2 class="stitle" style="margin-top:0">Bericht erstellen</h2>
+        <div class="lbl" style="margin-top:22px">Aus QS-Begehung</div>
+        <div class="card">
+          <b>QS-Begehung Nr. 30</b><br>
+          Datum: 21.08.2026<br>
+          Zeitraum: Monatsbericht August 2026
+        </div>
+        <div class="tiles" style="margin-top:10px">
+          <div class="tile"><div class="v">3/3</div><div class="k">Geprüft</div></div>
+          <div class="tile"><div class="v">4</div><div class="k">Medien</div></div>
+        </div>
+        <div class="lbl">Berichtsvorlage</div>
+        <div class="dd" id="ddVorlage1">
+          <div class="field" onclick="toggleDD('ddVorlage1')">
+            <span class="val">Vorlage_Standard.html</span><span class="chev">⌄</span>
+          </div>
+          <div class="menu">
+            <button onclick="closeDD('ddVorlage1')">Vorlage_Standard.html</button>
+            <button onclick="closeDD('ddVorlage1')">Vorlage_Standard.docx</button>
+            <button onclick="closeDD('ddVorlage1')">Vorlage_DB-InfraGO.html</button>
+          </div>
+        </div>
+        <div class="note">Vorlagen werden je Kunde/Projekt in der SharePoint-Bibliothek „Vorlagen“ gepflegt. Die Berichtssprache bestimmt die Vorlage.</div>
+        <div class="lbl">Empfänger</div>
+        <input class="field" value="lukas.weber@nordstern-pm.example">
+        <div class="subtext">Angemeldeter Benutzer</div>
+        <button class="btn-primary" onclick="showToast('<span class=\'lime\'>✓</span> Bericht QS-Begehung wird erstellt und versendet.')">Bericht erstellen &amp; senden</button>
+      </section>
+
+      <!-- ═══ 4.2 · Bericht Terminabgleich (F17) ═══ -->
+      <section class="screen" id="s-4-2">
+        <h2 class="stitle" style="margin-top:0">Bericht erstellen</h2>
+        <div class="lbl" style="margin-top:22px">Aus Terminabgleich</div>
+        <div class="card">
+          <b>Terminabgleich Juli 2026</b><br>
+          Datum: 22.07.2026<br>
+          Zeitraum: Monatsbericht Juli 2026
+        </div>
+        <div class="tiles" style="margin-top:10px">
+          <div class="tile"><div class="v">38/38</div><div class="k">Geprüft</div></div>
+          <div class="tile"><div class="v">9</div><div class="k">Medien</div></div>
+        </div>
+        <div class="lbl">Berichtsvorlage</div>
+        <div class="dd" id="ddVorlage2">
+          <div class="field" onclick="toggleDD('ddVorlage2')">
+            <span class="val">Vorlage_Standard.html</span><span class="chev">⌄</span>
+          </div>
+          <div class="menu">
+            <button onclick="closeDD('ddVorlage2')">Vorlage_Standard.html</button>
+            <button onclick="closeDD('ddVorlage2')">Vorlage_Standard.docx</button>
+            <button onclick="closeDD('ddVorlage2')">Vorlage_DB-InfraGO.html</button>
+          </div>
+        </div>
+        <div class="note">Vorlagen werden je Kunde/Projekt in der SharePoint-Bibliothek „Vorlagen“ gepflegt. Die Berichtssprache bestimmt die Vorlage.</div>
+        <div class="lbl">Empfänger</div>
+        <input class="field" value="lukas.weber@nordstern-pm.example">
+        <div class="subtext">Angemeldeter Benutzer</div>
+        <button class="btn-primary" onclick="showToast('<span class=\'lime\'>✓</span> Bericht Terminabgleich wird erstellt und versendet.')">Bericht erstellen &amp; senden</button>
+      </section>
+
+    </div>
+
+    <div class="toast" id="toast"></div>
+
+    <nav class="tabbar">
+      <button class="tab" id="tab-start" onclick="tabGo('s-1')">
+        <svg width="17" height="16" viewBox="0 0 17 16" fill="none" stroke-width="1.5" stroke-linejoin="round"><path d="M1.5 7.5 8.5 1.2l7 6.3M3.2 6.6V14.5h4V10h2.6v4.5h4V6.6"/></svg>
+        <span class="tlbl">Start</span>
+      </button>
+      <button class="tab" id="tab-qs" onclick="tabGo('s-2-1')">
+        <svg width="15" height="17" viewBox="0 0 15 17" fill="none" stroke-width="1.5" stroke-linejoin="round"><rect x="1" y="2.2" width="13" height="14" rx="1.8"/><path d="M4.8 2.2V1h5.4v1.2M4.4 9.4l2 2 4-4"/></svg>
+        <span class="tlbl">QS-Begehung</span>
+      </button>
+      <button class="tab" id="tab-ta" onclick="tabGo('s-3-1')">
+        <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke-width="1.5" stroke-linejoin="round"><rect x="1" y="2.2" width="14" height="12.8" rx="1.8"/><path d="M1 6h14M4.6 1v2.4M11.4 1v2.4M3.8 9h4.4M3.8 11.8h6.8"/></svg>
+        <span class="tlbl">Terminabgleich</span>
+      </button>
+    </nav>
+  </div>
+
+  <div class="caption" id="caption"></div>
+</main>
+
+<script>
+  // Screen-Metadaten: Titel für die Bildunterschrift, Folie im Konzept-Deck,
+  // logischer Eltern-Screen für den Zurück-Pfeil, aktiver Tab.
+  var SCREENS = {
+    's-1':   {t:'1 · Home – Projekte',              slide:5,  parent:null,    tab:'start'},
+    's-1-1': {t:'1.1 · Projektübersicht',           slide:6,  parent:'s-1',   tab:'start'},
+    's-1-2': {t:'1.2 · Neues Projekt anlegen',      slide:7,  parent:'s-1',   tab:'start'},
+    's-2':   {t:'2 · Neue QS-Begehung anlegen',     slide:8,  parent:'s-1-1', tab:'qs'},
+    's-2-1': {t:'2.1 · QS-Begehung offen',          slide:9,  parent:'s-1-1', tab:'qs'},
+    's-2-2': {t:'2.2 · Beobachtung erfassen',       slide:10, parent:'s-2-1', tab:'qs'},
+    's-2-3': {t:'2.3 · QS-Begehung geschlossen',    slide:11, parent:'s-1-1', tab:'qs'},
+    's-3':   {t:'3 · Neuen Terminabgleich anlegen', slide:12, parent:'s-1-1', tab:'ta'},
+    's-3-1': {t:'3.1 · Offener Terminabgleich',     slide:13, parent:'s-1-1', tab:'ta'},
+    's-3-2': {t:'3.2 · Geschlossener Terminabgleich', slide:14, parent:'s-1-1', tab:'ta'},
+    's-3-3': {t:'3.3 · Vorgang bearbeiten',         slide:15, parent:'s-3-1', tab:'ta'},
+    's-4-1': {t:'4.1 · Bericht QS-Begehung',        slide:16, parent:'s-2-1', tab:'qs'},
+    's-4-2': {t:'4.2 · Bericht Terminabgleich',     slide:17, parent:'s-3-2', tab:'ta'}
+  };
+  var current = 's-1';
+  var stack = [];
+
+  function show(id){
+    var s = SCREENS[id]; if(!s) return;
+    document.querySelectorAll('.screen').forEach(function(el){ el.classList.remove('act'); });
+    document.getElementById(id).classList.add('act');
+    document.getElementById('appBody').scrollTop = 0;
+    current = id;
+    document.getElementById('btnBack').style.display = (s.parent || stack.length) ? 'flex' : 'none';
+    ['start','qs','ta'].forEach(function(t){
+      document.getElementById('tab-'+t).classList.toggle('act', t === s.tab);
+    });
+    document.querySelectorAll('#sideNav .nav').forEach(function(b){
+      b.classList.toggle('act', b.getAttribute('data-s') === id);
+    });
+    document.getElementById('caption').innerHTML =
+      '<b>' + s.t + '</b> &nbsp;·&nbsp; Konzept-Folie ' + s.slide + ' &nbsp;·&nbsp; Zurück-Pfeil, Tab-Bar und alle Zeilen sind klickbar.';
+    closeAllDD(); hideToast();
+  }
+  function go(id){ stack.push(current); show(id); }
+  // Abgeschlossenes Formular nicht im Zurück-Pfad behalten
+  function goDone(id){
+    if(stack[stack.length - 1] === id) stack.pop();
+    show(id);
+  }
+  function goBack(){
+    var prev = stack.pop() || SCREENS[current].parent;
+    if(prev) show(prev);
+  }
+  function tabGo(id){ stack = ['s-1']; if(id==='s-1') stack=[]; show(id); }
+  function jump(id){ stack = []; var p = SCREENS[id].parent; if(p) stack = ['s-1', p!=='s-1' ? p : null].filter(Boolean); show(id); }
+
+  document.querySelectorAll('#sideNav .nav').forEach(function(b){
+    b.addEventListener('click', function(){ jump(b.getAttribute('data-s')); });
+  });
+
+  // Dropdowns
+  function toggleDD(id){
+    var el = document.getElementById(id);
+    var open = el.classList.contains('open');
+    closeAllDD();
+    if(!open){ el.classList.add('open'); syncChev(el); }
+  }
+  function closeDD(id){
+    var el = document.getElementById(id);
+    el.classList.remove('open'); syncChev(el);
+  }
+  function closeAllDD(){
+    document.querySelectorAll('.dd.open').forEach(function(el){ el.classList.remove('open'); syncChev(el); });
+  }
+  // Chevron folgt dem Zustand: geöffnet ⌃, geschlossen ⌄ (wie bei den Klapplisten)
+  function syncChev(dd){
+    var c = dd.querySelector('.field .chev');
+    if(c) c.textContent = dd.classList.contains('open') ? '⌃' : '⌄';
+  }
+
+  function pickProjekt(name, meta){
+    var v = document.getElementById('projVal');
+    v.textContent = name; v.className = 'val';
+    document.getElementById('projTitle').textContent = name;
+    document.getElementById('projMeta').textContent = meta.charAt(0) + meta.slice(1).toLowerCase();
+    closeDD('ddProjekt');
+    go('s-1-1');
+  }
+  function pickKat(name){
+    var v = document.getElementById('katVal');
+    v.textContent = name; v.className = 'val';
+    closeDD('ddKat');
+  }
+
+  // Aufklappbare Listen (Projektübersicht)
+  function toggleFold(id, btn){
+    var el = document.getElementById(id);
+    var open = el.style.display !== 'none';
+    el.style.display = open ? 'none' : 'block';
+    btn.querySelector('.fold-chev').textContent = open ? '⌄' : '⌃';
+  }
+
+  // Medien-Demo (Beobachtung)
+  var medCount = 0;
+  function addFoto(){
+    medCount++;
+    document.getElementById('medCount').textContent = medCount;
+    document.getElementById('medEmpty').style.display = 'none';
+    var grid = document.getElementById('medGrid');
+    grid.style.display = 'flex';
+    var t = document.createElement('div');
+    t.className = 'thumb';
+    t.innerHTML = '<svg width="22" height="19" viewBox="0 0 15 13" fill="none" stroke="#fff" stroke-width="1.2"><rect x=".7" y="2.7" width="13.6" height="9.6" rx="1.6"/><circle cx="7.5" cy="7.5" r="2.6"/><path d="M4.5 2.7 5.8.7h3.4l1.3 2"/></svg>';
+    grid.appendChild(t);
+  }
+
+  // Excel-Import-Demo (Neuer Terminabgleich)
+  function pickExcel(){
+    document.getElementById('excelLbl').innerHTML = 'Terminplan_B27_2026-08.xlsx <span style="color:var(--muted)">· 38 Vorgänge</span>';
+    document.getElementById('excelChev').textContent = '✓';
+    document.getElementById('excelChev').style.color = 'var(--teal)';
+  }
+
+  // Toast
+  var toastTimer = null;
+  function showToast(html){
+    var t = document.getElementById('toast');
+    t.innerHTML = html; t.classList.add('show');
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(hideToast, 2600);
+  }
+  function hideToast(){ document.getElementById('toast').classList.remove('show'); }
+
+  show('s-1');
+</script>
+
+<a class="pf-demo-badge" href="https://harispaartan.github.io/#work" title="Back to the portfolio">Portfolio demo · fictional company &amp; data · harispaartan.github.io</a>
+<style>.pf-demo-badge{position:fixed;right:12px;bottom:12px;z-index:2147483647;font:500 12px/1.3 system-ui,-apple-system,"Segoe UI",sans-serif;color:#E6EDF3;background:rgba(11,15,20,.92);border:1px solid #2a3340;border-radius:999px;padding:7px 12px;text-decoration:none;box-shadow:0 6px 20px rgba(0,0,0,.35);opacity:.92}.pf-demo-badge:hover{opacity:1;color:#F2A93B}@media print{.pf-demo-badge{display:none}}</style>
+</body>
+</html>

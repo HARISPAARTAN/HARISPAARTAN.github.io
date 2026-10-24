@@ -1,0 +1,2875 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>QS-App – Interaktiver Prototyp | Nordstern Projektmanagement GmbH</title>
+<style>
+/* ============ Presentation page (outside the phone) ============ */
+*{margin:0;padding:0;box-sizing:border-box}
+:root{
+  --pa-purple:#742774; --pa-purple-d:#5b1e5b;
+  --hdr:#1F4E79; --amber:#F2A93B;
+  --green:#107C10; --green-d:#0b5c0b;
+  --red:#A4262C; --blue:#0F6CBD; --orange:#CA5010;
+  --ink:#242424; --ink2:#605E5C; --line:#E1DFDD;
+  --bg:#FAF9F8; --card:#ffffff;
+}
+html,body{height:100%}
+body{
+  font-family:"Segoe UI","Segoe UI Web (West European)",-apple-system,BlinkMacSystemFont,Roboto,"Helvetica Neue",sans-serif;
+  background:radial-gradient(1200px 700px at 50% -10%, #2a2038 0%, #17131d 45%, #100d14 100%);
+  color:#e8e4ee; display:flex; flex-direction:column; align-items:center;
+  min-height:100vh; padding:18px 16px 28px;
+}
+.page-head{display:flex;flex-direction:column;align-items:center;gap:10px;margin-bottom:16px}
+.page-kicker{font-size:11px;letter-spacing:.22em;text-transform:uppercase;color:#a99cc0}
+.page-kicker b{color:var(--amber);font-weight:600}
+.seg{display:inline-flex;background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.14);border-radius:8px;padding:3px;gap:3px}
+.seg-b{appearance:none;border:0;background:transparent;color:#cfc7dd;font:600 12.5px "Segoe UI",sans-serif;padding:7px 18px;border-radius:6px;cursor:pointer}
+.seg-b.active{background:var(--pa-purple);color:#fff;box-shadow:0 2px 8px rgba(116,39,116,.5)}
+.seg-b:focus-visible{outline:2px solid var(--amber);outline-offset:2px}
+#stageWrap{display:flex;align-items:flex-start;justify-content:center}
+#stage{transform-origin:top center}
+/* ============ Device bezel ============ */
+.bezel{position:relative;background:linear-gradient(160deg,#1b1b1f,#0a0a0c);border-radius:56px;padding:13px;
+  box-shadow:0 40px 90px rgba(0,0,0,.65), 0 0 0 2px #333038, inset 0 0 0 2px #454049}
+body[data-dev="tablet"] .bezel{border-radius:36px}
+.screen{width:390px;height:844px;border-radius:44px;overflow:hidden;background:var(--bg);display:flex;flex-direction:column;position:relative;color:var(--ink)}
+body[data-dev="tablet"] .screen{width:768px;height:1024px;border-radius:24px}
+.notch{position:absolute;top:11px;left:50%;transform:translateX(-50%);width:112px;height:25px;background:#000;border-radius:20px;z-index:80}
+body[data-dev="tablet"] .notch{width:10px;height:10px;border-radius:50%;top:9px}
+/* ============ Status bar + Power Apps player chrome ============ */
+.statusbar{height:34px;background:#231a2b;color:#fff;display:flex;align-items:flex-end;justify-content:space-between;
+  padding:0 26px 3px;font-size:12px;font-weight:600;flex:none}
+.statusbar .sb-ic{display:flex;gap:5px;align-items:center}
+.statusbar svg{display:block}
+.pachrome{height:40px;background:#2b2135;color:#fff;display:flex;align-items:center;gap:10px;padding:0 12px;flex:none;border-bottom:1px solid #3d3149}
+.pachrome .pa-back{display:flex;align-items:center;color:#cbbfdd;flex:none}
+.pachrome .pa-name{font-size:13px;font-weight:600;flex:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.pachrome .pa-sub{font-size:10px;color:#a795c2;font-weight:400;display:block;line-height:1}
+.pa-avatar{width:26px;height:26px;border-radius:50%;background:var(--amber);color:#3c2a00;font-size:11px;font-weight:700;
+  display:flex;align-items:center;justify-content:center;flex:none;letter-spacing:.02em}
+.pa-dots{color:#cbbfdd;flex:none;font-weight:700;letter-spacing:1px;font-size:14px;padding:0 2px}
+/* ============ App chrome ============ */
+.app-main{flex:1;display:flex;flex-direction:column;min-height:0;background:var(--bg)}
+.app-header{height:48px;background:var(--hdr);color:#fff;display:flex;align-items:center;gap:6px;padding:0 8px;flex:none}
+.hdr-btn{appearance:none;border:0;background:transparent;color:#fff;width:38px;height:38px;border-radius:4px;display:flex;align-items:center;justify-content:center;cursor:pointer;flex:none}
+.hdr-btn:hover{background:rgba(255,255,255,.12)}
+.hdr-btn:focus-visible{outline:2px solid #fff;outline-offset:-2px}
+.hdr-title{flex:1;font-size:16px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.hdr-sync{position:relative;display:flex;align-items:center;justify-content:center;width:38px;height:38px;flex:none;color:#dff3df}
+.hdr-sync.off{color:#ffd693}
+.hdr-sync .q-badge{position:absolute;top:3px;right:2px;background:var(--amber);color:#3c2a00;font-size:9px;font-weight:700;
+  border-radius:8px;min-width:15px;height:15px;display:flex;align-items:center;justify-content:center;padding:0 3px}
+@keyframes spin{to{transform:rotate(360deg)}}
+.hdr-sync.syncing svg{animation:spin 1s linear infinite}
+.offline-banner{background:#FFF4E1;border-bottom:1px solid #f0d9a8;color:#7a4c00;font-size:12px;font-weight:600;
+  padding:7px 14px;display:flex;align-items:center;gap:8px;flex:none}
+.offline-banner .dot{width:8px;height:8px;border-radius:50%;background:var(--amber);flex:none}
+.offline-note{background:#FFF4E1;border-bottom:1px solid #f0d9a8;color:#8a5c10;font-size:10.5px;line-height:1.45;
+  padding:0 14px 7px;flex:none}
+.sync-banner{background:#E7F2E7;border-bottom:1px solid #bfe0bf;color:#0b5c0b;font-size:12px;font-weight:600;
+  padding:7px 14px;display:flex;align-items:center;gap:8px;flex:none}
+#appBody{flex:1;overflow-y:auto;overflow-x:hidden;-webkit-overflow-scrolling:touch;min-height:0}
+/* ============ Tab bar ============ */
+.tabbar{height:58px;background:#fff;border-top:1px solid var(--line);display:flex;flex:none}
+.tab{flex:1;appearance:none;border:0;background:transparent;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;
+  color:#616161;font:600 10px "Segoe UI",sans-serif;cursor:pointer;padding-top:4px}
+.tab svg{display:block}
+.tab.active{color:var(--pa-purple)}
+.tab:focus-visible{outline:2px solid var(--pa-purple);outline-offset:-2px}
+/* ============ Common controls (Fluent) ============ */
+.scr{padding:16px 16px 8px;max-width:820px;margin:0 auto;width:100%}
+.lbl{font-size:12.5px;font-weight:600;color:#323130;margin:14px 0 5px}
+.lbl:first-child{margin-top:0}
+.txt-in,.txt-area{width:100%;font:400 14.5px "Segoe UI",sans-serif;color:var(--ink);background:#fff;
+  border:1px solid #8A8886;border-radius:4px;padding:11px 12px;min-height:46px}
+.txt-area{min-height:96px;resize:none;line-height:1.45}
+.txt-in:focus,.txt-area:focus{outline:none;border-color:var(--pa-purple);box-shadow:0 0 0 1px var(--pa-purple)}
+.txt-in::placeholder,.txt-area::placeholder{color:#a19f9d}
+.btn{appearance:none;border:0;border-radius:4px;font:600 14.5px "Segoe UI",sans-serif;cursor:pointer;
+  display:flex;align-items:center;justify-content:center;gap:8px;padding:0 16px;min-height:46px;color:#fff;background:var(--pa-purple)}
+.btn:hover{filter:brightness(1.08)}
+.btn:focus-visible{outline:2px solid var(--ink);outline-offset:2px}
+.btn:disabled{background:#c8c6c4;color:#fff;cursor:default;filter:none}
+.btn-green{background:var(--green)}
+.btn-ghost{background:#fff;color:var(--ink);border:1px solid #8A8886}
+.btn-ghost:hover{background:#f3f2f1;filter:none}
+/* offline bzw. nicht verfügbar: sichtbar, aber wirkungslos (mit Hinweis-Toast) */
+.btn-blocked,.btn-blocked:hover{opacity:.45;filter:grayscale(1)}
+.chip{display:inline-flex;align-items:center;gap:6px;font-size:12px;font-weight:600;border-radius:12px;padding:3px 10px;white-space:nowrap}
+.chip .cdot{width:8px;height:8px;border-radius:50%;flex:none}
+/* Fluent dropdown */
+.dd{position:relative}
+.dd-btn{width:100%;appearance:none;background:#fff;border:1px solid #8A8886;border-radius:4px;min-height:46px;
+  display:flex;align-items:center;gap:9px;padding:0 12px;font:400 14.5px "Segoe UI",sans-serif;color:var(--ink);cursor:pointer;text-align:left}
+.dd-btn:focus-visible{outline:none;border-color:var(--pa-purple);box-shadow:0 0 0 1px var(--pa-purple)}
+.dd-btn .dd-txt{flex:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.dd-btn .dd-ph{color:#a19f9d}
+.dd-list{position:absolute;top:calc(100% + 4px);left:0;right:0;background:#fff;border:1px solid var(--line);border-radius:4px;
+  box-shadow:0 8px 24px rgba(0,0,0,.18);z-index:90;overflow:hidden}
+.dd-list[hidden]{display:none}
+.dd-opt{width:100%;appearance:none;border:0;background:#fff;display:flex;align-items:center;gap:9px;padding:11px 12px;
+  font:400 14px "Segoe UI",sans-serif;color:var(--ink);cursor:pointer;text-align:left}
+.dd-opt:hover,.dd-opt:focus-visible{background:#f3eef3;outline:none}
+.dd-opt.sel{background:#f7f2f7;font-weight:600}
+/* Cards */
+.card{background:#fff;border:1px solid var(--line);border-radius:6px;box-shadow:0 1px 2px rgba(0,0,0,.05)}
+/* ============ Home screen ============ */
+.proj-card{padding:13px 14px;margin-bottom:14px}
+.tile{width:100%;appearance:none;border:1px solid var(--line);border-radius:6px;background:#fff;cursor:pointer;
+  display:flex;align-items:center;gap:14px;padding:16px 16px;min-height:88px;text-align:left;margin-bottom:12px;
+  box-shadow:0 1px 2px rgba(0,0,0,.05);font-family:"Segoe UI",sans-serif}
+.tile:focus-visible{outline:2px solid var(--pa-purple);outline-offset:2px}
+.tile .t-ic{width:46px;height:46px;border-radius:8px;display:flex;align-items:center;justify-content:center;flex:none}
+.tile .t-tx{flex:1;min-width:0;display:flex;flex-direction:column;align-items:flex-start;gap:2px}
+.tile .t-t1{display:block;font-size:15.5px;font-weight:600;color:var(--ink);line-height:1.25}
+.tile .t-t2{display:block;font-size:12px;color:var(--ink2);line-height:1.35}
+.tile .t-chev{color:#a19f9d;flex:none}
+.tile-primary{background:var(--pa-purple);border-color:var(--pa-purple)}
+.tile-primary .t-t1,.tile-primary .t-t2{color:#fff}
+.tile-primary .t-t2{opacity:.85}
+.tile-primary .t-ic{background:rgba(255,255,255,.16);color:#fff}
+.tile-primary .t-chev{color:#e3cbe3}
+.tile-sec .t-ic{background:#f3eef3;color:var(--pa-purple)}
+body[data-dev="tablet"] .home-tiles{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+body[data-dev="tablet"] .home-tiles .tile{margin-bottom:0}
+.sec-h{font-size:12px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--ink2);margin:20px 0 8px}
+.beg-item{display:flex;align-items:center;gap:12px;padding:12px 14px;border-bottom:1px solid var(--line)}
+.beg-item:last-child{border-bottom:0}
+.beg-ic{width:36px;height:36px;border-radius:50%;background:#E7F2E7;color:var(--green);display:flex;align-items:center;justify-content:center;flex:none}
+.beg-t1{font-size:14px;font-weight:600;color:var(--ink)}
+.beg-t2{font-size:12px;color:var(--ink2);margin-top:1px}
+.pill{display:inline-flex;align-items:center;gap:7px;border-radius:14px;padding:6px 13px;font-size:12px;font-weight:600}
+.pill .pdot{width:8px;height:8px;border-radius:50%;flex:none}
+.pill-on{background:#E7F2E7;color:#0b5c0b}
+.pill-on .pdot{background:var(--green)}
+.pill-off{background:#FFF4E1;color:#7a4c00}
+.pill-off .pdot{background:var(--amber)}
+.home-foot{display:flex;justify-content:center;margin:18px 0 10px}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.45}}
+.pill .spin-dot{animation:pulse 1s ease-in-out infinite}
+/* ============ Beobachtung screen ============ */
+.obs-nav{display:flex;align-items:center;gap:8px;margin-bottom:12px}
+.nav-arrow{appearance:none;border:1px solid var(--line);background:#fff;border-radius:4px;width:44px;height:52px;
+  display:flex;align-items:center;justify-content:center;cursor:pointer;color:var(--hdr);flex:none}
+.nav-arrow:disabled{color:#c8c6c4;cursor:default}
+.nav-arrow:not(:disabled):hover{background:#f3f2f1}
+.nav-arrow:focus-visible{outline:2px solid var(--pa-purple)}
+.obs-mid{flex:1;text-align:center;min-width:0}
+.obs-count{font-size:14.5px;font-weight:700;color:var(--ink)}
+.obs-pills{display:flex;justify-content:center;gap:5px;margin-top:6px;flex-wrap:wrap}
+.opill{appearance:none;cursor:pointer;width:24px;height:24px;border-radius:50%;border:1.5px solid #c8c6c4;background:#fff;
+  font:600 11px "Segoe UI",sans-serif;color:var(--ink2);display:flex;align-items:center;justify-content:center;padding:0}
+.opill.done{border-color:var(--hdr);color:var(--hdr)}
+.opill.cur{background:var(--hdr);border-color:var(--hdr);color:#fff}
+.opill.draft{border-style:dashed}
+.opill:focus-visible{outline:2px solid var(--pa-purple);outline-offset:1px}
+.edit-bar{background:#EBF3FC;border:1px solid #bcd7f0;color:#0b4a80;font-size:12px;font-weight:600;border-radius:4px;
+  padding:7px 11px;display:flex;align-items:center;gap:8px;margin-bottom:12px}
+.media-btns{display:flex;gap:10px;margin-bottom:4px}
+.media-btns .btn{flex:1;min-height:56px;background:#fff;color:var(--hdr);border:1.5px solid var(--hdr);font-weight:600}
+.media-btns .btn:hover{background:#eef3f8;filter:none}
+.media-head{display:flex;align-items:center;justify-content:space-between;margin:14px 0 7px}
+.media-head .lbl{margin:0}
+.mv-toggle{display:inline-flex;border:1px solid var(--line);border-radius:4px;overflow:hidden}
+.mv-b{appearance:none;border:0;background:#fff;color:#8a8886;width:34px;height:28px;display:flex;align-items:center;justify-content:center;cursor:pointer}
+.mv-b.active{background:#f3eef3;color:var(--pa-purple)}
+.mv-b:focus-visible{outline:2px solid var(--pa-purple);outline-offset:-2px}
+.gal-carousel{display:flex;gap:9px;overflow-x:auto;padding:2px 2px 8px;scroll-snap-type:x mandatory}
+.gal-mosaic{display:grid;grid-template-columns:repeat(3,1fr);gap:9px;padding:2px}
+body[data-dev="tablet"] .gal-mosaic{grid-template-columns:repeat(4,1fr)}
+.thumb{position:relative;border-radius:6px;overflow:hidden;flex:none;width:96px;height:96px;scroll-snap-align:start;
+  border:1px solid var(--line);background:#eee}
+.gal-mosaic .thumb{width:auto;height:auto;aspect-ratio:1}
+.thumb img{width:100%;height:100%;object-fit:cover;display:block}
+@keyframes popin{from{transform:scale(.6);opacity:0}to{transform:scale(1);opacity:1}}
+.thumb.new{animation:popin .28s ease}
+.th-del{position:absolute;top:4px;right:4px;width:22px;height:22px;border-radius:50%;border:0;background:rgba(0,0,0,.55);
+  color:#fff;font-size:12px;cursor:pointer;display:flex;align-items:center;justify-content:center;padding:0}
+.th-del:hover{background:rgba(164,38,44,.9)}
+/* Video-Anhänge sind Dateien (Anlagen-Steuerung) – kein Posterbild, keine Laufzeit */
+.file-row{display:flex;align-items:center;gap:10px;background:#fff;border:1px solid var(--line);border-radius:4px;
+  padding:9px 10px;margin-top:7px}
+.file-row .fr-ic{color:var(--ink2);flex:none;display:flex}
+.file-row .fr-nm{flex:1;min-width:0;font-size:12.5px;color:var(--ink);word-break:break-all;line-height:1.35}
+.file-row .fr-chip{flex:none;font:700 9.5px/1 "Segoe UI",sans-serif;letter-spacing:.06em;text-transform:uppercase;
+  background:#EBF3FC;color:#1F4E79;border-radius:9px;padding:4px 8px}
+.file-row .fr-del{flex:none;appearance:none;border:0;background:#f3f2f1;color:var(--ink2);width:24px;height:24px;
+  border-radius:50%;font-size:12px;cursor:pointer;display:flex;align-items:center;justify-content:center;padding:0}
+.file-row .fr-del:hover{background:#FDEDEE;color:var(--red)}
+.gal-empty{border:1.5px dashed #c8c6c4;border-radius:6px;color:#8a8886;font-size:12.5px;text-align:center;padding:22px 12px}
+.action-bar{position:sticky;bottom:0;background:linear-gradient(to top, var(--bg) 0, var(--bg) 88%, rgba(250,249,248,0));
+  padding:18px 0 10px;display:flex;gap:10px;margin-top:18px}
+.action-bar .btn{flex:1;min-height:56px}
+.action-bar .btn-ghost{flex:0 0 auto;padding:0 18px}
+body[data-dev="tablet"] .obs-grid{display:grid;grid-template-columns:1fr 1fr;gap:22px;align-items:start}
+/* ============ Terminplan screen ============ */
+.tp-head{padding:13px 14px;margin-bottom:14px}
+.tp-head .tp-t{display:flex;justify-content:space-between;align-items:baseline;font-size:13.5px;font-weight:700}
+.tp-head .tp-t span{color:var(--ink2);font-weight:600;font-size:12px}
+.prog-track{height:8px;border-radius:4px;background:#edebe9;margin-top:9px;overflow:hidden}
+.prog-fill{height:100%;background:var(--green);border-radius:4px;transition:width .4s ease}
+.vg-card{margin-bottom:14px;overflow:hidden;border-radius:6px}
+.vg-card.done{border-color:#9fce9f;box-shadow:0 0 0 1px #9fce9f}
+.vg-plan{background:rgba(0,0,0,.05);border-bottom:1px solid var(--line);padding:12px 14px;position:relative}
+.vg-card.done .vg-plan{background:rgba(16,124,16,.06)}
+.vg-lock{position:absolute;top:11px;right:11px;color:#8a8886;display:flex;align-items:center;gap:4px;font-size:10px;font-weight:600}
+.vg-name{font-size:14.5px;font-weight:700;color:var(--ink);padding-right:54px}
+.vg-uid{font-family:Consolas,"Segoe UI Mono",monospace;font-size:11.5px;color:var(--ink2);margin-top:2px}
+.vg-meta{display:flex;flex-wrap:wrap;gap:4px 16px;margin-top:7px;font-size:12px;color:#444}
+.vg-meta b{font-weight:600;color:var(--ink2)}
+.vg-ist{background:#fff;padding:12px 14px}
+.vg-prog-row{display:flex;align-items:center;gap:12px}
+.vg-prog-row input[type=range]{flex:1}
+.vg-val{font-size:15px;font-weight:700;color:var(--hdr);min-width:52px;text-align:right}
+input[type=range]{appearance:none;-webkit-appearance:none;height:30px;background:transparent;cursor:pointer}
+input[type=range]:focus-visible{outline:2px solid var(--pa-purple);outline-offset:2px;border-radius:4px}
+input[type=range]::-webkit-slider-runnable-track{height:4px;border-radius:2px;background:linear-gradient(to right, var(--hdr) var(--p,0%), #d2d0ce var(--p,0%))}
+input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:22px;height:22px;border-radius:50%;background:#fff;
+  border:2px solid var(--hdr);margin-top:-9px;box-shadow:0 1px 3px rgba(0,0,0,.3)}
+input[type=range]::-moz-range-track{height:4px;border-radius:2px;background:#d2d0ce}
+input[type=range]::-moz-range-progress{height:4px;border-radius:2px;background:var(--hdr)}
+input[type=range]::-moz-range-thumb{width:20px;height:20px;border-radius:50%;background:#fff;border:2px solid var(--hdr)}
+.vg-actions{display:flex;gap:10px;margin-top:11px;align-items:center}
+.vg-actions .btn{min-height:42px;font-size:13.5px}
+.vg-media-btn{background:#fff;color:var(--hdr);border:1.5px solid var(--hdr)}
+.vg-media-btn:hover{background:#eef3f8;filter:none}
+.vg-fertig{flex:1}
+.vg-sum{display:flex;align-items:center;gap:10px;margin-top:2px}
+.vg-sum .prog-track{flex:1;margin-top:0}
+.vg-bem{font-size:12.5px;color:var(--ink2);line-height:1.45;margin-top:8px;
+  border-left:2px solid var(--line);padding-left:9px}
+.vg-thumbs{display:flex;gap:7px;margin-top:10px;flex-wrap:wrap}
+.vg-thumbs .thumb{width:52px;height:52px;border-radius:4px}
+.vg-thumbs .th-del{width:18px;height:18px;font-size:10px;top:2px;right:2px}
+.vg-done-chip{display:inline-flex;align-items:center;gap:5px;background:#E7F2E7;color:#0b5c0b;font-size:11.5px;font-weight:700;
+  border-radius:11px;padding:3px 10px}
+body[data-dev="tablet"] .vg-body{display:grid;grid-template-columns:5fr 6fr}
+body[data-dev="tablet"] .vg-plan{border-bottom:0;border-right:1px solid var(--line)}
+/* ============ Export screen ============ */
+.exp-sum{padding:14px;margin-bottom:14px}
+.exp-nums{display:flex;gap:10px;text-align:center}
+.exp-num{flex:1;background:#faf9f8;border:1px solid var(--line);border-radius:6px;padding:10px 4px}
+.exp-num b{display:block;font-size:21px;color:var(--hdr)}
+.exp-num span{font-size:11px;color:var(--ink2);font-weight:600}
+.exp-chips{display:flex;flex-wrap:wrap;gap:7px;margin-top:12px}
+.emp-row{display:flex;align-items:center;gap:10px;background:#fff;border:1px solid var(--line);border-radius:4px;padding:11px 12px;font-size:13.5px}
+.emp-row svg{color:var(--ink2);flex:none}
+.emp-row b{font-weight:600}
+.exp-hint{background:#FFF4E1;border:1px solid #f0d9a8;color:#7a4c00;font-size:12.5px;border-radius:4px;padding:9px 12px;margin-top:10px;font-weight:600}
+.flow-run{margin-top:16px;border:1px solid var(--line);border-radius:6px;background:#fff;padding:6px 0}
+.flow-step{display:flex;align-items:center;gap:11px;padding:10px 14px;font-size:13.5px;color:#a19f9d}
+.flow-step .fs-ic{width:22px;height:22px;flex:none;display:flex;align-items:center;justify-content:center}
+.fs-wait{width:9px;height:9px;border-radius:50%;background:#d2d0ce}
+.fs-spin{width:17px;height:17px;border:2.5px solid #e3d2e3;border-top-color:var(--pa-purple);border-radius:50%;animation:spin .8s linear infinite}
+.fs-check{color:var(--green)}
+.flow-step.active{color:var(--ink);font-weight:600}
+.flow-step.done{color:var(--ink)}
+/* Mock PDF */
+.pdf-wrap{margin-top:18px}
+.pdf-cap{font-size:12px;font-weight:700;color:var(--ink2);text-transform:uppercase;letter-spacing:.06em;margin-bottom:8px;display:flex;align-items:center;gap:7px}
+.pdf-page{background:#fff;border:1px solid #d2d0ce;border-radius:3px;box-shadow:0 6px 18px rgba(0,0,0,.14);padding:20px 18px 16px;font-size:11.5px;color:#222;line-height:1.45}
+.pdf-head{display:flex;justify-content:space-between;gap:12px;border-bottom:3px solid var(--amber);padding-bottom:10px;margin-bottom:12px}
+.pdf-logo{font-weight:700;font-size:13px;display:flex;align-items:center;gap:7px;color:#1a1a1a}
+.pdf-logo-sq{width:16px;height:16px;background:var(--amber);border-radius:3px;display:inline-block;flex:none}
+.pdf-meta{text-align:right;font-size:10px;color:#555}
+.pdf-page h3{font-size:12px;margin:13px 0 6px;color:var(--hdr)}
+.pdf-t{width:100%;border-collapse:collapse;font-size:10.5px}
+.pdf-t th{background:#f0eeec;text-align:left;padding:5px 6px;border:1px solid #d8d6d4;font-weight:700}
+.pdf-t td{padding:5px 6px;border:1px solid #d8d6d4;vertical-align:top}
+.pdf-t img{width:30px;height:30px;object-fit:cover;border-radius:3px;display:block}
+.pdf-medlink{font-size:8px;color:#0F6CBD;margin-top:3px;line-height:1.3;word-break:break-all}
+.pdf-sign{display:flex;gap:26px;margin-top:26px}
+.pdf-sign div{flex:1;border-top:1px solid #555;padding-top:4px;font-size:9.5px;color:#555}
+.pdf-foot{margin-top:16px;padding-top:8px;border-top:1px solid #d8d6d4;font-size:9px;color:#888;display:flex;justify-content:space-between;gap:8px;flex-wrap:wrap}
+/* ============ Toast + shutter ============ */
+#toast{position:absolute;left:50%;bottom:76px;transform:translateX(-50%) translateY(14px);background:#242424;color:#fff;
+  font-size:13px;font-weight:600;border-radius:6px;padding:11px 18px;opacity:0;pointer-events:none;transition:all .25s ease;
+  z-index:120;white-space:nowrap;max-width:88%;overflow:hidden;text-overflow:ellipsis;box-shadow:0 6px 20px rgba(0,0,0,.35)}
+#toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+#shutter{position:absolute;inset:0;background:#000;z-index:110;display:none;flex-direction:column;align-items:center;justify-content:center;gap:14px;color:#fff}
+#shutter.on{display:flex}
+#shutter .vf{width:64%;max-width:280px;aspect-ratio:1;border:2px solid rgba(255,255,255,.85);border-radius:8px;position:relative;
+  background:linear-gradient(150deg,#3a4b58,#151c22)}
+#shutter .vf::after{content:"";position:absolute;inset:30%;border:1.5px solid rgba(255,255,255,.6);border-radius:50%}
+#shutter .vf-lbl{font-size:13px;font-weight:600;letter-spacing:.04em;color:#ddd;text-align:center;padding:0 26px;line-height:1.5}
+/* Video: kein Sucher, kein REC-Punkt – die App wechselt nur zur Kamera-App des Geräts */
+#shutter .handoff{width:56px;height:56px;border-radius:14px;background:rgba(255,255,255,.12);
+  border:1px solid rgba(255,255,255,.3);display:flex;align-items:center;justify-content:center;color:#fff}
+#shutter.flash::before{content:"";position:absolute;inset:0;background:#fff;z-index:5}
+/* ============ Demo panel + caption (outside phone) ============ */
+.demo-panel{margin-top:20px;display:flex;align-items:center;gap:18px;background:rgba(255,255,255,.06);
+  border:1px solid rgba(255,255,255,.13);border-radius:10px;padding:10px 18px;flex-wrap:wrap;justify-content:center}
+.dp-item{display:flex;align-items:center;gap:10px;font-size:12.5px;color:#d5cde2;font-weight:600}
+.switch{position:relative;width:42px;height:22px;flex:none}
+.switch input{position:absolute;inset:0;opacity:0;cursor:pointer;margin:0;width:100%;height:100%}
+.sw-track{position:absolute;inset:0;background:#4a4258;border-radius:11px;transition:background .2s;pointer-events:none}
+.sw-knob{position:absolute;top:3px;left:3px;width:16px;height:16px;border-radius:50%;background:#fff;transition:left .2s;pointer-events:none}
+.switch input:checked ~ .sw-track{background:var(--amber)}
+.switch input:checked ~ .sw-knob{left:23px}
+.switch input:focus-visible ~ .sw-track{outline:2px solid var(--amber);outline-offset:2px}
+.dp-reset{appearance:none;border:1px solid rgba(255,255,255,.25);background:transparent;color:#b9aecb;font:600 11.5px "Segoe UI",sans-serif;
+  border-radius:6px;padding:6px 12px;cursor:pointer}
+.dp-reset:hover{background:rgba(255,255,255,.08)}
+/* ---- Exponat: der erzeugte Bericht, bewusst AUSSERHALB des Geräts ---- */
+#exhibitWrap{width:100%;max-width:660px;margin:26px auto 0}
+#exhibitWrap:empty{display:none}
+.exhibit{background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.14);border-radius:12px;padding:16px 16px 18px}
+.exhibit-h{display:flex;align-items:center;gap:9px;flex-wrap:wrap;margin-bottom:4px}
+.exhibit-h b{font-size:13.5px;color:#efeaf6;font-weight:600}
+.exhibit-tag{font:700 9.5px/1 "Segoe UI",sans-serif;letter-spacing:.08em;text-transform:uppercase;
+  background:rgba(242,169,59,.18);color:var(--amber);border-radius:9px;padding:5px 9px}
+.exhibit-sub{font-size:11px;color:#a99cc0;line-height:1.5;margin-bottom:12px}
+.exhibit .pdf-wrap{margin-top:0}
+.exhibit .pdf-cap{color:#a99cc0}
+.caption{margin-top:18px;text-align:center;max-width:640px}
+.cap-note{font-size:10.5px;color:#8f84a3;line-height:1.6;margin-top:12px;
+  border-top:1px solid rgba(255,255,255,.1);padding-top:10px}
+.cap-note span[lang="en"]{color:#7b7190}
+.caption h1{font-size:15px;font-weight:600;color:#efeaf6;letter-spacing:.01em}
+.caption .cap-org{font-size:11.5px;color:#a99cc0;margin-top:3px}
+.caption ul{list-style:none;display:flex;gap:6px 22px;justify-content:center;flex-wrap:wrap;margin-top:10px}
+.caption li{font-size:11px;color:#8f84a3;display:flex;align-items:center;gap:6px}
+.caption li::before{content:"";width:5px;height:5px;border-radius:50%;background:var(--amber);flex:none}
+/* ============ Ausbaustufen (MVP / Light / Premium) ============ */
+.tp{display:inline-flex;align-items:center;height:16px;padding:0 7px;border-radius:8px;
+    font:700 9.5px/1 "Segoe UI",sans-serif;letter-spacing:.06em;text-transform:uppercase;vertical-align:middle;margin-left:6px}
+.tp-mvp{box-shadow:inset 0 0 0 1px #bcd7f0}
+.tp-light{box-shadow:inset 0 0 0 1px #f0d9a8}
+.tp-prem{box-shadow:inset 0 0 0 1px #e0cbe0}
+body[data-mvp="1"] .feat[data-tier="light"],body[data-mvp="1"] .feat[data-tier="prem"]{opacity:.32;filter:grayscale(1)}
+body[data-mvp="1"] .feat[data-tier="light"] *,body[data-mvp="1"] .feat[data-tier="prem"] *{pointer-events:none}
+.tier-legend{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-top:10px}
+.tier-legend .tl-tx{font-size:11px;color:var(--ink2);font-weight:700;letter-spacing:.05em;text-transform:uppercase}
+/* ============ Wiederverwendbare Zeilen / Schalter / Hinweise ============ */
+.opt-row{display:flex;align-items:center;gap:12px;padding:11px 0;border-bottom:1px solid var(--line)}
+.opt-row:last-child{border-bottom:0}
+.opt-row .or-tx{flex:1;min-width:0}
+.opt-row .or-t1{font-size:13.5px;font-weight:600;color:var(--ink)}
+.opt-row .or-t2{font-size:11.5px;color:var(--ink2);line-height:1.4;margin-top:2px}
+.sw2{position:relative;width:42px;height:22px;flex:none}
+.sw2 input{position:absolute;inset:0;opacity:0;cursor:pointer;margin:0;width:100%;height:100%}
+.sw2 .sw2-track{position:absolute;inset:0;background:#c8c6c4;border-radius:11px;transition:background .2s;pointer-events:none}
+.sw2 .sw2-knob{position:absolute;top:3px;left:3px;width:16px;height:16px;border-radius:50%;background:#fff;transition:left .2s;
+  pointer-events:none;box-shadow:0 1px 2px rgba(0,0,0,.28)}
+.sw2 input:checked ~ .sw2-track{background:var(--green)}
+.sw2 input:checked ~ .sw2-knob{left:23px}
+.sw2 input:focus-visible ~ .sw2-track{outline:2px solid var(--pa-purple);outline-offset:2px}
+.note{font-size:11px;color:var(--ink2);line-height:1.45;margin-top:5px}
+.note-warn{background:#FFF4E1;border:1px solid #f0d9a8;color:#7a4c00;border-radius:4px;padding:7px 10px;
+  font-size:11.5px;line-height:1.45;margin-top:7px;font-weight:600}
+.mono{font-family:Consolas,"Segoe UI Mono",monospace}
+.chips-row{display:flex;flex-wrap:wrap;gap:7px;margin-top:6px}
+.ref-chip{display:inline-flex;align-items:center;gap:6px;background:#EBF3FC;color:#1F4E79;font-size:11.5px;font-weight:600;
+  border-radius:12px;padding:4px 6px 4px 10px}
+.ref-chip button{appearance:none;border:0;background:rgba(31,78,121,.16);color:#1F4E79;width:17px;height:17px;border-radius:50%;
+  font-size:10px;cursor:pointer;display:flex;align-items:center;justify-content:center;padding:0;flex:none}
+/* ============ Header-Overflow („Mehr“) ============ */
+.app-header{position:relative;z-index:60}
+.hdr-menu{position:absolute;top:calc(100% + 3px);right:2px;width:252px;background:#fff;border:1px solid var(--line);
+  border-radius:4px;box-shadow:0 8px 24px rgba(0,0,0,.22);z-index:95;overflow:hidden}
+.hdr-menu .dd-opt{color:var(--ink)}
+.hdr-menu .mm-sep{height:1px;background:var(--line)}
+.mehr-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.mehr-grid .tile{margin-bottom:0;min-height:82px;padding:12px;flex-direction:column;align-items:flex-start;gap:6px}
+.mehr-grid .tile .t-chev{display:none}
+.mehr-grid .tile .t-t1{font-size:13.5px}
+.mehr-grid .tile .t-t2{font-size:10.5px}
+.mehr-grid .tile .t-ic{width:32px;height:32px}
+/* ============ Übersichtsplan ============ */
+/* Die Planfläche ist bewusst NICHT antippbar: ein Image-Control liefert in Power Apps
+   keine Zeigerkoordinaten. Punkte werden ausschließlich über die Bereichsliste gesetzt. */
+.planwrap{position:relative;aspect-ratio:4/3;border:1px solid var(--line);border-radius:6px;overflow:hidden;background:#fff}
+.planwrap img{width:100%;height:100%;display:block;object-fit:cover;pointer-events:none}
+.pin{position:absolute;width:26px;height:26px;border-radius:50%;transform:translate(-50%,-50%);border:2px solid #fff;
+  color:#fff;font:700 11px "Segoe UI",sans-serif;display:flex;align-items:center;justify-content:center;cursor:pointer;
+  box-shadow:0 2px 6px rgba(0,0,0,.45);padding:0}
+.pin:focus-visible{outline:2px solid var(--pa-purple);outline-offset:2px}
+.pin-draft{background:var(--amber);color:#3c2a00;animation:pulse 1.1s ease-in-out infinite}
+.zone-row{display:flex;align-items:center;gap:12px;padding:12px 14px;border:0;border-bottom:1px solid var(--line);width:100%;
+  background:#fff;text-align:left;cursor:pointer;font-family:"Segoe UI",sans-serif}
+.zone-row:last-child{border-bottom:0}
+.zone-row:hover{background:#f3f2f1}
+.zone-row .z-ic{width:30px;height:30px;border-radius:6px;background:#EBF3FC;color:var(--hdr);display:flex;align-items:center;justify-content:center;flex:none}
+.zone-row .z-t1{font-size:13.5px;font-weight:600;color:var(--ink)}
+.zone-row .z-t2{font-size:11.5px;color:var(--ink2);margin-top:1px}
+/* ============ Aufgaben / To-Do ============ */
+.seg3{display:flex;border:1px solid var(--line);border-radius:4px;overflow:hidden;background:#fff}
+.seg3 button{flex:1;appearance:none;border:0;background:#fff;color:var(--ink2);font:600 12.5px "Segoe UI",sans-serif;
+  padding:10px 4px;cursor:pointer;border-right:1px solid var(--line)}
+.seg3 button:last-child{border-right:0}
+.seg3 button.active{background:#f3eef3;color:var(--pa-purple)}
+.seg3 button:focus-visible{outline:2px solid var(--pa-purple);outline-offset:-2px}
+.todo-row{display:flex;align-items:flex-start;gap:12px;padding:12px 14px;width:100%;background:#fff;border:0;
+  text-align:left;font-family:"Segoe UI",sans-serif;cursor:pointer}
+.tdbox{width:26px;height:26px;border-radius:50%;border:2px solid #8a8886;background:#fff;flex:none;cursor:pointer;
+  display:flex;align-items:center;justify-content:center;color:#fff;padding:0;margin-top:2px}
+.tdbox.on{background:var(--green);border-color:var(--green)}
+.tdbox:focus-visible{outline:2px solid var(--pa-purple);outline-offset:2px}
+.td-t1{font-size:12px;color:var(--ink2);display:flex;align-items:center;gap:7px;flex-wrap:wrap}
+.td-t2{font-size:13.5px;font-weight:600;color:var(--ink);margin-top:3px;line-height:1.35}
+.td-t2.done{text-decoration:line-through;color:var(--ink2);font-weight:400}
+.td-t3{font-size:11.5px;color:var(--ink2);margin-top:2px}
+/* ============ Wissensdatenbank ============ */
+.kb-row{width:100%;display:flex;align-items:flex-start;gap:11px;padding:12px 14px;background:#fff;border:0;
+  border-bottom:1px solid var(--line);text-align:left;cursor:pointer;font-family:"Segoe UI",sans-serif}
+.kb-row:hover{background:#f9f8f7}
+.kb-t1{font-size:13.5px;font-weight:700;color:var(--ink);line-height:1.3}
+.kb-t2{font-size:11.5px;color:var(--ink2);line-height:1.45;margin-top:3px}
+.kb-kick{display:inline-flex;align-items:center;height:17px;padding:0 7px;border-radius:9px;font:700 9.5px/1 "Segoe UI",sans-serif;
+  letter-spacing:.05em;text-transform:uppercase;background:#EBF3FC;color:#1F4E79;margin-bottom:4px}
+.kb-kick.sop{background:#E7F2E7;color:#0b5c0b}
+.kb-kick.mb{background:#FDF3EB;color:#CA5010}
+.kb-open{background:#faf9f8;border-bottom:1px solid var(--line);padding:12px 14px;font-size:12px;color:#444;line-height:1.5}
+/* ============ Einstellungen ============ */
+.sw-row{display:flex;gap:9px;flex-wrap:wrap;margin-top:6px}
+.swatch{width:40px;height:40px;border-radius:8px;border:2px solid transparent;cursor:pointer;padding:0;
+  box-shadow:inset 0 0 0 1px rgba(0,0,0,.14)}
+.swatch.sel{border-color:var(--ink)}
+.swatch:focus-visible{outline:2px solid var(--pa-purple);outline-offset:2px}
+.logo-pick{display:flex;gap:9px;margin-top:6px}
+.logo-b{min-width:64px;height:42px;border-radius:6px;border:1.5px solid var(--line);background:#fff;cursor:pointer;
+  font:700 12px "Segoe UI",sans-serif;color:var(--ink);display:flex;align-items:center;justify-content:center;gap:6px;padding:0 10px}
+.logo-b.sel{border-color:var(--pa-purple);box-shadow:0 0 0 1px var(--pa-purple)}
+.logo-sq{width:14px;height:14px;border-radius:3px;flex:none}
+.ro-row{display:flex;justify-content:space-between;gap:12px;padding:9px 0;border-bottom:1px solid var(--line);font-size:12px}
+.ro-row:last-child{border-bottom:0}
+.ro-row b{color:var(--ink2);font-weight:600;flex:none}
+.ro-row span{text-align:right;color:var(--ink);word-break:break-all}
+/* ============ Terminplan-Import ============ */
+.imp-file{display:flex;align-items:center;gap:10px;background:#F3F8FD;border:1px solid #bcd7f0;border-radius:4px;
+  padding:10px 12px;font-size:12.5px;color:#1F4E79}
+.imp-t{width:100%;border-collapse:collapse;font-size:10.5px;margin-top:10px}
+.imp-t th{background:#f0eeec;text-align:left;padding:5px 6px;border:1px solid #d8d6d4;font-weight:700;white-space:nowrap}
+.imp-t td{padding:5px 6px;border:1px solid #d8d6d4;white-space:nowrap}
+/* ============ Export-Erweiterungen ============ */
+.exp-warn{background:#FDEDEE;border:1px solid #f3c4c7;color:#A4262C;border-radius:4px;padding:11px 12px;margin-top:12px;
+  font-size:12.5px;line-height:1.5}
+.exp-warn .ew-h{font-weight:700;display:flex;align-items:center;gap:7px;margin-bottom:5px}
+.exp-warn ul{margin:6px 0 0 16px}
+.exp-warn .ew-btns{display:flex;gap:9px;margin-top:12px}
+.exp-warn .ew-btns .btn{flex:1;min-height:44px;font-size:13px}
+.fmt-seg{display:flex;gap:10px}
+.fmt-b{flex:1;appearance:none;border:1.5px solid var(--line);background:#fff;border-radius:6px;padding:11px 10px;cursor:pointer;
+  font-family:"Segoe UI",sans-serif;text-align:left;display:flex;align-items:center;gap:9px}
+.fmt-b.sel{border-color:var(--pa-purple);box-shadow:0 0 0 1px var(--pa-purple);background:#faf7fa}
+.fmt-b:focus-visible{outline:2px solid var(--pa-purple);outline-offset:2px}
+.fmt-b .f-t1{font-size:13.5px;font-weight:600;color:var(--ink);display:block}
+.fmt-b .f-t2{font-size:10.5px;color:var(--ink2);display:block;margin-top:1px}
+/* ============ Small real screens: app fills viewport ============ */
+@media (max-width:560px){
+  body{padding:0;display:block;background:#000}
+  .page-head,.demo-panel,.caption,#exhibitWrap{display:none}
+  #stageWrap{width:100%!important;height:100dvh!important}
+  #stage{transform:none!important}
+  .bezel{padding:0;border-radius:0;box-shadow:none;background:#000}
+  .screen,body[data-dev="tablet"] .screen{width:100vw;height:100dvh;border-radius:0}
+  .notch{display:none}
+}
+</style>
+</head>
+<body data-dev="phone">
+
+<div class="page-head">
+  <div class="page-kicker">PROJ02 · <b>Nordstern</b> Projektmanagement GmbH · Power-Apps-Prototyp</div>
+  <div class="seg" role="group" aria-label="Geräteansicht wählen">
+    <button class="seg-b active" id="segPhone" onclick="setDevice('phone')">Smartphone</button>
+    <button class="seg-b" id="segTablet" onclick="setDevice('tablet')">Tablet</button>
+  </div>
+  <div style="font-size:10.5px;color:#8f84a3;letter-spacing:.04em">4.1 · Smartphone- und Tablet-Layout (responsive Container) · Ausbaustufe Light</div>
+</div>
+
+<div id="stageWrap"><div id="stage">
+  <div class="bezel">
+    <div class="screen" id="screen">
+      <div class="notch" aria-hidden="true"></div>
+      <!-- Phone status bar -->
+      <div class="statusbar" aria-hidden="true">
+        <span id="sbTime">09:41</span>
+        <span class="sb-ic">
+          <svg width="15" height="11" viewBox="0 0 15 11" fill="currentColor"><rect x="0" y="7" width="2.5" height="4" rx=".6"/><rect x="4" y="5" width="2.5" height="6" rx=".6"/><rect x="8" y="2.5" width="2.5" height="8.5" rx=".6"/><rect x="12" y="0" width="2.5" height="11" rx=".6"/></svg>
+          <span id="sbNet"></span>
+          <svg width="23" height="11" viewBox="0 0 23 11"><rect x="0" y="0" width="20" height="11" rx="2.6" fill="none" stroke="currentColor" stroke-width="1"/><rect x="1.8" y="1.8" width="13" height="7.4" rx="1.2" fill="currentColor"/><rect x="21" y="3.4" width="2" height="4.2" rx="1" fill="currentColor"/></svg>
+        </span>
+      </div>
+      <!-- Power Apps player chrome -->
+      <div class="pachrome">
+        <span class="pa-back" aria-hidden="true"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M15 5 8 12l7 7"/></svg></span>
+        <span class="pa-name">QS Baustelle – Nordstern<span class="pa-sub">Power Apps</span></span>
+        <span class="pa-avatar" title="H. Harithas">HH</span>
+        <span class="pa-dots" aria-hidden="true">⋮</span>
+      </div>
+      <!-- Canvas app -->
+      <div class="app-main">
+        <div class="app-header">
+          <button class="hdr-btn" id="hdrBack" onclick="goBack()" aria-label="Zurück">
+            <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M15 5 8 12l7 7"/></svg>
+          </button>
+          <div class="hdr-title" id="hdrTitle">QS Baustelle</div>
+          <span class="dd" data-dd="more" style="flex:none">
+            <button class="hdr-btn" id="hdrMore" onclick="toggleDD('more')" aria-haspopup="menu" aria-label="Mehr">
+              <svg width="19" height="19" viewBox="0 0 24 24" fill="currentColor"><circle cx="12" cy="5" r="1.9"/><circle cx="12" cy="12" r="1.9"/><circle cx="12" cy="19" r="1.9"/></svg>
+            </button>
+            <span id="hdrMoreMenu"></span>
+          </span>
+          <div class="hdr-sync" id="hdrSync" title="Synchronisierungsstatus"></div>
+        </div>
+        <div id="banner"></div>
+        <div id="appBody" tabindex="-1"></div>
+        <nav class="tabbar" aria-label="Hauptnavigation">
+          <button class="tab" data-v="home" onclick="gotoView('home')">
+            <svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 10.5 12 3l9 7.5"/><path d="M5.5 9v11h13V9"/></svg>
+            <span id="tabLblHome">Start</span></button>
+          <button class="tab" data-v="beobachtung" onclick="gotoView('beobachtung')">
+            <svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="2.5" y="6.5" width="19" height="13" rx="2.5"/><path d="M8.5 6.5 10 4h4l1.5 2.5"/><circle cx="12" cy="12.8" r="3.4"/></svg>
+            <span id="tabLblBeob">Beobachtungen</span></button>
+          <button class="tab" data-v="terminplan" onclick="gotoView('terminplan')">
+            <svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4.5" width="18" height="16" rx="2.5"/><path d="M3 9.5h18M8 2.8v3.4M16 2.8v3.4"/><path d="m8.8 14.5 2.2 2.2 4.2-4.2"/></svg>
+            <span id="tabLblPlan">Terminplan</span></button>
+          <button class="tab" data-v="export" onclick="gotoView('export')">
+            <svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M21.5 3 11 13.2"/><path d="M21.5 3 15 21l-4-7.8L3 9.5Z"/></svg>
+            <span id="tabLblBericht">Bericht</span></button>
+        </nav>
+        <div id="toast" role="status"></div>
+        <div id="shutter" aria-hidden="true"></div>
+      </div>
+    </div>
+  </div>
+</div></div>
+
+<!-- Exponat: der erzeugte Bericht. Bewusst AUSSERHALB des Geräts – eine Canvas-App
+     kann Word/PDF nicht in der App darstellen, sie kann die Datei nur per Launch() öffnen. -->
+<div id="exhibitWrap"></div>
+
+<div class="demo-panel">
+  <div class="dp-item">
+    <label class="switch"><input type="checkbox" id="swOffline" onchange="setOnline(!this.checked)" aria-label="Offline-Modus simulieren"><span class="sw-track"></span><span class="sw-knob"></span></label>
+    Offline-Modus simulieren
+  </div>
+  <div class="dp-item">
+    <label class="switch"><input type="checkbox" id="swMvp" onchange="setMvpOnly(this.checked)" aria-label="Nur MVP anzeigen"><span class="sw-track"></span><span class="sw-knob"></span></label>
+    Nur MVP anzeigen
+  </div>
+  <button class="dp-reset" onclick="resetDemo()">Demo zurücksetzen</button>
+</div>
+
+<div class="caption">
+  <h1>QS-App – Interaktiver Prototyp: vollständige Anforderungsmatrix, nach Ausbaustufen gekennzeichnet</h1>
+  <div class="cap-org">Nordstern Projektmanagement GmbH · Stand 12.08.2026 · Module 1–6 vollständig demonstriert · jede Funktion mit Ausbaustufe (MVP / Light / Premium) · ausschließlich in Power Apps umsetzbare Funktionen</div>
+  <ul>
+    <li>Modul 1–6 vollständig abgebildet</li>
+    <li>MVP / Light / Premium gekennzeichnet</li>
+    <li>Power-Apps-konform (Workarounds offen benannt)</li>
+    <li>Simulierte Kamera, SharePoint-Ablage &amp; E-Mail (Power Automate)</li>
+    <li>Offline-Simulation</li>
+  </ul>
+  <div class="cap-note">
+    Übergangseffekte (Blende, Kamera-Overlay, Pop-in der Miniaturen, animierte Fortschritte) sind Darstellung des Prototyps und existieren in Power Apps nicht.<br>
+    <span lang="en">Transition effects (shutter flash, camera overlay, thumbnail pop-in, animated progress) are prototype presentation only and do not exist in Power Apps.</span>
+  </div>
+</div>
+
+<script>
+'use strict';
+/* =================================================================
+   QS Baustelle – Klick-Dummy | Nordstern Projektmanagement GmbH
+   Vanilla JS, ein State-Objekt + Render-Funktionen, localStorage.
+   ================================================================= */
+var LS_KEY = 'nsqs_proto_v2';
+var HEUTE = '12.08.2026';
+var HEUTE_ISO = '2026-08-12';
+var PROJEKT = 'UW Lindenhorst';
+var EMPFAENGER = 'h.harithas@nordstern-pm.example';
+var KATS = [
+  {name:'Status',             en:'Status',            fg:'#444444', bg:'#F3F2F1', dot:'#8A8886'},
+  {name:'Beobachtung / SOP',  en:'Observation / SOP', fg:'#0F6CBD', bg:'#EBF3FC', dot:'#0F6CBD'},
+  {name:'Abweichung',         en:'Non-conformity',    fg:'#CA5010', bg:'#FDF3EB', dot:'#CA5010'},
+  {name:'Mangel',             en:'Defect',            fg:'#A4262C', bg:'#FDEDEE', dot:'#A4262C'}
+];
+/* Berichtsvorlagen (3.3 / 3.4) – wie AKZENTE mit de/en-Paar, gelesen über isEN() */
+var VORLAGEN = [
+  {de:'Standard NS',                     en:'NS standard'},
+  {de:'Kunde: Nordwind Netz',               en:'Client: Nordwind Netz'},
+  {de:'Projektspezifisch (Lindenhorst)', en:'Project-specific (Lindenhorst)'}
+];
+function vorlName(v){ return isEN() && v.en ? v.en : v.de; }
+/* Marker im Übersichtsplan müssen in Canvas zur Design-Zeit angelegt werden. */
+var MAX_PINS = 15;
+/* 5.6 – AI Builder liefert Objekterkennungs-Tags, keinen Fließtext. */
+var AI_TAGS = [
+  {de:'Kabel',      en:'cable'},
+  {de:'Erdung',     en:'earthing'},
+  {de:'Korrosion',  en:'corrosion'}
+];
+function aiTagList(){ return AI_TAGS.map(function(a){ return isEN() ? a.en : a.de; }).join(', '); }
+
+/* =================================================================
+   Ausbaustufen (MVP / Light / Premium) – Anforderungs-Traceability
+   ================================================================= */
+var TIERS = {
+  mvp:  {l:'MVP',     bg:'#EBF3FC', fg:'#1F4E79'},
+  light:{l:'Light',   bg:'#FFF4E1', fg:'#7a4c00'},
+  prem: {l:'Premium', bg:'#F3EEF3', fg:'#742774'}
+};
+function tier(k){
+  var x = TIERS[k]; if(!x) return '';
+  return '<span class="tp tp-'+k+'" style="background:'+x.bg+';color:'+x.fg+'">'+x.l+'</span>';
+}
+function feat(k, html){ return '<div class="feat" data-tier="'+k+'">'+html+'</div>'; }
+function setMvpOnly(v){
+  state.showMvpOnly = !!v;
+  document.body.setAttribute('data-mvp', v ? '1' : '0');
+  var sw = el('swMvp'); if(sw) sw.checked = !!v;
+  save(); render();
+  toast(v ? t('mvpOnlyOn') : t('mvpOnlyOff'));
+}
+
+/* =================================================================
+   Projekte (3.9 – App für mehrere Projekte, Premium)
+   Jeder Eintrag bringt seinen eigenen Terminplan-Stamm mit.
+   ================================================================= */
+/* VG_MASTER = Auszug aus dem realen Terminplan UW Lindenhorst (MS-Project-Export
+   „Export Terminplan(Vorgangstabelle1).csv“). Ausgewählt wurden die im 6-Wochen-Fenster
+   ab 12.08.2026 laufenden Vorgänge mit Dauer > 0 und <= 60 Tagen, die ersten 8 nach Nr.
+   uid = UID-Spalte des Terminplans, s/e = Anfang/Ende, ort = Feldbezeichnung aus dem
+   Vorgangsnamen (-Qnn / Qnn / PSTn / Tnnn), sonst Spalte „Schaltung“. */
+var VG_MASTER = [
+  {uid:'2645', name:'110kV Relaisgebäuden (3 Stück) - Fertigstellung', s:'22.07.2026', e:'01.09.2026', ort:''},
+  {uid:'2005', name:'380kV Leistungsschalter - Lieferung zur Baustelle Q08', s:'31.08.2026', e:'31.08.2026', ort:'Q08'},
+  {uid:'2031', name:'380kV Trennschalter - Lieferung zur Baustelle Q09 (Feld-Trenner und SS-Trenner)', s:'17.08.2026', e:'17.08.2026', ort:'Q09'},
+  {uid:'2076', name:'380 kV Ableiter - Lieferung zur Baustelle Q09 T414', s:'17.08.2026', e:'17.08.2026', ort:'Q09'},
+  {uid:'193',  name:'A_08.01-4 FUP TNG -Q17/-Q18 PST2', s:'26.06.2026', e:'20.08.2026', ort:'-Q17, -Q18'},
+  {uid:'3249', name:'Montage Anlage Beschilderung -Q03, -Q04', s:'31.07.2026', e:'13.08.2026', ort:'-Q03, -Q04'},
+  {uid:'3250', name:'Montage Anlage Beleuchtung -Q03, -Q04', s:'31.07.2026', e:'27.08.2026', ort:'-Q03, -Q04'},
+  {uid:'2278', name:'Montage Sekundär -Q03 Kabel Anschluss', s:'31.07.2026', e:'27.08.2026', ort:'-Q03'}
+];
+var VG_LZW = [
+  {uid:'2.1.1.10', name:'Bodenaustausch Halle A', s:'06.07.2026', e:'11.08.2026', ort:'Halle A, Achse A–F'},
+  {uid:'2.2.3.10', name:'Fundamente Stützenreihe B', s:'20.07.2026', e:'26.08.2026', ort:'Halle A, Achse B'},
+  {uid:'2.4.1.20', name:'Sprinklerleitung Untergeschoss', s:'03.08.2026', e:'18.09.2026', ort:'UG, Technikzentrale'},
+  {uid:'2.6.2.10', name:'Torschürzen / Verladerampen', s:'24.08.2026', e:'30.09.2026', ort:'Nordfassade'}
+];
+var VG_KWN = [
+  {uid:'3.1.2.10', name:'Sanierung Belebungsbecken 2', s:'01.07.2026', e:'29.08.2026', ort:'Becken 2'},
+  {uid:'3.2.1.10', name:'Beschichtung Faulturm', s:'11.08.2026', e:'25.09.2026', ort:'Faulturm Nord'},
+  {uid:'3.3.4.20', name:'MSR-Technik Rechengebäude', s:'18.08.2026', e:'09.10.2026', ort:'Rechengebäude'}
+];
+var PROJEKTE = [
+  {id:'UWP-380',     kurz:'UWP', name:'UW Lindenhorst – 380-kV-Schaltanlage', ordner:'/UW_Lindenhorst', angelegt:'02.06.2026', vg:VG_MASTER,
+   kunde:'Nordwind Netz', an:'Helios Grid'},
+  {id:'PRJ-LZW',     kurz:'LZW', name:'Neubau Logistikzentrum Hafen West',  ordner:'/BV_LZ_HafenWest', angelegt:'14.04.2026', vg:VG_LZW,
+   kunde:'Hafenbetriebe Nord GmbH', an:'Bauunion Nord'},
+  {id:'PRJ-KWN',     kurz:'KWN', name:'Sanierung Klärwerk Nord',            ordner:'/BV_KW_Nord',  angelegt:'09.03.2026', vg:VG_KWN,
+   kunde:'Stadtentwässerung Nord AöR', an:'Wasserbau Meyer'}
+];
+function proj(){ return PROJEKTE[(state && state.projIdx) || 0]; }
+function VGM(){ return proj().vg; }
+
+/* =================================================================
+   Bereiche des Übersichtsplans (5.1 / 5.2 / 5.10)
+   ================================================================= */
+var ZONEN = [
+  {x:0.22, y:0.30, de:'Feld -Q03',            en:'Bay -Q03',            subDe:'Schaltanlage 380 kV · Primärtechnik', subEn:'380 kV switchyard · primary equipment'},
+  {x:0.60, y:0.22, de:'Feld -Q04',            en:'Bay -Q04',            subDe:'Schaltanlage 380 kV · Primärtechnik', subEn:'380 kV switchyard · primary equipment'},
+  {x:0.47, y:0.74, de:'Relaisgebäude PST1',   en:'Relay building PST1', subDe:'Sekundärtechnik · Schrankreihen',     subEn:'Secondary equipment · cubicle rows'}
+];
+function zoneName(z){ return isEN() ? z.en : z.de; }
+function zoneSub(z){ return isEN() ? z.subEn : z.subDe; }
+
+/* =================================================================
+   Wissensdatenbank (5.4) + Normen/Technische Dokumente (5.5)
+   Quelle: SharePoint-Bibliothek „QS-Wissen“ (4.4)
+   ================================================================= */
+/* sumDe/sumEn = Spalte „Kurzbeschreibung“ der SharePoint-Bibliothek. NUR Titel und
+   diese Spalte sind durchsuchbar – der Inhalt der Dokumente selbst nicht (5.4). */
+var WISSEN = [
+  {k:'norm', de:'DIN EN 61936-1 – Starkstromanlagen über 1 kV', en:'DIN EN 61936-1 – Power installations exceeding 1 kV',
+   sumDe:'Errichtung, Schutzabstände und Prüfung von Schaltanlagen',
+   sumEn:'Erection, clearances and testing of switchgear installations',
+   exDe:'Errichtungsbestimmungen für Starkstromanlagen über 1 kV. Der Abschnitt zu Verbindungen regelt Anzugsmomente, Kontaktflächen und die Prüfung vor Inbetriebsetzung.',
+   exEn:'Erection rules for power installations exceeding 1 kV. The section on connections covers tightening torques, contact surfaces and testing before energisation.'},
+  {k:'norm', de:'DIN VDE 0141 – Erdungen für Starkstromanlagen', en:'DIN VDE 0141 – Earthing for power installations',
+   sumDe:'Mindestquerschnitte und Nachweise der Erdungsanlage',
+   sumEn:'Minimum cross-sections and evidence for the earthing system',
+   exDe:'Bemessung der Erdungsanlage: Werkstoffe, Verbindungstechnik und Messung des Ausbreitungswiderstands je Bauabschnitt.',
+   exEn:'Design of the earthing system: materials, connection technique and measurement of the earth spreading resistance per construction section.'},
+  {k:'sop', de:'SOP 07 – Abnahme Sekundärverkabelung', en:'SOP 07 – Acceptance of secondary wiring',
+   sumDe:'Ablauf der Abnahme vor dem Unterspannungsetzen',
+   sumEn:'Acceptance procedure before energising the cubicles',
+   exDe:'Ablauf der Abnahme vor dem Unterspannungsetzen: Schirmauflagen, Klemmenbelegung, Kabelverschraubungen, Fotodokumentation je Schrank.',
+   exEn:'Acceptance procedure before energising: shield terminations, terminal assignment, cable glands, photo documentation per cubicle.'},
+  {k:'mb', de:'NS-Merkblatt SF6-Gasdruck', en:'NS leaflet on SF6 gas pressure',
+   sumDe:'Bewertung von Druck- und Dichtheitsbefunden',
+   sumEn:'Assessing pressure and tightness findings',
+   exDe:'Kurzanleitung zur Bewertung: Druck innerhalb des Toleranzbands = Beobachtung, Unterschreitung der Mindestfüllung = Mangel mit To-Do.',
+   exEn:'Short guide to assessment: pressure within the tolerance band = observation, below the minimum filling level = defect with a to-do.'},
+  {k:'norm', de:'DIN VDE 0105-100 – Betrieb von elektrischen Anlagen', en:'DIN VDE 0105-100 – Operation of electrical installations',
+   sumDe:'Fünf Sicherheitsregeln, Schaltberechtigung, Arbeitsfreigabe',
+   sumEn:'Five safety rules, switching authorisation, work release',
+   exDe:'Grundlage für Arbeiten in der Schaltanlage: fünf Sicherheitsregeln, Schaltberechtigung und Arbeitsfreigabe durch den Anlagenverantwortlichen.',
+   exEn:'Basis for work inside the substation: five safety rules, switching authorisation and work release by the person responsible for the installation.'},
+  {k:'sop', de:'SOP 11 – Prüfung Erdungsanschlüsse', en:'SOP 11 – Testing earthing connections',
+   sumDe:'Sichtprüfung, Querschnittsvergleich, Durchgangsmessung',
+   sumEn:'Visual check, cross-section comparison, continuity measurement',
+   exDe:'Prüfschritte je Feld: Sichtprüfung der Anschlusspunkte, Abgleich mit der Ausführungszeichnung, Durchgangsmessung und Protokoll.',
+   exEn:'Test steps per bay: visual check of the connection points, comparison with the construction drawing, continuity measurement and record.'}
+];
+function wissenTitel(w){ return isEN() ? w.en : w.de; }
+function wissenText(w){ return isEN() ? w.exEn : w.exDe; }
+function wissenSum(w){ return isEN() ? w.sumEn : w.sumDe; }
+function kbKick(k){
+  if(k==='sop') return '<span class="kb-kick sop">SOP</span>';
+  if(k==='mb')  return '<span class="kb-kick mb">'+(isEN()?'Leaflet':'Merkblatt')+'</span>';
+  return '<span class="kb-kick">'+(isEN()?'Standard':'Norm')+'</span>';
+}
+
+/* =================================================================
+   Dateibenennung (4.5 – benutzerdefinierte Namenskonvention, Premium)
+   ================================================================= */
+var NAMING = [
+  '{Projekt}_{Datum}_B{Nr}_{Lfd}',
+  '{Datum}_{Bereich}_{Kategorie}_{Lfd}',
+  '{Projektnr}-{Vorgang-UID}-{Lfd}'
+];
+function slug(s){
+  return String(s==null?'':s)
+    .replace(/ä/g,'ae').replace(/ö/g,'oe').replace(/ü/g,'ue').replace(/ß/g,'ss')
+    .replace(/Ä/g,'Ae').replace(/Ö/g,'Oe').replace(/Ü/g,'Ue')
+    .replace(/[^A-Za-z0-9]+/g,'-').replace(/^-+|-+$/g,'').slice(0,24) || 'Allgemein';
+}
+function fileName(typ, bNr, ctx){
+  ctx = ctx || {};
+  var lfd = String(ctx.lfd!=null ? ctx.lfd : state.motifSeq).padStart(3,'0');
+  var ext = typ==='video' ? 'mp4' : 'jpg';
+  var p = proj();
+  var datum = HEUTE_ISO.replace(/-/g,'');
+  var pat = (state.settings && state.settings.naming) || 0;
+  var base;
+  if(pat===1){
+    base = datum+'_'+slug(ctx.ort||p.kurz)+'_'+slug(ctx.kat!=null && ctx.kat>=0 ? KATS[ctx.kat].name : 'Allgemein')+'_'+lfd;
+  } else if(pat===2){
+    base = p.id+'-'+(ctx.uid||'ALLG')+'-'+lfd;
+  } else {
+    base = p.kurz+'_'+datum+'_B'+bNr+'_'+lfd;
+  }
+  return base+'.'+ext;
+}
+
+/* =================================================================
+   Mehrsprachigkeit (DE/EN)
+   Entspricht dem Power-Apps-Muster: Übersetzungsliste (Key|DE|EN)
+   in SharePoint, offline gecacht; Auswahl des Nutzers überschreibt
+   Language(). Berichte bleiben in der Vorlagensprache (Deutsch).
+   ================================================================= */
+function isEN(){ return state && state.lang==='en'; }
+function katName(k){ return isEN() && k.en ? k.en : k.name; }
+var STR = {
+  de: {
+    tabStart:'Start', tabBeob:'Beobachtungen', tabPlan:'Terminplan', tabBericht:'Bericht',
+    syncing:'Wird synchronisiert …', onlineSynced:'Online – synchronisiert',
+    offlineBanner:'Offline – Daten werden lokal gespeichert', savedLocally:'lokal gespeichert',
+    offlineDetail:'Offline funktioniert ausschließlich im mobilen Power-Apps-Player, nicht im Browser. Fotos werden nur in begrenzter Zahl zwischengespeichert; Video-Anhänge und SharePoint-Dokumente sind offline nie verfügbar.',
+    projekt:'Projekt',
+    tileNew:'Neue Begehung starten', tileNewSub:'Beobachtungen erfassen &amp; Terminplan prüfen',
+    tileCont:'Begehung fortsetzen', startedAt:'begonnen um 08:52 Uhr',
+    tileReport:'Bericht senden', tileReportSub:'PDF aus Vorlage · E-Mail + SharePoint-Ablage',
+    prevWalks:'Frühere Begehungen', begVom:'Begehung vom', ongoing:'laufend', reportSentShort:'Bericht gesendet',
+    selIntro:'Checkliste für die Begehung zusammenstellen: Vorgänge aus dem Projekt-Terminplan auswählen. Die Plandaten (grau) werden vor der Begehung aus dem Terminplan übernommen.',
+    sollStart:'Soll-Start', sollEnde:'Soll-Ende', bereich:'Bereich', planChip:'Plan',
+    bereichTbd:'vor Ort ergänzen', kunde:'Auftraggeber', anLbl:'Auftragnehmer',
+    apply:'Übernehmen', cancel:'Abbrechen',
+    prevObs:'Vorherige Beobachtung', nextObs:'Nächste Beobachtung',
+    noMedia:'Noch keine Medien – Foto aufnehmen',
+    noFotos:'Noch keine Fotos – Foto aufnehmen',
+    foto:'Foto', video:'Video', medien:'Medien',
+    videoFiles:'Video-Dateien (Anlagen)',
+    carouselView:'Karussell-Ansicht', mosaicView:'Mosaik-Ansicht',
+    standort:'Standort', phStandort:'z. B. Feld -Q03, Sammelschiene',
+    kategorie:'Kategorie', beschreibung:'Beschreibung', phBeschr:'Beobachtung kurz beschreiben …',
+    finishNext:'Fertig – nächste Beobachtung', discard:'Verwerfen', saveChanges:'Änderungen speichern',
+    fillOne:'Bitte mindestens ein Feld ausfüllen', discarded:'Eingaben verworfen',
+    mediaRemoved:'Medium entfernt', delMediaAria:'Medium löschen',
+    bitteWaehlen:'Bitte wählen …',
+    camShutter:'Kamera – Auslösen …',
+    progIst:'Fortschritt (Ist)', geprueft:'Geprüft', bemerkung:'Bemerkung',
+    phBem:'Ist-Stand kurz beschreiben …', fertig:'Fertig',
+    beobachtungen:'Beobachtungen', vorgGeprueft:'Vorgänge geprüft',
+    noKat:'Noch keine Beobachtungen kategorisiert.',
+    vorlageLbl:'Berichtsvorlage',
+    vorlagenHint:'Vorlagen werden je Kunde/Projekt in SharePoint gepflegt (Liste „QS-Vorlagen“). Die Berichtssprache wird durch die Vorlage bestimmt.',
+    empf:'Empfänger', reportGoesTo:'Bericht geht an:', loggedUser:'angemeldeter Benutzer',
+    createSend:'Bericht erstellen &amp; senden',
+    expOffline:'Offline – Senden ist erst nach Wiederherstellung der Verbindung möglich.',
+    pdfCap:'PDF-Ausgabe',
+    offlineToast:'Offline-Modus aktiv – Daten werden lokal gespeichert',
+
+    /* ---- Ausbaustufen / Navigation ---- */
+    tierLegend:'Ausbaustufen', mvpOnly:'Nur MVP anzeigen',
+    mvpOnlyOn:'Ansicht auf MVP-Umfang reduziert', mvpOnlyOff:'Alle Ausbaustufen sichtbar',
+    more:'Mehr', mehrTitel:'Weitere Funktionen',
+    projId:'Projekt-ID', projAngelegt:'angelegt am', projSwitched:'Projekt gewechselt',
+
+    /* ---- Übersichtsplan (5.1 / 5.2 / 5.10) ---- */
+    planTitle:'Übersichtsplan',
+    planIntro:'Bereich in der Liste unten wählen – der Punkt wird im Plan gesetzt und der Standort automatisch in die Beobachtung übernommen.',
+    planZonen:'Bereiche', planPunkt:'Punkt übernehmen',
+    planOrtCopied:'Standort aus Plan übernommen', planMarker:'Mängel im Plan',
+    planFreeNote:'Standardweg in Power Apps: Der Punkt wird über die Bereichsliste unten gesetzt und rastet auf die Bereichsmitte ein. Die Planfläche selbst ist nicht antippbar – ein Image-Control liefert keine Zeigerkoordinaten. Freies Antippen wäre eine Erweiterung über eine PCF-Codekomponente (Dataverse + Admin-Freigabe).',
+    planMarkerLimit:'Marker sind auf {N} vordefinierte Positionen begrenzt (Design-Zeit); weitere Beobachtungen erscheinen in der Liste.',
+    planBE:'BE-Fläche',
+    planCap:'Übersichtsplan · UW Lindenhorst · Schaltanlage 380 kV · Lageplan 1:1000',
+    planNoPin:'Noch kein Punkt gewählt', planPinSet:'Punkt gesetzt',
+    planLegend:'Marker öffnen die Beobachtung mit Status und Medien.',
+    planNoMarker:'Noch keine Beobachtung im Plan verortet.',
+
+    /* ---- Aufgaben / To-Do (5.7 / 5.8) ---- */
+    todoTitle:'Aufgaben', tabMehrTodo:'To-Do-Nachverfolgung',
+    todoOpen:'Offen', todoDoneLbl:'Erledigt', todoAll:'Alle',
+    todoEmpty:'Keine Aufgaben – To-Do wird direkt in der Beobachtung gesetzt.',
+    todoMarkDone:'Als erledigt markieren', todoReopen:'Wieder öffnen',
+    todoIsDone:'Aufgabe erledigt', todoIsOpen:'Aufgabe wieder geöffnet',
+    lblTodo:'To Do', todoPh:'Was ist zu tun? (z. B. Nacharbeit, Nachweis, Termin)',
+    todoNoText:'(ohne Beschreibung)',
+
+    /* ---- Wissensdatenbank (5.4 / 5.5) ---- */
+    wissenTitle:'Wissensdatenbank',
+    wissenSearch:'Suchen (Norm, Stichwort, SOP)',
+    wissenRef:'Als Referenz verknüpfen', wissenRefOk:'Als Referenz verknüpft',
+    wissenNone:'Keine Treffer',
+    wissenSource:'Quelle: SharePoint-Bibliothek „QS-Wissen“',
+    wissenOfflineNote:'Offline nicht verfügbar: SharePoint-Dokumente können in Power Apps nicht offline zwischengespeichert werden. Nur Metadaten sind gecacht.',
+    wissenDeleg:'Hinweis: Die Suche über SharePoint ist nicht delegierbar – es werden die ersten 500 Einträge durchsucht. Gesucht wird ausschließlich in Titel und Kurzbeschreibung: Der Dokumentinhalt selbst ist nicht durchsuchbar.',
+    kbAll:'Alle', kbNorm:'Normen', kbSop:'SOP', kbMb:'Merkblätter',
+    refs:'Verknüpfte Referenzen', refRemoved:'Referenz entfernt',
+
+    /* ---- Einstellungen (4.5 / 5.6 / 6.x) ---- */
+    setTitle:'Einstellungen', setLang:'Sprache',
+    setLangHint:'Standardsprache Deutsch, Englisch zuschaltbar.',
+    setNaming:'Dateibenennung', setNamingHint:'Benennungsregel für alle Fotos, Videos und Berichte.',
+    setNamingPrev:'Vorschau', setNamingOk:'Benennungsregel geändert',
+    setCI:'Design & Logo', setOwnLogo:'Eigenes Logo',
+    setCIHint:'Akzentfarbe und Logo nach Corporate Identity Nordstern – vom Kunden überschreibbar.',
+    setAI:'KI-Assistenz', setAIHint:'Optional – jederzeit abschaltbar',
+    setAISub:'Die Analyse verbraucht Copilot Credits (AI Builder) und kann hier in den Einstellungen abgeschaltet werden.',
+    setAICredits:'Verbrauchsbasiert über Copilot Credits (AI Builder). Ohne Guthaben ist die Funktion gesperrt – sie liegt deshalb nie im kritischen Pfad.',
+    setAblage:'Ablage', setListe:'SharePoint-Liste', setBib:'Bibliothek',
+    setAiOn:'KI-Assistenz aktiviert', setAiOff:'KI-Assistenz deaktiviert',
+    setAkzentOk:'Akzentfarbe übernommen', setLogoOk:'Logo übernommen',
+
+    /* ---- Beobachtung: Medien / GPS / Plan / KI ---- */
+    videoUpload:'Video hochladen', videoUploadOk:'Video aus Galerie übernommen',
+    videoRecNote:'Power Apps kann Video nicht in der App aufnehmen: „Video“ wechselt zur Kamera-App des Geräts, danach wird die Datei über die Anlagen-Steuerung angehängt. Video-Anhänge erscheinen als Datei, nicht als Vorschaubild – es gibt weder Standbild noch Laufzeitanzeige. iOS: Video vorher in die Dateien-App exportieren.',
+    videoCamHint:'Gerät wechselt zur Kamera-App …',
+    videoOffline:'Video-Anhang nur online möglich',
+    nrLbl:'Nr.', seqHint:'Fortlaufende, sichtbare Nummer je Begehung',
+    fromPlan:'Aus Plan wählen',
+    gpsConsent:'Standort je Beobachtung erfassen (Einwilligung)',
+    gpsApply:'Standort übernehmen', gpsApplied:'GPS-Standort in Beobachtung übernommen',
+    gpsNote:'Power Apps liefert Breiten-/Längengrad, aber keinen Genauigkeitswert (± m). Erfasst werden nur Einzelpunkte, solange die App geöffnet ist; eine durchgehende Wegaufzeichnung der Begehung ist nicht möglich. Nur mit ausdrücklicher Einwilligung.',
+    gpsOff:'Erfassung aus – ohne Einwilligung wird kein Standort erfasst.',
+    gpsOn:'Standorterfassung aktiviert', gpsOffT:'Standorterfassung deaktiviert',
+    aiBtn:'Vorschlag der KI-Assistenz', aiRunning:'KI-Assistenz analysiert Foto …',
+    aiOk:'Kategorie-Vorschlag übernommen – die Beschreibung schreibt der Prüfer',
+    aiNoMedia:'Für einen Vorschlag zuerst ein Foto aufnehmen.',
+    aiOffline:'KI-Assistenz nur online verfügbar',
+    aiTagsLine:'Erkannt: {T} — Vorschlag: Kategorie {K}',
+    aiScope:'AI Builder liefert ausschließlich Objekterkennungs-Tags bzw. OCR-Text. Fließtext, Maße aus dem Foto oder Normverweise sind nicht möglich – die Beschreibung schreibt der Prüfer.',
+
+    /* ---- Terminplan-Import (2.2) ---- */
+    impBtn:'Aus Terminplan importieren (Excel / MS Project)',
+    impTitle:'Terminplan-Import', impFile:'Terminplan_UW_Lindenhorst.xlsx · 412 KB',
+    impStart:'Import starten', impDone:'8 Vorgänge importiert',
+    impMapping:'Spaltenzuordnung', impClose:'Schließen',
+    impHint:'Import läuft über Power Automate: Excel-Tabelle bzw. exportierte MS-Project-Liste → SharePoint-Liste „QS_Terminplan“.',
+    impBusy:'Terminplan wird importiert …',
+    impS3:'Vorgänge in SharePoint-Liste „QS_Terminplan“ geschrieben',
+    colVorgang:'Vorgang',
+    flowAsyncNote:'Der Flow läuft als ein Aufruf; die App zeigt keinen Schritt-für-Schritt-Fortschritt. Längere Läufe werden asynchron abgeschlossen – die Rückmeldung erfolgt dann per E-Mail.',
+
+    /* ---- Terminplan (2.11) ---- */
+    vgOneEntry:'als ein Eintrag gespeichert',
+    vgParts:'Fortschritt + Bemerkung + Medien + Plandaten',
+    vgDetailTitle:'Vorgang bearbeiten',
+    vgBack:'Zurück zum Terminplan',
+    vgMediaNote:'Kamera- und Anlagen-Steuerungen liegen in dieser Detailansicht, nicht in der Listenzeile: In einer Galerie-Vorlage arbeiten sie in Canvas-Apps unzuverlässig.',
+    vgNoMedia:'Noch keine Medien zu diesem Vorgang.',
+
+    /* ---- Bericht / Export ---- */
+    fmtLbl:'Ausgabeformat', fmtWord:'Word (.docx)', fmtPdf:'PDF',
+    fmtWordSub:'aus Word-Vorlage · Premium-Connector', fmtPdfSub:'ohne Premium-Connector',
+    fmtWordNote:'Word aus Vorlage benötigt den Premium-Connector „Word Online (Business)“ in Power Automate. PDF ist ohne Premium möglich (OneDrive for Business → Datei konvertieren).',
+    pdfImgNote:'Fotos werden als kleine Vorschau eingebettet; die Originale bleiben im Medienordner der Begehung und sind aus dem Bericht heraus verlinkt. Bildlastige Berichte können den Premium-Weg (Word Online (Business) → PDF) erfordern.',
+    fmtChanged:'Ausgabeformat geändert',
+    tmplDefault:'Vordefinierte Standardvorlage',
+    warnTitle:'Offene Punkte vor dem finalen Export',
+    warnDraft:'unfertige Beobachtung (Entwurf)', warnDrafts:'unfertige Beobachtungen (Entwürfe)',
+    warnTodo:'offene Aufgabe (To Do)', warnTodos:'offene Aufgaben (To Do)',
+    warnAsk:'Bericht trotzdem final erzeugen und versenden?',
+    warnSend:'Trotzdem senden', warnBack:'Zurück zur Bearbeitung',
+    warnBackToast:'Export abgebrochen – offene Punkte bearbeiten',
+    videoLinkNote:'Video-Dateien werden als Link in den Bericht aufgenommen; die Datei bleibt im Medienordner der Begehung.',
+    expZielordner:'Zielordner', expNaming:'Benennungsregel',
+    wordCap:'Word-Ausgabe',
+    flowBusy:'Bericht wird erstellt …',
+    flowResult:'Bericht aus Vorlage „{V}“ erstellt · E-Mail an {E} gesendet · Medien &amp; Daten in SharePoint abgelegt',
+    expDone:'Bericht erstellt und versendet',
+    expOpen:'Bericht öffnen',
+    expOpenNote:'Power Apps kann Word- oder PDF-Dokumente nicht in der App darstellen. „Bericht öffnen“ ruft Launch() auf – die Datei öffnet in SharePoint bzw. in der Dokument-App des Geräts.',
+    expOpenToast:'Launch() – Datei wird in SharePoint geöffnet',
+    exhibitCap:'So sieht der versendete Bericht aus',
+    exhibitTag:'außerhalb der App',
+    exhibitSub:'Nachbildung des erzeugten Dokuments – bewusst außerhalb des Geräts dargestellt. In der App selbst gibt es nur die Bestätigung und den Öffnen-Link.'
+  },
+  en: {
+    tabStart:'Start', tabBeob:'Observations', tabPlan:'Schedule', tabBericht:'Report',
+    syncing:'Syncing …', onlineSynced:'Online – synced',
+    offlineBanner:'Offline – data is stored locally', savedLocally:'saved locally',
+    offlineDetail:'Offline only works in the mobile Power Apps player, not in the browser. Only a limited number of photos is cached; video attachments and SharePoint documents are never available offline.',
+    projekt:'Project',
+    tileNew:'Start new site walk', tileNewSub:'Record observations &amp; check schedule',
+    tileCont:'Continue site walk', startedAt:'started at 08:52',
+    tileReport:'Send report', tileReportSub:'PDF from template · email + SharePoint filing',
+    prevWalks:'Previous site walks', begVom:'Site walk of', ongoing:'in progress', reportSentShort:'report sent',
+    selIntro:'Compose the checklist for the site walk: select activities from the project schedule. The plan data (grey) is taken from the schedule before the walk.',
+    sollStart:'Planned start', sollEnde:'Planned finish', bereich:'Area', planChip:'Plan',
+    bereichTbd:'to be added on site', kunde:'Client', anLbl:'Main contractor',
+    apply:'Apply', cancel:'Cancel',
+    prevObs:'Previous observation', nextObs:'Next observation',
+    noMedia:'No media yet – take a photo',
+    noFotos:'No photos yet – take a photo',
+    foto:'Photo', video:'Video', medien:'Media',
+    videoFiles:'Video files (attachments)',
+    carouselView:'Carousel view', mosaicView:'Mosaic view',
+    standort:'Location', phStandort:'e.g. bay -Q03, busbar',
+    kategorie:'Category', beschreibung:'Description', phBeschr:'Briefly describe the observation …',
+    finishNext:'Done – next observation', discard:'Discard', saveChanges:'Save changes',
+    fillOne:'Please fill in at least one field', discarded:'Input discarded',
+    mediaRemoved:'Media item removed', delMediaAria:'Delete media',
+    bitteWaehlen:'Please select …',
+    camShutter:'Camera – capturing …',
+    progIst:'Progress (actual)', geprueft:'Checked', bemerkung:'Remark',
+    phBem:'Briefly describe the current status …', fertig:'Done',
+    beobachtungen:'Observations', vorgGeprueft:'Activities checked',
+    noKat:'No observations categorized yet.',
+    vorlageLbl:'Report template',
+    vorlagenHint:'Templates are maintained per client/project in SharePoint (list “QS-Vorlagen”). The report language is defined by the template.',
+    empf:'Recipient', reportGoesTo:'Report goes to:', loggedUser:'signed-in user',
+    createSend:'Create &amp; send report',
+    expOffline:'Offline – sending is only possible once the connection is restored.',
+    pdfCap:'PDF output',
+    offlineToast:'Offline mode active – data is stored locally',
+
+    /* ---- Tiers / navigation ---- */
+    tierLegend:'Delivery tiers', mvpOnly:'Show MVP only',
+    mvpOnlyOn:'View reduced to MVP scope', mvpOnlyOff:'All delivery tiers visible',
+    more:'More', mehrTitel:'More functions',
+    projId:'Project ID', projAngelegt:'created on', projSwitched:'Project switched',
+
+    /* ---- Site overview plan (5.1 / 5.2 / 5.10) ---- */
+    planTitle:'Site overview plan',
+    planIntro:'Select an area from the list below – the point is placed on the plan and the location is copied into the observation automatically.',
+    planZonen:'Areas', planPunkt:'Apply point',
+    planOrtCopied:'Location copied from plan', planMarker:'Defects on the plan',
+    planFreeNote:'Standard Power Apps route: the point is set through the area list below and snaps to the centre of that area. The plan image itself is not tappable – an image control returns no pointer coordinates. Free tapping would be an extension via a PCF code component (Dataverse + admin approval).',
+    planMarkerLimit:'Markers are limited to {N} predefined positions (design time); further observations appear in the list.',
+    planBE:'Site facilities',
+    planCap:'Site overview plan · UW Lindenhorst · 380 kV switchyard · Site plan 1:1000',
+    planNoPin:'No point selected yet', planPinSet:'Point set',
+    planLegend:'Markers open the observation with status and media.',
+    planNoMarker:'No observation located on the plan yet.',
+
+    /* ---- Tasks / to-do (5.7 / 5.8) ---- */
+    todoTitle:'Tasks', tabMehrTodo:'To-do follow-up',
+    todoOpen:'Open', todoDoneLbl:'Completed', todoAll:'All',
+    todoEmpty:'No tasks – set a to-do directly on an observation.',
+    todoMarkDone:'Mark as completed', todoReopen:'Reopen',
+    todoIsDone:'Task completed', todoIsOpen:'Task reopened',
+    lblTodo:'To do', todoPh:'What needs to be done? (e.g. rework, evidence, deadline)',
+    todoNoText:'(no description)',
+
+    /* ---- Knowledge base (5.4 / 5.5) ---- */
+    wissenTitle:'Knowledge base',
+    wissenSearch:'Search (standard, keyword, SOP)',
+    wissenRef:'Link as reference', wissenRefOk:'Linked as reference',
+    wissenNone:'No results',
+    wissenSource:'Source: SharePoint library “QS-Wissen”',
+    wissenOfflineNote:'Not available offline: SharePoint documents cannot be cached offline in Power Apps. Only metadata is cached.',
+    wissenDeleg:'Note: search over SharePoint is not delegable – the first 500 entries are searched. Only the title and the short summary are searched: the document content itself is not searchable.',
+    kbAll:'All', kbNorm:'Standards', kbSop:'SOP', kbMb:'Leaflets',
+    refs:'Linked references', refRemoved:'Reference removed',
+
+    /* ---- Settings (4.5 / 5.6 / 6.x) ---- */
+    setTitle:'Settings', setLang:'Language',
+    setLangHint:'Default language German, English can be enabled.',
+    setNaming:'File naming convention', setNamingHint:'Naming rule for all photos, videos and reports.',
+    setNamingPrev:'Preview', setNamingOk:'Naming rule changed',
+    setCI:'Design & logo', setOwnLogo:'Own logo',
+    setCIHint:'Accent colour and logo follow the Nordstern corporate identity – can be overridden by the client.',
+    setAI:'AI assistance', setAIHint:'Optional – can be disabled at any time',
+    setAISub:'Processing consumes Copilot Credits (AI Builder) and can be switched off here in the settings.',
+    setAICredits:'Consumption-based via Copilot Credits (AI Builder). Without a balance the feature is blocked – it is therefore never on the critical path.',
+    setAblage:'Storage', setListe:'SharePoint list', setBib:'Library',
+    setAiOn:'AI assistance enabled', setAiOff:'AI assistance disabled',
+    setAkzentOk:'Accent colour applied', setLogoOk:'Logo applied',
+
+    /* ---- Observation: media / GPS / plan / AI ---- */
+    videoUpload:'Upload video', videoUploadOk:'Video taken from the gallery',
+    videoRecNote:'Power Apps cannot record video in-app: “Video” switches to the device camera app, then the file is attached via the attachments control. Video attachments appear as a file, not as a preview image – there is neither a poster frame nor a duration. iOS: export the video to the Files app first.',
+    videoCamHint:'Switching to the device camera app …',
+    videoOffline:'Video attachment requires a connection',
+    nrLbl:'No.', seqHint:'Sequential, visible number per site walk',
+    fromPlan:'Pick from plan',
+    gpsConsent:'Capture location per observation (consent)',
+    gpsApply:'Apply location', gpsApplied:'GPS location copied into the observation',
+    gpsNote:'Power Apps returns latitude/longitude but no accuracy value (± m). Only single points are captured while the app is open; continuous track recording of the walk is not possible. Only with explicit consent.',
+    gpsOff:'Capture off – no location is recorded without consent.',
+    gpsOn:'Location capture enabled', gpsOffT:'Location capture disabled',
+    aiBtn:'AI assistance suggestion', aiRunning:'AI assistance is analysing the photo …',
+    aiOk:'Category suggestion applied – the description is written by the inspector',
+    aiNoMedia:'Take a photo first to get a suggestion.',
+    aiOffline:'AI assistance requires a connection',
+    aiTagsLine:'Detected: {T} — suggested category: {K}',
+    aiScope:'AI Builder returns object-detection tags or OCR text only. Prose, dimensions read off a photo or references to standards are not possible – the description is written by the inspector.',
+
+    /* ---- Schedule import (2.2) ---- */
+    impBtn:'Import from project schedule (Excel / MS Project)',
+    impTitle:'Schedule import', impFile:'Terminplan_UW_Lindenhorst.xlsx · 412 KB',
+    impStart:'Start import', impDone:'8 activities imported',
+    impMapping:'Column mapping', impClose:'Close',
+    impHint:'The import runs through Power Automate: Excel table or exported MS Project list → SharePoint list “QS_Terminplan”.',
+    impBusy:'Schedule is being imported …',
+    impS3:'Activities written to SharePoint list “QS_Terminplan”',
+    colVorgang:'Activity',
+    flowAsyncNote:'The flow runs as a single call; the app shows no step-by-step progress. Longer runs finish asynchronously – you are then notified by email.',
+
+    /* ---- Schedule (2.11) ---- */
+    vgOneEntry:'saved as one entry',
+    vgParts:'progress + remark + media + plan data',
+    vgDetailTitle:'Edit activity',
+    vgBack:'Back to the schedule',
+    vgMediaNote:'The camera and attachment controls live in this detail view rather than in the list row: inside a gallery template they behave unreliably in canvas apps.',
+    vgNoMedia:'No media for this activity yet.',
+
+    /* ---- Report / export ---- */
+    fmtLbl:'Output format', fmtWord:'Word (.docx)', fmtPdf:'PDF',
+    fmtWordSub:'from Word template · premium connector', fmtPdfSub:'no premium connector',
+    fmtWordNote:'Word from a template requires the premium connector “Word Online (Business)” in Power Automate. PDF works without premium (OneDrive for Business → convert file).',
+    pdfImgNote:'Photos are embedded as small previews; the originals stay in the media folder of the site walk and are linked from the report. Image-heavy reports may require the premium route (Word Online (Business) → PDF).',
+    fmtChanged:'Output format changed',
+    tmplDefault:'Predefined default template',
+    warnTitle:'Open items before the final export',
+    warnDraft:'unfinished observation (draft)', warnDrafts:'unfinished observations (drafts)',
+    warnTodo:'open task (to do)', warnTodos:'open tasks (to do)',
+    warnAsk:'Create and send the final report anyway?',
+    warnSend:'Send anyway', warnBack:'Back to editing',
+    warnBackToast:'Export cancelled – please handle the open items',
+    videoLinkNote:'Video files are included in the report as a link; the file stays in the media folder of the site walk.',
+    expZielordner:'Target folder', expNaming:'Naming rule',
+    wordCap:'Word output',
+    flowBusy:'Report is being created …',
+    flowResult:'Report created from template “{V}” · email sent to {E} · media &amp; data filed in SharePoint',
+    expDone:'Report created and sent',
+    expOpen:'Open report',
+    expOpenNote:'Power Apps cannot display Word or PDF documents inside the app. “Open report” calls Launch() – the file opens in SharePoint or in the device document app.',
+    expOpenToast:'Launch() – opening the file in SharePoint',
+    exhibitCap:'This is the report that gets sent',
+    exhibitTag:'outside the app',
+    exhibitSub:'Mock-up of the generated document – deliberately shown outside the device. Inside the app there is only the confirmation and the open link.'
+  }
+};
+function t(k){ return (isEN() && STR.en[k]!==undefined) ? STR.en[k] : STR.de[k]; }
+function setLang(l){
+  if(state.lang===l) return;
+  state.lang = l; state.ddOpen='';
+  if(state.settings) state.settings.lang = l;   /* 6.1 / 6.2 – Einstellung wird mitgeführt */
+  render(); save();
+  toast(l==='en' ? 'Language: English' : 'Sprache: Deutsch');
+}
+
+/* ---------- Simulierte Foto-/Video-Motive (Inline-SVG) ---------- */
+function motifSVG(k){
+  var head = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 160 160">';
+  var sky  = '<defs><linearGradient id="g" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#9dbdd9"/><stop offset="1" stop-color="#e7edf2"/></linearGradient></defs><rect width="160" height="160" fill="url(#g)"/>';
+  var body = '';
+  if(k===0){ /* Portalanlage 380 kV mit Sammelschiene */
+    body = sky +
+      '<rect y="126" width="160" height="34" fill="#8d9384"/>'+
+      '<path d="M0 132h160" stroke="#767c6e" stroke-width="2"/>'+
+      /* Portalstiele + Traverse */
+      '<rect x="24" y="34" width="8" height="94" fill="#5d6570"/>'+
+      '<rect x="126" y="34" width="8" height="94" fill="#5d6570"/>'+
+      '<rect x="18" y="30" width="122" height="7" fill="#5d6570"/>'+
+      '<g stroke="#7b8492" stroke-width="1.6">'+
+      '<path d="M24 48h8M24 66h8M24 84h8M24 102h8M126 48h8M126 66h8M126 84h8M126 102h8"/></g>'+
+      /* Sammelschienen (Leiterseile) */
+      '<path d="M28 46C60 62 100 62 130 46" stroke="#3b4048" stroke-width="2.4" fill="none"/>'+
+      '<path d="M28 58C60 76 100 76 130 58" stroke="#3b4048" stroke-width="2.4" fill="none"/>'+
+      /* Stützisolatoren */
+      '<g fill="#cfd6d9">'+
+      '<rect x="58" y="88" width="8" height="38" rx="2"/><rect x="94" y="88" width="8" height="38" rx="2"/></g>'+
+      '<g stroke="#a9b3b7" stroke-width="1.2">'+
+      '<path d="M55 96h14M55 104h14M55 112h14M91 96h14M91 104h14M91 112h14"/></g>';
+  } else if(k===3){ /* Sekundärschränke / Kabelanschluss im Relaisgebäude */
+    body = '<defs><linearGradient id="g" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#e7e9ea"/><stop offset="1" stop-color="#c4c8cb"/></linearGradient></defs><rect width="160" height="160" fill="url(#g)"/>'+
+      /* Schrankreihe */
+      '<g fill="#9aa3a8" stroke="#79838a" stroke-width="1.4">'+
+      '<rect x="8" y="18" width="44" height="128"/><rect x="58" y="18" width="44" height="128"/><rect x="108" y="18" width="44" height="128"/></g>'+
+      /* Klemmleisten */
+      '<g fill="#3d4a54">'+
+      '<rect x="14" y="44" width="32" height="9"/><rect x="14" y="74" width="32" height="9"/><rect x="14" y="104" width="32" height="9"/>'+
+      '<rect x="64" y="44" width="32" height="9"/><rect x="64" y="74" width="32" height="9"/><rect x="64" y="104" width="32" height="9"/>'+
+      '<rect x="114" y="44" width="32" height="9"/><rect x="114" y="74" width="32" height="9"/><rect x="114" y="104" width="32" height="9"/></g>'+
+      /* Aderbündel */
+      '<g stroke="#b8860b" stroke-width="1.6" fill="none" opacity=".85">'+
+      '<path d="M30 53v20M36 53v20M80 53v20M86 53v20M130 53v20M136 53v20"/></g>'+
+      '<circle cx="30" cy="30" r="3.2" fill="#107C10"/><circle cx="80" cy="30" r="3.2" fill="#107C10"/><circle cx="130" cy="30" r="3.2" fill="#F2A93B"/>';
+  } else if(k===2){ /* Leistungsschalter (SF6) mit Manometer */
+    body = sky +
+      '<rect y="128" width="160" height="32" fill="#8d9384"/>'+
+      /* Antriebskasten */
+      '<rect x="52" y="92" width="56" height="38" rx="3" fill="#93999b" stroke="#767c7e" stroke-width="1.4"/>'+
+      /* Manometer */
+      '<circle cx="80" cy="110" r="11" fill="#f2f4f5" stroke="#5d6164" stroke-width="1.6"/>'+
+      '<path d="M80 110 74 104" stroke="#A4262C" stroke-width="2"/>'+
+      '<circle cx="80" cy="110" r="1.8" fill="#5d6164"/>'+
+      /* Pole / Isolatoren */
+      '<g fill="#d2d8da" stroke="#aab3b6" stroke-width="1">'+
+      '<rect x="28" y="34" width="14" height="58" rx="3"/><rect x="73" y="26" width="14" height="66" rx="3"/><rect x="118" y="34" width="14" height="58" rx="3"/></g>'+
+      '<g stroke="#aab3b6" stroke-width="1.2">'+
+      '<path d="M25 44h20M25 56h20M25 68h20M25 80h20M70 36h20M70 48h20M70 60h20M70 72h20M70 84h20M115 44h20M115 56h20M115 68h20M115 80h20"/></g>'+
+      '<g fill="#5b6168"><rect x="26" y="28" width="18" height="7" rx="2"/><rect x="71" y="20" width="18" height="7" rx="2"/><rect x="116" y="28" width="18" height="7" rx="2"/></g>';
+  } else if(k===1){ /* Erdungsanschluss / Schraubverbindung (Nahaufnahme) */
+    body = '<defs><linearGradient id="g" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#b7bcc0"/><stop offset="1" stop-color="#8f959a"/></linearGradient></defs><rect width="160" height="160" fill="url(#g)"/>'+
+      /* Stahlprofil */
+      '<path d="M0 46h160M0 118h160" stroke="#767c80" stroke-width="2.4"/>'+
+      /* Erdungsband */
+      '<path d="M8 132 44 96 96 92 152 60" stroke="#9a6b28" stroke-width="9" fill="none" stroke-linejoin="round"/>'+
+      '<path d="M8 132 44 96 96 92 152 60" stroke="#c08b3c" stroke-width="3.4" fill="none" stroke-linejoin="round"/>'+
+      /* Anschlusslasche + Schrauben */
+      '<rect x="56" y="66" width="52" height="34" rx="3" fill="#a7adb1" stroke="#6f7579" stroke-width="1.6"/>'+
+      '<circle cx="70" cy="83" r="7" fill="#7d8489" stroke="#565c60" stroke-width="1.4"/>'+
+      '<circle cx="94" cy="83" r="7" fill="#7d8489" stroke="#565c60" stroke-width="1.4"/>'+
+      /* fehlende Drehmoment-Markierung: nur EINE Schraube markiert */
+      '<path d="M70 76v14" stroke="#CA5010" stroke-width="2.6"/>'+
+      '<circle cx="124" cy="120" r="9" fill="none" stroke="#A4262C" stroke-width="2.6"/>';
+  } else { /* Relaisgebäude PST1 */
+    body = sky +
+      '<rect y="120" width="160" height="40" fill="#8d9384"/>'+
+      '<rect x="16" y="52" width="128" height="70" fill="#dcd7cd" stroke="#b3ada2" stroke-width="1.6"/>'+
+      '<path d="M12 52h136l-8-12H20Z" fill="#9aa0a4"/>'+
+      /* Türen + Fenster */
+      '<rect x="64" y="84" width="32" height="38" fill="#5f6b74" stroke="#485159" stroke-width="1.2"/>'+
+      '<path d="M80 84v38" stroke="#485159" stroke-width="1.2"/>'+
+      '<g fill="#9dbdd9" stroke="#7d95ab" stroke-width="1">'+
+      '<rect x="28" y="66" width="24" height="16"/><rect x="108" y="66" width="24" height="16"/></g>'+
+      /* Kabelpritsche + Erdungsleiter am Sockel */
+      '<path d="M16 116h128" stroke="#b8860b" stroke-width="3" fill="none"/>'+
+      '<rect x="16" y="118" width="128" height="5" fill="#a9a396"/>'+
+      '<circle cx="150" cy="60" r="3.4" fill="#F2A93B"/>';
+  }
+  var stamp = '<rect y="142" width="160" height="18" fill="rgba(0,0,0,.45)"/>'+
+    '<text x="6" y="155" font-family="Segoe UI,Arial" font-size="10" fill="#fff">'+HEUTE+' · UW Lindenhorst</text>';
+  return 'data:image/svg+xml;utf8,' + encodeURIComponent(head + body + stamp + '</svg>');
+}
+function makeMedia(typ, bNr, ctx){
+  state.motifSeq++;
+  var k = state.motifSeq % 5;
+  /* 4.5: Dateiname folgt der in den Einstellungen gewählten Benennungsregel.
+     Video bekommt bewusst KEIN Vorschaubild und KEINE Laufzeit: die Anlagen-Steuerung
+     kennt nur Dateiname und Datei – ein Standbild müsste erst serverseitig erzeugt werden. */
+  var m = {typ:typ, name:fileName(typ, bNr, ctx)};
+  if(typ!=='video'){ m.src = motifSVG(k); }
+  return m;
+}
+
+/* ---------- Seed / State ---------- */
+function vgFromMaster(m){ return {uid:m.uid, name:m.name, s:m.s, e:m.e, ort:m.ort, prog:0, bem:'', medien:[], fertig:false}; }
+function blankObs(nr){
+  return {nr:nr, standort:'', kat:-1, beschreibung:'', medien:[], saved:false, erstellt:'',
+          todo:false, todoText:'', todoDone:false, planX:null, planY:null, gps:null, refs:[], aiTags:false};
+}
+function defSettings(){
+  return {lang:'de', naming:0, akzent:'#F2A93B', logo:'NS', ai:true, gpsConsent:false};
+}
+function seedState(){
+  var s = {
+    lang:'de',
+    device:'phone', online:true, queue:0, syncing:false, view:'home',
+    obsIndex:2, mediaView:'carousel', motifSeq:0, vorlage:0, vgIdx:0,
+    reportSent:false, ddOpen:'',
+    projIdx:0, showMvpOnly:false, todoFilter:'open',
+    wissenQuery:'', wissenOpen:-1, wissenFilter:'all',
+    format:'pdf', impOpen:false, expWarn:false,
+    settings:defSettings(),
+    archiv:[
+      {datum:'31.07.2026', beob:5, vorg:8, sent:true},
+      {datum:'17.07.2026', beob:3, vorg:6, sent:true}
+    ],
+    obs:[], vg:[]
+  };
+  state = s; /* makeMedia braucht state.motifSeq / state.settings */
+  var o1 = blankObs(1), o2 = blankObs(2);
+  o1.standort = 'Feld -Q03, Sammelschienenanschluss'; o1.kat = 3;
+  o1.beschreibung = 'Drehmoment-Markierungen an der Sammelschienenverbindung Feld -Q03 fehlen (3 von 4 Klemmstellen). Nachziehen mit dem vorgegebenen Anzugsmoment und Markierung erforderlich, Nachweis vor Inbetriebsetzung.';
+  o1.medien = [makeMedia('foto',1,{ort:o1.standort,kat:3,uid:'2278'}), makeMedia('foto',1,{ort:o1.standort,kat:3,uid:'2278'})];
+  o1.saved = true; o1.erstellt = '12.08.2026, 08:52';
+  o1.planX = ZONEN[0].x; o1.planY = ZONEN[0].y;
+  o1.gps = {lat:48.8746, lon:9.0592};
+  o1.todo = true; o1.todoText = 'Klemmstellen nachziehen, Drehmoment-Markierung setzen und Protokoll vor Inbetriebsetzung vorlegen (bis KW 35).';
+  o1.refs = ['DIN EN 61936-1 – Starkstromanlagen über 1 kV'];
+  o2.standort = 'Relaisgebäude PST1, Schrankreihe -Q03/-Q04'; o2.kat = 1;
+  o2.beschreibung = 'Kabeleinführungen der Schränke -Q03/-Q04 gemäß SOP 07 geprüft, Schirmauflagen und Beschriftung vollständig. Freigabe für Anschluss LWL und AC/DC-Einspeisung empfohlen.';
+  o2.medien = [makeMedia('foto',2,{ort:o2.standort,kat:1,uid:'3250'})];
+  o2.saved = true; o2.erstellt = '12.08.2026, 09:07';
+  o2.planX = ZONEN[2].x; o2.planY = ZONEN[2].y;
+  o2.gps = {lat:48.8731, lon:9.0611};
+  s.obs = [o1, o2, blankObs(3)];
+  s.vg = VG_MASTER.map(vgFromMaster);
+  s.vg[0].prog = 80;
+  s.vg[0].bem = 'Relaisgebäude 1 und 2 abgenommen, Gebäude 3 im Innenausbau – Restleistung KW 35.';
+  s.vg[0].medien = [makeMedia('foto','V1',{ort:s.vg[0].ort,uid:s.vg[0].uid})];
+  s.vg[0].fertig = true;
+  return s;
+}
+/* Migration: alte Payloads dürfen nie zum Absturz führen */
+function migrate(s){
+  if(!s || typeof s!=='object') return s;
+  if(!s.lang) s.lang = 'de';
+  if(typeof s.projIdx!=='number' || !PROJEKTE[s.projIdx]) s.projIdx = 0;
+  if(typeof s.showMvpOnly!=='boolean') s.showMvpOnly = false;
+  if(['open','done','all'].indexOf(s.todoFilter)<0) s.todoFilter = 'open';
+  if(typeof s.wissenQuery!=='string') s.wissenQuery = '';
+  if(typeof s.wissenOpen!=='number') s.wissenOpen = -1;
+  if(['all','norm','sop','mb'].indexOf(s.wissenFilter)<0) s.wissenFilter = 'all';
+  if(s.format!=='word' && s.format!=='pdf') s.format = 'pdf';
+  if(typeof s.vgIdx!=='number' || s.vgIdx<0) s.vgIdx = 0;
+  if(s.view==='vgdetail' && !(s.vg && s.vg[s.vgIdx])) s.view = 'terminplan';
+  s.impOpen = false; s.expWarn = false;
+  var d = defSettings();
+  if(!s.settings || typeof s.settings!=='object') s.settings = d;
+  for(var k in d){ if(s.settings[k]===undefined) s.settings[k] = d[k]; }
+  if(!Array.isArray(s.archiv)) s.archiv = [];
+  if(!Array.isArray(s.obs)) s.obs = [];
+  if(!Array.isArray(s.vg))  s.vg  = [];
+  s.obs.forEach(function(o, i){
+    if(typeof o.nr!=='number') o.nr = i+1;
+    if(typeof o.todo!=='boolean') o.todo = false;
+    if(typeof o.todoText!=='string') o.todoText = '';
+    if(typeof o.todoDone!=='boolean') o.todoDone = false;
+    if(o.planX===undefined) o.planX = null;
+    if(o.planY===undefined) o.planY = null;
+    if(o.gps===undefined) o.gps = null;
+    if(typeof o.aiTags!=='boolean') o.aiTags = false;
+    if(!Array.isArray(o.refs)) o.refs = [];
+    if(!Array.isArray(o.medien)) o.medien = [];
+    /* Altbestand: Videos trugen ein erfundenes Standbild + eine Laufzeit */
+    o.medien.forEach(function(m){ if(m && m.typ==='video'){ delete m.dauer; delete m.src; } });
+  });
+  s.vg.forEach(function(v){
+    if(!Array.isArray(v.medien)) v.medien = [];
+    v.medien.forEach(function(m){ if(m && m.typ==='video'){ delete m.dauer; delete m.src; } });
+  });
+  return s;
+}
+var state = null;
+function save(){
+  try{
+    /* transiente Flags (_new: Animations-Marker, _dirty: Offline-Zähler) nicht persistieren */
+    localStorage.setItem(LS_KEY, JSON.stringify(state, function(k,v){
+      return (k==='_new' || k==='_dirty') ? undefined : v;
+    }));
+  }catch(e){}
+}
+function load(){
+  try{
+    var raw = localStorage.getItem(LS_KEY);
+    if(raw){
+      var s = JSON.parse(raw);
+      if(s && s.obs && s.vg){
+        s.syncing=false; s.ddOpen='';
+        migrate(s);
+        /* Online gespeicherte Warteschlange gilt als synchronisiert (Reload während Sync-Fenster) */
+        if(s.online){
+          s.queue = 0;
+          s.obs.forEach(function(o){ delete o._dirty; });
+          s.vg.forEach(function(v){ delete v._dirty; });
+        }
+        return s;
+      }
+    }
+  }catch(e){}
+  return seedState();
+}
+/* ---------- Singular/Plural (sprachabhängig) ---------- */
+function nEintraege(n){ return isEN() ? (n===1?'1 entry':n+' entries') : (n===1?'1 Eintrag':n+' Einträge'); }
+function nBeobTxt(n){ return isEN() ? (n===1?'1 observation':n+' observations') : (n===1?'1 Beobachtung':n+' Beobachtungen'); }
+function nVorgTxt(n){ return isEN() ? (n===1?'1 activity':n+' activities') : (n===1?'1 Vorgang':n+' Vorgänge'); }
+function vgCheckedTxt(d, tot){ return isEN() ? d+' of '+tot+' activities checked' : d+' von '+tot+' Vorgängen geprüft'; }
+function queuePillTxt(n){ return isEN() ? nEintraege(n)+' in the queue' : nEintraege(n)+' in der Warteschlange'; }
+
+/* ---------- Helpers ---------- */
+function el(id){ return document.getElementById(id); }
+function esc(s){ return String(s==null?'':s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
+/* Der Terminplan liefert nicht zu jedem Vorgang eine Feldbezeichnung (Spalte „Schaltung“
+   leer, kein -Qnn/PSTn im Vorgangsnamen). Der Bereich wird dann in der Begehung ergänzt. */
+function ortTxt(o){
+  return o ? esc(o) : '<span style="color:#a19f9d;font-style:italic">'+t('bereichTbd')+'</span>';
+}
+function savedObs(){ return state.obs.filter(function(o){return o.saved;}); }
+function mediaCount(){
+  var n=0; state.obs.forEach(function(o){n+=o.medien.length;}); state.vg.forEach(function(v){n+=v.medien.length;}); return n;
+}
+var toastT = null;
+function toast(msg){
+  var t = el('toast'); t.textContent = msg; t.classList.add('show');
+  clearTimeout(toastT); toastT = setTimeout(function(){ t.classList.remove('show'); }, 2300);
+}
+function queueAdd(){ if(!state.online){ state.queue++; } }
+/* Offline-Textänderungen: pro Datensatz einmal in die Warteschlange zählen */
+function markDirty(rec){ if(!state.online && !rec._dirty){ rec._dirty = true; state.queue++; } }
+function katChip(i, extra){
+  if(i<0) return '';
+  var k = KATS[i];
+  return '<span class="chip" style="background:'+k.bg+';color:'+k.fg+'">'+
+    '<span class="cdot" style="background:'+k.dot+'"></span>'+esc(katName(k))+(extra||'')+'</span>';
+}
+var IC = {
+  chevL:'<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M15 5 8 12l7 7"/></svg>',
+  chevR:'<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="m9 5 7 7-7 7"/></svg>',
+  chevD:'<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#605E5C" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg>',
+  cam:'<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="2.5" y="6.5" width="19" height="13" rx="2.5"/><path d="M8.5 6.5 10 4h4l1.5 2.5"/><circle cx="12" cy="12.8" r="3.4"/></svg>',
+  vid:'<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="2.5" y="6" width="13.5" height="12" rx="2.5"/><path d="m16 10.6 5.5-3.1v9l-5.5-3.1"/></svg>',
+  lock:'<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="4.5" y="10.5" width="15" height="10" rx="2"/><path d="M8 10.5V7.5a4 4 0 0 1 8 0v3"/></svg>',
+  check:'<svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="m4.5 12.5 5 5 10-11"/></svg>',
+  checkS:'<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="m4.5 12.5 5 5 10-11"/></svg>',
+  cloudOk:'<svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M7 18.5A4.5 4.5 0 0 1 6.6 9.6 5.5 5.5 0 0 1 17.3 10.9 4 4 0 0 1 17 18.5Z"/><path d="m9.2 14.3 2 2 3.8-4"/></svg>',
+  cloudOff:'<svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M7 18.5A4.5 4.5 0 0 1 6.6 9.6 5.5 5.5 0 0 1 17.3 10.9 4 4 0 0 1 17 18.5Z"/><path d="m4 4 16 17" stroke-width="2.1"/></svg>',
+  sync:'<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6.5v5h-5"/><path d="M4 17.5v-5h5"/><path d="M5.5 9.5a7 7 0 0 1 12.6-2l1.9 2M18.5 14.5a7 7 0 0 1-12.6 2l-1.9-2"/></svg>',
+  person:'<svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="7.5" r="3.8"/><path d="M4.5 20.5c1-4 4-6 7.5-6s6.5 2 7.5 6"/></svg>',
+  walk:'<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><circle cx="13" cy="4.5" r="2"/><path d="M13 7.5 9.5 10l1 4.5L8 21M13 7.5l2.5 3 3 1M10.5 14.5l3.5 2 1 4.5"/></svg>',
+  plan:'<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4.5" width="18" height="16" rx="2.5"/><path d="M3 9.5h18M8 2.8v3.4M16 2.8v3.4"/><path d="m8.8 14.5 2.2 2.2 4.2-4.2"/></svg>',
+  send:'<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M21.5 3 11 13.2"/><path d="M21.5 3 15 21l-4-7.8L3 9.5Z"/></svg>',
+  grid:'<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3.5" y="3.5" width="7" height="7" rx="1"/><rect x="13.5" y="3.5" width="7" height="7" rx="1"/><rect x="3.5" y="13.5" width="7" height="7" rx="1"/><rect x="13.5" y="13.5" width="7" height="7" rx="1"/></svg>',
+  rows:'<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2.5" y="7" width="8.5" height="10" rx="1"/><rect x="13.5" y="7" width="8.5" height="10" rx="1"/></svg>',
+  map:'<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M9 3.5 3 6v14.5l6-2.5 6 2.5 6-2.5V3.5l-6 2.5Z"/><path d="M9 3.5V18M15 6v14.5"/></svg>',
+  pin:'<svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M12 21.5s7-6.4 7-11.5a7 7 0 1 0-14 0c0 5.1 7 11.5 7 11.5Z"/><circle cx="12" cy="10" r="2.6"/></svg>',
+  task:'<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M9 4.5h9.5A1.5 1.5 0 0 1 20 6v13.5a1.5 1.5 0 0 1-1.5 1.5h-13A1.5 1.5 0 0 1 4 19.5V6a1.5 1.5 0 0 1 1.5-1.5H9Z"/><path d="M9 3h6v3H9Z"/><path d="m8.5 12.5 2.2 2.2 4.3-4.4"/></svg>',
+  book:'<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4.5h6a3 3 0 0 1 3 3v13a2.4 2.4 0 0 0-2.4-2.4H4Z"/><path d="M22 4.5h-6a3 3 0 0 0-3 3v13a2.4 2.4 0 0 1 2.4-2.4H22Z"/></svg>',
+  gear:'<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3.2"/><path d="M12 2.5v2.6M12 18.9v2.6M21.5 12h-2.6M5.1 12H2.5M18.7 5.3l-1.8 1.8M7.1 16.9l-1.8 1.8M18.7 18.7l-1.8-1.8M7.1 7.1 5.3 5.3"/></svg>',
+  search:'<svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="10.5" cy="10.5" r="6.5"/><path d="m15.4 15.4 4.6 4.6"/></svg>',
+  up:'<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 16.5V4.5"/><path d="m7.5 9 4.5-4.5L16.5 9"/><path d="M4.5 15v3.5A1.5 1.5 0 0 0 6 20h12a1.5 1.5 0 0 0 1.5-1.5V15"/></svg>',
+  ai:'<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="m12 3 1.9 5.1L19 10l-5.1 1.9L12 17l-1.9-5.1L5 10l5.1-1.9Z"/><path d="M18.5 15.5 19.4 18l2.5.9-2.5.9-.9 2.5-.9-2.5-2.5-.9 2.5-.9Z"/></svg>',
+  warn:'<svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3.5 22 20H2Z"/><path d="M12 9.5v4.5M12 17.2v.1"/></svg>',
+  doc:'<svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M6 2.8h7.5L19 8.2v13A1.5 1.5 0 0 1 17.5 22.7h-11A1.5 1.5 0 0 1 5 21.2V4.3A1.5 1.5 0 0 1 6 2.8Z"/><path d="M13.5 2.8v5.4H19"/></svg>',
+  link:'<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"><path d="M10.5 13.5a4.5 4.5 0 0 0 6.4 0l2.6-2.6a4.5 4.5 0 0 0-6.4-6.4l-1.4 1.4"/><path d="M13.5 10.5a4.5 4.5 0 0 0-6.4 0l-2.6 2.6a4.5 4.5 0 0 0 6.4 6.4l1.4-1.4"/></svg>',
+  excel:'<svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="M3 9h18M9 9v11"/><path d="m12.5 12.5 4 4M16.5 12.5l-4 4"/></svg>'
+};
+
+/* ---------- Übersichtsplan als Inline-SVG (Data-URI, kein externer Request) ---------- */
+function planSVG(){
+  var s = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 300">'+
+    '<rect width="400" height="300" fill="#F7F6F4"/>'+
+    '<g stroke="#E3E0DC" stroke-width="1">';
+  for(var x=20;x<400;x+=20){ s += '<path d="M'+x+' 0V300"/>'; }
+  for(var y=20;y<300;y+=20){ s += '<path d="M0 '+y+'H400"/>'; }
+  s += '</g>'+
+    /* Anlagenzaun (Schaltanlage 380 kV) */
+    '<rect x="26" y="34" width="348" height="196" fill="none" stroke="#B0A99E" stroke-width="1.6" stroke-dasharray="6 4"/>'+
+    /* Sammelschienen SS1 / SS2 */
+    '<path d="M40 74H360" stroke="#7E93A6" stroke-width="7"/>'+
+    '<path d="M40 104H360" stroke="#7E93A6" stroke-width="7"/>'+
+    '<text x="366" y="77" font-family="Segoe UI,Arial" font-size="8" fill="#6c7a86">SS1</text>'+
+    '<text x="366" y="107" font-family="Segoe UI,Arial" font-size="8" fill="#6c7a86">SS2</text>'+
+    /* Feldstiche (Abgänge) */
+    '<g stroke="#8FA0AE" stroke-width="4">'+
+    '<path d="M88 104v58M176 104v58M264 104v58M330 104v46"/></g>'+
+    /* Felder -Q03 / -Q04 / -Q17 als Gerätefelder */
+    '<g fill="#B9C7D4" stroke="#7E93A6" stroke-width="1.4">'+
+    '<rect x="66" y="118" width="44" height="30"/><rect x="154" y="118" width="44" height="30"/>'+
+    '<rect x="242" y="118" width="44" height="30"/></g>'+
+    /* Leistungsschalter-Symbole in den Feldern */
+    '<g stroke="#5d6570" stroke-width="2" fill="none">'+
+    '<path d="M78 126h20M78 140h20M88 126v14"/><path d="M166 126h20M166 140h20M176 126v14"/>'+
+    '<path d="M254 126h20M254 140h20M264 126v14"/></g>'+
+    /* Transformatorstellplätze */
+    '<g fill="#D9CDBB" stroke="#B49B6C" stroke-width="1.4">'+
+    '<rect x="70" y="170" width="36" height="26" rx="2"/><rect x="158" y="170" width="36" height="26" rx="2"/></g>'+
+    /* Relaisgebäude PST1 */
+    '<rect x="150" y="206" width="96" height="34" fill="#CBD3D8" stroke="#8B959C" stroke-width="1.6"/>'+
+    '<path d="M150 223h96" stroke="#8B959C" stroke-width="1.1"/>'+
+    /* Kabeltrasse zum Relaisgebäude */
+    '<path d="M88 148 V 200 H 150" stroke="#C8A24B" stroke-width="2.4" fill="none" stroke-dasharray="5 4"/>'+
+    '<path d="M176 148 V 206" stroke="#C8A24B" stroke-width="2.4" fill="none" stroke-dasharray="5 4"/>'+
+    /* Baustelleneinrichtung */
+    '<rect x="292" y="240" width="52" height="26" fill="#E4D3B4" stroke="#B49B6C" stroke-width="1.4"/>'+
+    '<text x="296" y="257" font-family="Segoe UI,Arial" font-size="9" fill="#7a6238">'+esc(t('planBE'))+'</text>'+
+    /* Beschriftungen – identische Quelle wie die Bereichsliste (DE/EN über zoneName) */
+    '<text x="46" y="62" font-family="Segoe UI,Arial" font-size="11" font-weight="700" fill="#3d3a35">'+esc(zoneName(ZONEN[0]))+'</text>'+
+    '<text x="214" y="62" font-family="Segoe UI,Arial" font-size="11" font-weight="700" fill="#3d3a35">'+esc(zoneName(ZONEN[1]))+'</text>'+
+    '<text x="128" y="258" font-family="Segoe UI,Arial" font-size="11" font-weight="700" fill="#3d3a35">'+esc(zoneName(ZONEN[2]))+'</text>'+
+    /* Nordpfeil + Maßstab */
+    '<g transform="translate(366,32)"><path d="M0 14 L6 -8 L12 14 L6 8Z" fill="#3d3a35"/>'+
+    '<text x="1" y="26" font-family="Segoe UI,Arial" font-size="9" fill="#3d3a35">N</text></g>'+
+    '<g transform="translate(16,284)"><path d="M0 0h60" stroke="#3d3a35" stroke-width="2"/>'+
+    '<path d="M0 -4v8M30 -3v6M60 -4v8" stroke="#3d3a35" stroke-width="1.4"/>'+
+    '<text x="66" y="4" font-family="Segoe UI,Arial" font-size="9" fill="#3d3a35">50 m</text></g>'+
+    '<text x="16" y="20" font-family="Segoe UI,Arial" font-size="10" fill="#8a8378">'+esc(t('planCap'))+'</text>'+
+  '</svg>';
+  return 'data:image/svg+xml;utf8,' + encodeURIComponent(s);
+}
+
+/* ---------- Header / Banner / Tabs / Statusbar ---------- */
+function titleFor(v){
+  var de = { home:'QS Baustelle', vgauswahl:'Vorgänge auswählen', beobachtung:'Begehung vom '+HEUTE,
+             terminplan:'Terminplan-Check', vgdetail:'Vorgang bearbeiten', export:'Bericht & Export',
+             plan:'Übersichtsplan', todo:'Aufgaben', wissen:'Wissensdatenbank', einstellungen:'Einstellungen' };
+  var en = { home:'QS Baustelle', vgauswahl:'Select activities', beobachtung:'Site walk of '+HEUTE,
+             terminplan:'Schedule check', vgdetail:'Edit activity', export:'Report & export',
+             plan:'Site overview plan', todo:'Tasks', wissen:'Knowledge base', einstellungen:'Settings' };
+  return (isEN() ? en : de)[v] || 'QS Baustelle';
+}
+/* Overflow-Menü im Header – macht die Zusatz-Screens aus jeder Ansicht erreichbar,
+   ohne einen fünften Tab (entspricht dem Power-Apps-Muster mit einem Kontextmenü). */
+var MEHR = [
+  {v:'plan',          k:'planTitle',   tier:'prem',  ic:'map'},
+  {v:'todo',          k:'todoTitle',   tier:'prem',  ic:'task'},
+  {v:'wissen',        k:'wissenTitle', tier:'prem',  ic:'book'},
+  {v:'einstellungen', k:'setTitle',    tier:'light', ic:'gear'}
+];
+function moreMenuHTML(){
+  if(state.ddOpen!=='more') return '';
+  var h = '<div class="hdr-menu" role="menu">';
+  MEHR.forEach(function(m){
+    h += '<button class="dd-opt" role="menuitem" onclick="gotoView(\''+m.v+'\')">'+
+      '<span style="color:var(--pa-purple);display:flex">'+IC[m.ic]+'</span>'+
+      '<span style="flex:1">'+t(m.k)+'</span>'+tier(m.tier)+'</button>';
+  });
+  h += '<div class="mm-sep"></div>'+
+    '<button class="dd-opt" role="menuitemcheckbox" aria-checked="'+(!!state.showMvpOnly)+'" onclick="setMvpOnly('+(!state.showMvpOnly)+')">'+
+      '<span style="flex:1">'+t('mvpOnly')+'</span>'+
+      (state.showMvpOnly ? '<span style="color:var(--pa-purple)">'+IC.checkS+'</span>' : '')+'</button>';
+  return h+'</div>';
+}
+function renderChrome(){
+  el('hdrTitle').textContent = titleFor(state.view);
+  el('hdrMoreMenu').innerHTML = moreMenuHTML();
+  el('tabLblHome').textContent = t('tabStart');
+  el('tabLblBeob').textContent = t('tabBeob');
+  el('tabLblPlan').textContent = t('tabPlan');
+  el('tabLblBericht').textContent = t('tabBericht');
+  el('hdrBack').style.visibility = state.view==='home' ? 'hidden' : 'visible';
+  var sync = el('hdrSync');
+  if(state.syncing){
+    sync.className='hdr-sync syncing'; sync.innerHTML = IC.sync; sync.title=t('syncing');
+  } else if(state.online){
+    sync.className='hdr-sync'; sync.innerHTML = IC.cloudOk; sync.title=t('onlineSynced');
+  } else {
+    sync.className='hdr-sync off';
+    sync.innerHTML = IC.cloudOff + (state.queue>0 ? '<span class="q-badge">'+state.queue+'</span>' : '');
+    sync.title='Offline';
+  }
+  var b = el('banner');
+  if(state.syncing){
+    b.innerHTML = '<div class="sync-banner"><span class="fs-spin" style="width:13px;height:13px;border-width:2px"></span> '+
+      (isEN()
+        ? 'Syncing '+nEintraege(state.queue)+' to SharePoint …'
+        : (state.queue===1 ? '1 Eintrag wird' : state.queue+' Einträge werden')+' mit SharePoint synchronisiert …')+'</div>';
+  } else if(!state.online){
+    /* Offline-Realität: nur mobiler Player, begrenzter Foto-Cache, nie Video/Dokumente */
+    b.innerHTML = '<div class="offline-banner"><span class="dot"></span> '+t('offlineBanner')+
+      (state.queue>0 ? ' · <b>'+state.queue+(isEN()?' pending':' ausstehend')+'</b>' : '')+'</div>'+
+      '<div class="offline-note">'+t('offlineDetail')+'</div>';
+  } else { b.innerHTML=''; }
+  var activeTab = state.view==='vgdetail' ? 'terminplan' : state.view;
+  document.querySelectorAll('.tab').forEach(function(t){
+    t.classList.toggle('active', t.getAttribute('data-v')===activeTab);
+  });
+  el('sbNet').innerHTML = state.online
+    ? '<svg width="15" height="11" viewBox="0 0 16 12" fill="currentColor"><path d="M8 11.5 1 4.8A10.4 10.4 0 0 1 15 4.8Z" opacity=".35"/><path d="M8 11.5 3.5 7.2a7 7 0 0 1 9 0Z"/></svg>'
+    : '<svg width="15" height="11" viewBox="0 0 16 12" fill="none" stroke="currentColor" stroke-width="1.4"><path d="M8 11 1.5 4.6a10 10 0 0 1 13 0Z" opacity=".5"/><path d="m2 1 12 10"/></svg>';
+}
+
+/* ---------- Screen: Start ---------- */
+function renderHome(){
+  var nSaved = savedObs().length;
+  var tiles =
+    '<div class="home-tiles">'+
+    '<button class="tile tile-primary" onclick="startBegehung()">'+
+      '<span class="t-ic">'+IC.walk+'</span>'+
+      '<span class="t-tx"><span class="t-t1">'+t('tileNew')+'</span><span class="t-t2">'+t('tileNewSub')+'</span></span>'+
+      '<span class="t-chev">'+IC.chevR+'</span></button>';
+  if(nSaved>0){
+    tiles += '<button class="tile tile-sec" onclick="gotoView(\'beobachtung\')">'+
+      '<span class="t-ic">'+IC.cam+'</span>'+
+      '<span class="t-tx"><span class="t-t1">'+t('tileCont')+'</span><span class="t-t2">'+nBeobTxt(nSaved)+' · '+t('startedAt')+'</span></span>'+
+      '<span class="t-chev">'+IC.chevR+'</span></button>';
+  }
+  var vgDone = state.vg.filter(function(v){return v.fertig;}).length;
+  tiles += '<button class="tile tile-sec" onclick="gotoView(\'terminplan\')">'+
+      '<span class="t-ic">'+IC.plan+'</span>'+
+      '<span class="t-tx"><span class="t-t1">'+titleFor('terminplan')+'</span><span class="t-t2">'+vgCheckedTxt(vgDone, state.vg.length)+'</span></span>'+
+      '<span class="t-chev">'+IC.chevR+'</span></button>';
+  tiles += '<button class="tile tile-sec" onclick="gotoView(\'export\')">'+
+      '<span class="t-ic">'+IC.send+'</span>'+
+      '<span class="t-tx"><span class="t-t1">'+t('tileReport')+'</span><span class="t-t2">'+t('tileReportSub')+'</span></span>'+
+      '<span class="t-chev">'+IC.chevR+'</span></button>';
+  tiles += '</div>';
+
+  var arch = '';
+  if(state.reportSent){
+    arch += '<div class="beg-item"><span class="beg-ic">'+IC.check+'</span><div style="flex:1"><div class="beg-t1">'+t('begVom')+' '+HEUTE+' <span style="color:#0b5c0b">· '+t('ongoing')+'</span></div>'+
+      '<div class="beg-t2">'+nBeobTxt(nSaved)+' · '+t('reportSentShort')+'</div></div></div>';
+  }
+  state.archiv.forEach(function(a){
+    arch += '<div class="beg-item"><span class="beg-ic">'+IC.check+'</span><div style="flex:1">'+
+      '<div class="beg-t1">'+t('begVom')+' '+a.datum+'</div>'+
+      '<div class="beg-t2">'+nBeobTxt(a.beob)+' · '+nVorgTxt(a.vorg)+' · '+t('reportSentShort')+'</div></div>'+
+      '<span style="color:#a19f9d">'+IC.chevR+'</span></div>';
+  });
+
+  var pill = state.syncing
+    ? '<span class="pill pill-on"><span class="pdot spin-dot"></span>'+t('syncing')+'</span>'
+    : state.online
+      ? '<span class="pill pill-on"><span class="pdot"></span>'+t('onlineSynced')+'</span>'
+      : '<span class="pill pill-off"><span class="pdot"></span>Offline – '+(state.queue>0 ? queuePillTxt(state.queue) : t('savedLocally'))+'</span>';
+
+  var p = proj();
+  var projOpts = PROJEKTE.map(function(pp,i){ return {t:pp.name, sel:i===state.projIdx}; });
+  var mehr = '<div class="sec-h">'+t('mehrTitel')+'</div><div class="mehr-grid">';
+  MEHR.forEach(function(m){
+    mehr += feat(m.tier,
+      '<button class="tile tile-sec" onclick="gotoView(\''+m.v+'\')">'+
+        '<span class="t-ic">'+IC[m.ic]+'</span>'+
+        '<span class="t-tx"><span class="t-t1">'+t(m.k)+'</span>'+
+        '<span class="t-t2">'+mehrSub(m.v)+tier(m.tier)+'</span></span></button>');
+  });
+  mehr += '</div>';
+
+  return '<div class="scr">'+
+    '<div class="card proj-card">'+
+      '<div style="display:flex;align-items:center;justify-content:space-between">'+
+        '<div class="lbl" style="margin-top:0">'+t('projekt')+tier('prem')+'</div>'+
+        '<span class="mv-toggle" role="group" aria-label="Sprache / Language" title="Sprache / Language">'+
+          '<button class="mv-b'+(state.lang!=='en'?' active':'')+'" style="width:auto;padding:0 8px;font-size:11px;font-weight:600" onclick="setLang(\'de\')">DE</button>'+
+          '<button class="mv-b'+(state.lang==='en'?' active':'')+'" style="width:auto;padding:0 8px;font-size:11px;font-weight:600" onclick="setLang(\'en\')">EN</button>'+
+        '</span>'+
+      '</div>'+
+      ddHTML('proj', esc(p.name), projOpts, 'pickProjekt', true)+
+      '<div class="mono" style="font-size:11.5px;color:var(--ink2);margin-top:8px">'+
+        t('projId')+': '+p.id+' · '+t('projAngelegt')+' '+p.angelegt+'<br>'+
+        t('kunde')+': '+esc(p.kunde)+' · '+t('anLbl')+': '+esc(p.an)+'<br>'+
+        p.ordner+'/Begehung_'+HEUTE_ISO+'/</div>'+
+      '<div class="tier-legend">'+
+        '<span class="tl-tx">'+t('tierLegend')+'</span>'+
+        tier('mvp')+tier('light')+tier('prem')+
+      '</div>'+
+      '<div class="opt-row" style="border-bottom:0;padding-bottom:0">'+
+        '<div class="or-tx"><div class="or-t1">'+t('mvpOnly')+'</div>'+
+        '<div class="or-t2">'+(isEN()
+          ? 'Greys out everything beyond the MVP scope.'
+          : 'Blendet alles außerhalb des MVP-Umfangs aus.')+'</div></div>'+
+        '<label class="sw2"><input type="checkbox" '+(state.showMvpOnly?'checked':'')+
+          ' onchange="setMvpOnly(this.checked)" aria-label="'+t('mvpOnly')+'">'+
+          '<span class="sw2-track"></span><span class="sw2-knob"></span></label>'+
+      '</div>'+
+    '</div>'+
+    tiles+
+    mehr+
+    '<div class="sec-h">'+t('prevWalks')+'</div>'+
+    '<div class="card">'+arch+'</div>'+
+    '<div class="home-foot">'+pill+'</div>'+
+  '</div>';
+}
+function mehrSub(v){
+  if(v==='plan') return isEN() ? 'Pin & defect markers' : 'Punkt & Mängel-Marker';
+  if(v==='todo'){
+    var open = state.obs.filter(function(o){ return o.saved && o.todo && !o.todoDone; }).length;
+    return isEN() ? open+' open' : open+' offen';
+  }
+  if(v==='wissen') return isEN() ? 'Standards & SOP' : 'Normen & SOP';
+  return isEN() ? 'Naming, CI, AI' : 'Benennung, CI, KI';
+}
+/* 3.9 – Mehrprojektfähigkeit: Projektwechsel lädt Terminplan-Stamm + leere Begehung */
+function pickProjekt(i){
+  if(!PROJEKTE[i]) return;
+  state.projIdx = i; state.ddOpen='';
+  state.obs = [blankObs(1)];
+  state.obsIndex = 0;
+  state.vg = VGM().map(vgFromMaster);
+  state.vgSel = null; state.vgIdx = 0;
+  if(state.view==='vgdetail') state.view = 'terminplan';
+  state.reportSent = false; state.expWarn = false;
+  save(); render();
+  toast(t('projSwitched')+': '+PROJEKTE[i].name);
+}
+
+/* ---------- Fluent Dropdown (generisch) ---------- */
+function ddHTML(id, selText, opts, onPickName, enabled){
+  var open = state.ddOpen===id;
+  var list = '';
+  opts.forEach(function(o,i){
+    list += '<button class="dd-opt'+(o.sel?' sel':'')+'" role="option" '+
+      (onPickName? 'onclick="'+onPickName+'('+i+')"' : 'onclick="closeDD()"')+'>'+
+      (o.chip||'')+'<span>'+esc(o.t)+'</span>'+(o.sel?'<span style="margin-left:auto;color:var(--pa-purple)">'+IC.checkS+'</span>':'')+'</button>';
+  });
+  return '<div class="dd" data-dd="'+id+'">'+
+    '<button class="dd-btn" aria-haspopup="listbox" aria-expanded="'+open+'" '+
+      (enabled===false ? 'disabled style="background:#faf9f8;color:#605e5c;cursor:default"' : 'onclick="toggleDD(\''+id+'\')"')+'>'+
+      (selText ? '<span class="dd-txt">'+selText+'</span>' : '<span class="dd-txt dd-ph">'+t('bitteWaehlen')+'</span>')+IC.chevD+'</button>'+
+    '<div class="dd-list" role="listbox" '+(open?'':'hidden')+'>'+list+'</div>'+
+  '</div>';
+}
+function toggleDD(id){ state.ddOpen = (state.ddOpen===id ? '' : id); render(); }
+function closeDD(){ if(state.ddOpen){ state.ddOpen=''; render(); } }
+document.addEventListener('click', function(e){
+  if(state && state.ddOpen && !e.target.closest('.dd')) closeDD();
+});
+document.addEventListener('keydown', function(e){
+  if(e.key==='Escape' && state && state.ddOpen) closeDD();
+});
+
+/* ---------- Medienliste: Fotos als Miniatur, Videos als Dateizeile ----------
+   Die Kamera-Steuerung liefert ein Bild, die Anlagen-Steuerung nur eine Datei.
+   Ein Video hat deshalb weder Vorschaubild noch Laufzeit. */
+function mediaListHTML(list, delFn){
+  var fotos = [], videos = [];
+  (list||[]).forEach(function(m, mi){ (m.typ==='video' ? videos : fotos).push({m:m, i:mi}); });
+  var thumbs = '';
+  fotos.forEach(function(e){
+    var m = e.m;
+    thumbs += '<div class="thumb'+(m._new?' new':'')+'" title="'+esc(m.name)+'">'+
+      '<img src="'+m.src+'" alt="'+esc(m.name)+'">'+
+      '<button class="th-del" onclick="'+delFn+'('+e.i+')" aria-label="'+t('delMediaAria')+'">✕</button></div>';
+    delete m._new;
+  });
+  /* 1.2 – die Galerie (Karussell/Mosaik) bleibt immer sichtbar, auch ohne Fotos */
+  var h = '<div class="'+(state.mediaView==='mosaic'?'gal-mosaic':'gal-carousel')+'">'+
+    (fotos.length ? thumbs
+      : '<div class="gal-empty" style="flex:1;grid-column:1/-1">'+
+        (videos.length ? t('noFotos') : t('noMedia'))+'</div>')+
+  '</div>';
+  if(videos.length){
+    h += '<div class="lbl">'+t('videoFiles')+' ('+videos.length+')</div>';
+    videos.forEach(function(e){
+      var m = e.m;
+      delete m._new;
+      h += '<div class="file-row">'+
+        '<span class="fr-ic">'+IC.doc+'</span>'+
+        '<span class="fr-nm">'+esc(m.name)+
+          (m.up ? ' <span title="'+t('videoUpload')+'" aria-label="'+t('videoUpload')+'">&#8593;</span>' : '')+'</span>'+
+        '<span class="fr-chip">'+t('video')+'</span>'+
+        '<button class="fr-del" onclick="'+delFn+'('+e.i+')" aria-label="'+t('delMediaAria')+'">✕</button>'+
+      '</div>';
+    });
+  }
+  return h;
+}
+/* 5.6 – erkannte Tags der KI-Assistenz (AI Builder liefert nur Tags, keinen Fließtext) */
+function aiTagsTxt(){
+  return t('aiTagsLine').replace('{T}', aiTagList()).replace('{K}', katName(KATS[3]));
+}
+
+/* ---------- Screen: Beobachtung (Screen 1) ---------- */
+function renderBeobachtung(){
+  var n = state.obs.length;
+  if(state.obsIndex<0) state.obsIndex=0;
+  if(state.obsIndex>=n) state.obsIndex=n-1;
+  var i = state.obsIndex;
+  var o = state.obs[i];
+  var isDraft = !o.saved;
+
+  /* Nummern-Pills entfernt: reale App navigiert nur mit Pfeilen (Vereinfachung, siehe Doku) */
+
+  var kat = o.kat>=0 ? KATS[o.kat] : null;
+  var katOpts = KATS.map(function(k,ki){
+    return {t:katName(k), sel:ki===o.kat, chip:'<span class="cdot" style="width:9px;height:9px;border-radius:50%;background:'+k.dot+';flex:none"></span>'};
+  });
+  var katSel = kat ? '<span class="chip" style="background:'+kat.bg+';color:'+kat.fg+'"><span class="cdot" style="background:'+kat.dot+'"></span>'+esc(katName(kat))+'</span>' : '';
+
+  /* 1.1 Foto · 1.1 Video (Workaround: Kamera-App) · 1.1.1 Video-Upload aus der Galerie
+     Video-Buttons sind offline gesperrt: die Anlagen-Steuerung arbeitet nur online. */
+  var vBlock = state.online ? '' : ' btn-blocked';
+  var galBlock =
+    '<div class="media-btns">'+
+      '<button class="btn" onclick="addMedia(\'foto\')">'+IC.cam+' '+t('foto')+'</button>'+
+      '<button class="btn'+vBlock+'" aria-disabled="'+(!state.online)+'" onclick="addMedia(\'video\')">'+IC.vid+' '+t('video')+'</button>'+
+      '<button class="btn'+vBlock+'" aria-disabled="'+(!state.online)+'" onclick="uploadVideo()">'+IC.up+' '+t('videoUpload')+'</button>'+
+    '</div>'+
+    '<div class="note-warn">'+t('videoRecNote')+'</div>'+
+    /* 1.2 – Karussell/Mosaik zur Laufzeit umschaltbar (zwei Galerien, per Visible getauscht) */
+    '<div class="media-head"><span class="lbl">'+t('medien')+' ('+o.medien.length+')'+tier('mvp')+'</span>'+
+      '<span class="mv-toggle" role="group" aria-label="'+t('carouselView')+' / '+t('mosaicView')+'">'+
+        '<button class="mv-b'+(state.mediaView!=='mosaic'?' active':'')+'" onclick="setMediaView(\'carousel\')" title="'+t('carouselView')+'" aria-label="'+t('carouselView')+'">'+IC.rows+'</button>'+
+        '<button class="mv-b'+(state.mediaView==='mosaic'?' active':'')+'" onclick="setMediaView(\'mosaic\')" title="'+t('mosaicView')+'" aria-label="'+t('mosaicView')+'">'+IC.grid+'</button>'+
+      '</span>'+
+    '</div>'+ mediaListHTML(o.medien, 'delMedia');
+
+  /* 5.9 – Standortaufzeichnung nur mit Einwilligung, ohne Genauigkeitsangabe */
+  var gpsBlock = feat('prem',
+    '<div class="opt-row" style="border-bottom:0;padding:9px 0">'+
+      '<div class="or-tx"><div class="or-t1" style="font-size:12.5px">'+t('gpsConsent')+tier('prem')+'</div>'+
+      '<div class="or-t2">'+t('gpsNote')+'</div></div>'+
+      '<label class="sw2"><input type="checkbox" '+(state.settings.gpsConsent?'checked':'')+
+        ' onchange="setGpsConsent(this.checked)" aria-label="'+t('gpsConsent')+'">'+
+        '<span class="sw2-track"></span><span class="sw2-knob"></span></label>'+
+    '</div>'+
+    (state.settings.gpsConsent
+      ? '<div style="display:flex;align-items:center;gap:9px;flex-wrap:wrap;margin-top:2px">'+
+          '<span class="chip" style="background:#EBF3FC;color:#1F4E79">'+IC.pin+' '+gpsTxt(o)+'</span>'+
+          '<button class="btn btn-ghost" style="min-height:32px;font-size:12px;padding:0 11px" onclick="applyGps()">'+t('gpsApply')+'</button>'+
+        '</div>'
+      : '<div class="note">'+t('gpsOff')+'</div>'));
+
+  /* 5.5 – verknüpfte Normen / technische Dokumente */
+  var refBlock = feat('prem',
+    '<div class="lbl">'+t('refs')+tier('prem')+'</div>'+
+    (o.refs && o.refs.length
+      ? '<div class="chips-row">'+o.refs.map(function(r, ri){
+          return '<span class="ref-chip">'+IC.link+' '+esc(r)+
+            '<button onclick="delRef('+ri+')" aria-label="'+t('refRemoved')+'">✕</button></span>';
+        }).join('')+'</div>'
+      : '<div class="note">'+(isEN()
+          ? 'Open the knowledge base to link a standard or SOP.'
+          : 'Über die Wissensdatenbank eine Norm oder SOP verknüpfen.')+'</div>')+
+    '<button class="btn btn-ghost" style="min-height:36px;font-size:12.5px;margin-top:7px;width:100%" onclick="gotoView(\'wissen\')">'+
+      IC.book+' '+t('wissenTitle')+'</button>');
+
+  /* 5.7 – To-Do je Eintrag mit Beschreibungsfeld */
+  var todoBlock = feat('prem',
+    '<div class="opt-row" style="border-bottom:0;padding:11px 0 5px">'+
+      '<div class="or-tx"><div class="or-t1">'+t('lblTodo')+tier('prem')+'</div>'+
+      '<div class="or-t2">'+(isEN()
+        ? 'Creates a task that can be followed up and closed later.'
+        : 'Erzeugt eine Aufgabe, die später nachverfolgt und abgeschlossen wird.')+'</div></div>'+
+      '<label class="sw2"><input type="checkbox" '+(o.todo?'checked':'')+
+        ' onchange="setTodo(this.checked)" aria-label="'+t('lblTodo')+'">'+
+        '<span class="sw2-track"></span><span class="sw2-knob"></span></label>'+
+    '</div>'+
+    (o.todo
+      ? '<input class="txt-in" type="text" value="'+esc(o.todoText)+'" placeholder="'+t('todoPh')+'" oninput="onObsField(\'todoText\', this.value)">'
+      : ''));
+
+  /* 5.6 – KI-Assistenz schlägt NUR eine Kategorie vor und zeigt die erkannten Tags.
+     Die Beschreibung schreibt der Prüfer; AI Builder kann keinen Fließtext erzeugen. */
+  var aiBlock = state.settings.ai ? feat('prem',
+    '<button class="btn btn-ghost'+(state.online?'':' btn-blocked')+'" aria-disabled="'+(!state.online)+'"'+
+      ' style="width:100%;min-height:42px;font-size:13px;margin-top:8px" onclick="aiSuggest()">'+
+      IC.ai+' '+t('aiBtn')+tier('prem')+'</button>'+
+    (o.aiTags
+      ? '<div class="edit-bar" style="margin:8px 0 0"><span style="flex:none;display:flex">'+IC.ai+'</span>'+
+        '<span>'+esc(aiTagsTxt())+'</span></div>'
+      : '')+
+    '<div class="note">'+t('aiScope')+'</div>'+
+    '<div class="note">'+t('setAICredits')+'</div>') : '';
+
+  var formBlock =
+    '<div class="media-head"><span class="lbl" style="margin:0">'+t('standort')+tier('mvp')+'</span>'+
+      feat('prem','<button class="btn btn-ghost" style="min-height:30px;font-size:12px;padding:0 10px" onclick="gotoView(\'plan\')">'+
+        IC.map+' '+t('fromPlan')+'</button>')+
+    '</div>'+
+    '<input class="txt-in" id="inStandort" type="text" value="'+esc(o.standort)+'" placeholder="'+t('phStandort')+'" oninput="onObsField(\'standort\', this.value)">'+
+    (o.planX!=null ? '<div class="note">'+IC.pin+' '+t('planPinSet')+' · '+t('planTitle')+'</div>' : '')+
+    gpsBlock+
+    '<div class="lbl">'+t('kategorie')+tier('mvp')+'</div>'+
+    ddHTML('kat', katSel, katOpts, 'pickKat', true)+
+    '<div class="lbl">'+t('beschreibung')+tier('mvp')+'</div>'+
+    '<textarea class="txt-area" id="inBeschr" rows="4" placeholder="'+t('phBeschr')+'" oninput="onObsField(\'beschreibung\', this.value)">'+esc(o.beschreibung)+'</textarea>'+
+    aiBlock+
+    todoBlock+
+    refBlock+
+    '<div class="action-bar">'+
+      (isDraft
+        ? '<button class="btn btn-green" onclick="finishObs()">'+IC.check+' '+t('finishNext')+'</button>'+
+          '<button class="btn btn-ghost" onclick="discardDraft()">'+t('discard')+'</button>'
+        : '<button class="btn btn-green" onclick="saveEdit()">'+IC.check+' '+t('saveChanges')+'</button>')+
+    '</div>';
+
+  return '<div class="scr">'+
+    '<div class="obs-nav">'+
+      '<button class="nav-arrow" '+(i===0?'disabled':'')+' onclick="navObs(-1)" aria-label="'+t('prevObs')+'">'+IC.chevL+'</button>'+
+      '<div class="obs-mid"><div class="obs-count">'+(isEN() ? 'Observation '+(i+1)+' of '+n : 'Beobachtung '+(i+1)+' von '+n)+'</div>'+
+        /* 1.10 – eindeutige, sichtbare fortlaufende Nummer */
+        '<div style="margin-top:5px"><span class="chip mono" style="background:#EBF3FC;color:#1F4E79" title="'+t('seqHint')+'">'+
+          t('nrLbl')+' '+String(o.nr).padStart(3,'0')+'</span>'+tier('light')+'</div>'+
+      '</div>'+
+      '<button class="nav-arrow" '+(i===n-1?'disabled':'')+' onclick="navObs(1)" aria-label="'+t('nextObs')+'">'+IC.chevR+'</button>'+
+    '</div>'+
+    (!isDraft ? '<div class="edit-bar">'+IC.checkS+' '+(isEN() ? 'Saved on '+esc(o.erstellt)+' – editable (add media / comments)' : 'Gespeichert am '+esc(o.erstellt)+' – Bearbeiten möglich (Medien / Kommentare ergänzen)')+'</div>' : '')+
+    '<div class="obs-grid"><div class="obs-media-col">'+galBlock+'</div><div class="obs-form-col">'+formBlock+'</div></div>'+
+  '</div>';
+}
+function gpsTxt(o){
+  var g = (o && o.gps) || {lat:52.1338, lon:7.6337};
+  return g.lat.toFixed(4)+'° N, '+g.lon.toFixed(4)+'° E';
+}
+function setGpsConsent(v){
+  state.settings.gpsConsent = !!v;
+  save(); render();
+  toast(v ? t('gpsOn') : t('gpsOffT'));
+}
+function applyGps(){
+  var o = state.obs[state.obsIndex];
+  if(!o.gps) o.gps = {lat:52.1338 + (o.nr%7)*0.0009, lon:7.6337 + (o.nr%5)*0.0011};
+  markDirty(o); queueAdd(); save(); render();
+  toast(t('gpsApplied')+': '+gpsTxt(o));
+}
+function setTodo(v){
+  var o = state.obs[state.obsIndex];
+  o.todo = !!v;
+  if(!v){ o.todoDone = false; }
+  markDirty(o); save(); render();
+}
+function delRef(ri){
+  var o = state.obs[state.obsIndex];
+  o.refs.splice(ri,1); markDirty(o); save(); render(); toast(t('refRemoved'));
+}
+/* 5.6 – optionale, abschaltbare KI-Assistenz (AI Builder, verbrauchsbasiert) */
+var aiBusy = false;
+function aiSuggest(){
+  if(aiBusy || !state.settings.ai) return;
+  /* AI Builder ist ein Online-Dienst – offline gibt es keinen Vorschlag. */
+  if(!state.online){ toast(t('aiOffline')); return; }
+  var o = state.obs[state.obsIndex];
+  if(o.medien.length===0){ toast(t('aiNoMedia')); return; }
+  aiBusy = true;
+  var ov = el('shutter');
+  ov.innerHTML = '<div class="fs-spin" style="width:34px;height:34px;border-width:4px"></div>'+
+                 '<div class="vf-lbl">'+t('aiRunning')+'</div>';
+  ov.classList.add('on');
+  setTimeout(function(){
+    ov.classList.remove('on'); ov.innerHTML=''; aiBusy = false;
+    /* Ergebnis der Objekterkennung: Tags + Kategorievorschlag.
+       Die Beschreibung wird bewusst NICHT verändert. */
+    o.kat = 3;
+    o.aiTags = true;
+    markDirty(o); save(); render();
+    toast(t('aiOk'));
+  }, 700);
+}
+/* 1.1.1 – Video aus der Galerie anhängen (Anlagen-Steuerung → Durchsuchen) */
+function uploadVideo(){
+  /* Anlagen-Steuerung ist online-only – offline gibt es keinen Video-Anhang. */
+  if(!state.online){ toast(t('videoOffline')); return; }
+  var o = state.obs[state.obsIndex];
+  var m = makeMedia('video', o.nr, {ort:o.standort, kat:o.kat, uid:''});
+  m._new = true; m.up = true;
+  o.medien.push(m); queueAdd(); save(); render();
+  toast(t('videoUploadOk')+' ('+m.name+')');
+}
+function navObs(d){
+  var i = state.obsIndex + d;
+  if(i<0 || i>=state.obs.length) return;
+  state.obsIndex = i; state.ddOpen=''; render();
+}
+function gotoObs(i){ state.obsIndex=i; state.ddOpen=''; render(); }
+var persistT = null;
+function persistSoon(){ clearTimeout(persistT); persistT = setTimeout(save, 350); }
+function onObsField(f, v){ var o = state.obs[state.obsIndex]; o[f]=v; markDirty(o); persistSoon(); }
+function pickKat(ki){ state.obs[state.obsIndex].kat = ki; state.ddOpen=''; render(); save(); }
+function setMediaView(v){ state.mediaView=v; render(); save(); }
+function addMedia(typ){
+  if(typ==='video' && !state.online){ toast(t('videoOffline')); return; }
+  var o = state.obs[state.obsIndex];
+  simulateCapture(typ, function(){
+    var m = makeMedia(typ, o.nr, {ort:o.standort, kat:o.kat, uid:''}); m._new=true;
+    o.medien.push(m); queueAdd(); save(); render();
+    toast((typ==='video' ? t('video') : t('foto'))+(isEN() ? ' added (' : ' hinzugefügt (')+m.name+')');
+  });
+}
+function delMedia(mi){
+  state.obs[state.obsIndex].medien.splice(mi,1);
+  queueAdd(); save(); render(); toast(t('mediaRemoved'));
+}
+function finishObs(){
+  var o = state.obs[state.obsIndex];
+  if(!o.standort && !o.beschreibung && o.kat<0 && o.medien.length===0){
+    toast(t('fillOne')); return;
+  }
+  o.saved = true; o.erstellt = HEUTE+', '+nowHM();
+  queueAdd();
+  state.obs.push(blankObs(state.obs.length+1));
+  state.obsIndex = state.obs.length-1;
+  save(); render();
+  toast(isEN() ? 'Observation '+o.nr+' saved ✓' : 'Beobachtung '+o.nr+' gespeichert ✓');
+}
+function saveEdit(){
+  var o = state.obs[state.obsIndex];
+  queueAdd(); save(); render();
+  toast(isEN() ? 'Changes to observation '+o.nr+' saved ✓' : 'Änderungen an Beobachtung '+o.nr+' gespeichert ✓');
+}
+function discardDraft(){
+  var o = state.obs[state.obsIndex];
+  o.standort=''; o.beschreibung=''; o.kat=-1; o.medien=[];
+  o.todo=false; o.todoText=''; o.todoDone=false;
+  o.planX=null; o.planY=null; o.gps=null; o.refs=[];
+  save(); render(); toast(t('discarded'));
+}
+function nowHM(){
+  var d = new Date();
+  return String(d.getHours()).padStart(2,'0')+':'+String(d.getMinutes()).padStart(2,'0');
+}
+
+/* ---------- Kamera-Simulation ---------- */
+function simulateCapture(typ, done){
+  var ov = el('shutter');
+  if(typ==='video'){
+    /* Kein Sucher, kein REC-Punkt: Power Apps zeigt keine Videoaufnahme in der App.
+       Sichtbar ist nur der Wechsel zur Kamera-App des Geräts. */
+    ov.innerHTML = '<div class="handoff">'+IC.vid+'</div><div class="vf-lbl">'+t('videoCamHint')+'</div>';
+    ov.classList.add('on');
+    setTimeout(function(){
+      ov.classList.remove('on'); ov.innerHTML='';
+      done();
+    }, 950);
+    return;
+  }
+  /* Foto: die Kamera-Steuerung zeigt echten Sucher und löst in der App aus. */
+  ov.innerHTML = '<div class="vf"></div><div class="vf-lbl">'+t('camShutter')+'</div>';
+  ov.classList.add('on');
+  setTimeout(function(){
+    ov.classList.add('flash');
+    setTimeout(function(){
+      ov.classList.remove('on','flash'); ov.innerHTML='';
+      done();
+    }, 200);
+  }, 550);
+}
+
+/* =================================================================
+   Screen: Übersichtsplan (5.1 Punkt wählen, 5.2 Standort übernehmen,
+   5.10 Mängel als Marker, die den Eintrag öffnen)
+   ================================================================= */
+function renderPlan(){
+  var cur = state.obs[state.obsIndex] || state.obs[0];
+  /* Marker müssen in Canvas zur Design-Zeit angelegt werden: die Anzahl ist fest
+     begrenzt, weitere Beobachtungen bleiben in der Liste sichtbar (5.10). */
+  var pins = '';
+  var shownPins = 0;
+  state.obs.forEach(function(o, oi){
+    if(o.planX==null || o.planY==null) return;
+    if(shownPins >= MAX_PINS) return;
+    shownPins++;
+    var draft = !o.saved;
+    var bg = o.kat>=0 ? KATS[o.kat].dot : '#8A8886';
+    pins += '<button class="pin'+(draft?' pin-draft':'')+'" '+
+      'style="left:'+(o.planX*100).toFixed(2)+'%;top:'+(o.planY*100).toFixed(2)+'%;'+(draft?'':'background:'+bg)+'" '+
+      'onclick="openPin('+oi+')" '+
+      'title="'+esc((o.standort||t('planNoPin'))+' · '+(o.kat>=0?katName(KATS[o.kat]):''))+'" '+
+      'aria-label="'+t('nrLbl')+' '+o.nr+'">'+o.nr+'</button>';
+  });
+  var marked = state.obs.filter(function(o){ return o.planX!=null; }).length;
+
+  var zonen = '<div class="card" style="overflow:hidden">';
+  ZONEN.forEach(function(z, zi){
+    zonen += '<button class="zone-row" onclick="pickZone('+zi+')">'+
+      '<span class="z-ic">'+IC.pin+'</span>'+
+      '<span style="flex:1;min-width:0"><span class="z-t1">'+esc(zoneName(z))+'</span>'+
+      '<span class="z-t2" style="display:block">'+esc(zoneSub(z))+'</span></span>'+
+      '<span style="color:#a19f9d">'+IC.chevR+'</span></button>';
+  });
+  zonen += '</div>';
+
+  return '<div class="scr">'+
+    feat('prem',
+    '<div class="card" style="padding:12px 14px;font-size:12.5px;color:var(--ink2);line-height:1.5">'+
+      t('planIntro')+tier('prem')+'</div>'+
+    '<div class="lbl">'+t('planMarker')+' ('+marked+')</div>'+
+    /* Kein onclick auf der Planfläche: ein Image-Control kennt keine Klickkoordinaten. */
+    '<div class="planwrap">'+
+      '<img src="'+planSVG()+'" alt="'+t('planTitle')+'">'+ pins +
+    '</div>'+
+    '<div class="note">'+t('planLegend')+(marked===0 ? ' '+t('planNoMarker') : '')+'</div>'+
+    '<div class="note-warn">'+t('planFreeNote')+'<br>'+
+      t('planMarkerLimit').replace('{N}', MAX_PINS)+'</div>'+
+    '<div class="lbl">'+t('planZonen')+'</div>'+
+    zonen+
+    '<div class="note">'+(cur && cur.planX!=null
+        ? IC.pin+' '+t('planPinSet')+' · '+esc(cur.standort||'–')
+        : t('planNoPin'))+'</div>'+
+    '<div class="action-bar">'+
+      '<button class="btn btn-green" onclick="gotoView(\'beobachtung\')">'+IC.check+' '+t('planPunkt')+'</button>'+
+      '<button class="btn btn-ghost" onclick="gotoView(\'beobachtung\')">'+t('cancel')+'</button>'+
+    '</div>')+
+  '</div>';
+}
+function openPin(oi){
+  gotoObs(oi);
+  gotoView('beobachtung');
+}
+function setPlanPoint(x, y, ortName){
+  var o = state.obs[state.obsIndex];
+  if(!o) return;
+  o.planX = Math.max(0.02, Math.min(0.98, x));
+  o.planY = Math.max(0.02, Math.min(0.98, y));
+  if(ortName){ o.standort = ortName; }     /* 5.2 – Standort automatisch übernehmen */
+  markDirty(o); queueAdd(); save(); render();
+  toast(ortName ? t('planOrtCopied')+': '+ortName : t('planPinSet'));
+}
+/* 5.1 – einziger Weg, einen Punkt zu setzen: Bereichsliste. Der Punkt rastet auf die
+   Bereichsmitte ein. Freies Antippen der Planfläche ist in Canvas nicht möglich. */
+function pickZone(zi){
+  var z = ZONEN[zi];
+  setPlanPoint(z.x, z.y, zoneName(z));
+}
+
+/* =================================================================
+   Screen: Aufgaben / To-Do-Nachverfolgung (5.7 / 5.8)
+   ================================================================= */
+function todoList(){
+  return state.obs.filter(function(o){ return o.saved && o.todo; });
+}
+function renderTodo(){
+  var all = todoList();
+  var nOpen = all.filter(function(o){ return !o.todoDone; }).length;
+  var nDone = all.length - nOpen;
+  var f = state.todoFilter || 'open';
+  var shown = all.filter(function(o){
+    return f==='all' ? true : (f==='done' ? o.todoDone : !o.todoDone);
+  });
+
+  var rows = '';
+  shown.forEach(function(o){
+    var oi = state.obs.indexOf(o);
+    rows += '<div class="card" style="margin-bottom:10px;overflow:hidden">'+
+      '<div style="display:flex">'+
+        '<button class="todo-row" onclick="openTodo('+oi+')">'+
+          '<span style="flex:1;min-width:0">'+
+            '<span class="td-t1"><span class="mono">'+t('nrLbl')+' '+String(o.nr).padStart(3,'0')+'</span>'+katChip(o.kat)+'</span>'+
+            '<div class="td-t2'+(o.todoDone?' done':'')+'">'+esc(o.todoText || t('todoNoText'))+'</div>'+
+            '<div class="td-t3">'+esc(o.standort || '–')+'</div>'+
+          '</span>'+
+        '</button>'+
+        '<div style="padding:12px 14px 12px 0;display:flex;align-items:center">'+
+          '<button class="tdbox'+(o.todoDone?' on':'')+'" onclick="toggleTodoDone('+oi+')" '+
+            'aria-label="'+(o.todoDone ? t('todoReopen') : t('todoMarkDone'))+'" '+
+            'title="'+(o.todoDone ? t('todoReopen') : t('todoMarkDone'))+'">'+(o.todoDone?IC.checkS:'')+'</button>'+
+        '</div>'+
+      '</div>'+
+    '</div>';
+  });
+  if(!rows) rows = '<div class="gal-empty">'+t('todoEmpty')+'</div>';
+
+  return '<div class="scr">'+
+    feat('prem',
+    '<div class="seg3" role="group" aria-label="'+t('todoTitle')+'">'+
+      '<button class="'+(f==='open'?'active':'')+'" onclick="setTodoFilter(\'open\')">'+t('todoOpen')+'</button>'+
+      '<button class="'+(f==='done'?'active':'')+'" onclick="setTodoFilter(\'done\')">'+t('todoDoneLbl')+'</button>'+
+      '<button class="'+(f==='all'?'active':'')+'" onclick="setTodoFilter(\'all\')">'+t('todoAll')+'</button>'+
+    '</div>'+
+    '<div style="font-size:12px;color:var(--ink2);margin:10px 0 12px;display:flex;align-items:center;gap:6px">'+
+      nOpen+' '+t('todoOpen').toLowerCase()+' · '+nDone+' '+t('todoDoneLbl').toLowerCase()+tier('prem')+'</div>'+
+    rows)+
+    '<div style="height:12px"></div>'+
+  '</div>';
+}
+function setTodoFilter(f){ state.todoFilter=f; save(); render(); }
+function openTodo(oi){ gotoObs(oi); gotoView('beobachtung'); }
+function toggleTodoDone(oi){
+  var o = state.obs[oi];
+  o.todoDone = !o.todoDone;
+  markDirty(o); queueAdd(); save(); render();
+  toast(o.todoDone ? t('todoIsDone') : t('todoIsOpen'));
+}
+
+/* =================================================================
+   Screen: Wissensdatenbank & Normen (5.4 / 5.5)
+   ================================================================= */
+function renderWissen(){
+  var q = (state.wissenQuery||'').toLowerCase();
+  var kf = state.wissenFilter || 'all';
+  var hits = [];
+  WISSEN.forEach(function(w, wi){
+    if(kf!=='all' && w.k!==kf) return;
+    /* Durchsucht werden nur Titel und Kurzbeschreibung (Listenspalten).
+       Der Inhalt der SharePoint-Dokumente ist aus der App heraus nicht durchsuchbar. */
+    var hay = (w.de+' '+w.en+' '+w.sumDe+' '+w.sumEn).toLowerCase();
+    if(q && hay.indexOf(q)<0) return;
+    hits.push({w:w, i:wi});
+  });
+
+  var list = '<div class="card" style="overflow:hidden">';
+  if(hits.length===0){
+    list += '<div class="gal-empty" style="border:0">'+t('wissenNone')+'</div>';
+  } else {
+    hits.forEach(function(h){
+      var open = state.wissenOpen===h.i;
+      list += '<button class="kb-row" onclick="toggleWissen('+h.i+')" aria-expanded="'+open+'">'+
+        '<span style="flex:1;min-width:0">'+kbKick(h.w.k)+
+          '<div class="kb-t1">'+esc(wissenTitel(h.w))+'</div>'+
+          '<div class="kb-t2">'+esc(wissenSum(h.w))+'</div>'+
+        '</span>'+
+        '<span style="color:#a19f9d;flex:none;display:flex;align-items:center">'+(open ? IC.chevD : IC.chevR)+'</span></button>';
+      if(open){
+        list += '<div class="kb-open">'+esc(wissenText(h.w))+
+          '<button class="btn btn-ghost" style="min-height:36px;font-size:12.5px;margin-top:10px;width:100%" onclick="linkRef('+h.i+')">'+
+            IC.link+' '+t('wissenRef')+'</button></div>';
+      }
+    });
+  }
+  list += '</div>';
+
+  return '<div class="scr">'+
+    feat('prem',
+    '<div style="position:relative">'+
+      '<span style="position:absolute;left:12px;top:14px;color:#8a8886;pointer-events:none">'+IC.search+'</span>'+
+      '<input class="txt-in" type="search" style="padding-left:38px" value="'+esc(state.wissenQuery||'')+'" '+
+        'placeholder="'+t('wissenSearch')+'" oninput="onWissen(this.value)" aria-label="'+t('wissenSearch')+'">'+
+    '</div>'+
+    '<div class="seg3" style="margin-top:10px" role="group" aria-label="'+t('wissenTitle')+'">'+
+      '<button class="'+(kf==='all'?'active':'')+'" onclick="setWissenFilter(\'all\')">'+t('kbAll')+'</button>'+
+      '<button class="'+(kf==='norm'?'active':'')+'" onclick="setWissenFilter(\'norm\')">'+t('kbNorm')+'</button>'+
+      '<button class="'+(kf==='sop'?'active':'')+'" onclick="setWissenFilter(\'sop\')">'+t('kbSop')+'</button>'+
+      '<button class="'+(kf==='mb'?'active':'')+'" onclick="setWissenFilter(\'mb\')">'+t('kbMb')+'</button>'+
+    '</div>'+
+    '<div class="lbl">'+t('wissenTitle')+' ('+hits.length+')'+tier('prem')+'</div>'+
+    list+
+    (!state.online ? '<div class="note-warn">'+t('wissenOfflineNote')+'</div>' : '')+
+    '<div class="note">'+t('wissenDeleg')+'</div>'+
+    '<div class="note">'+t('wissenSource')+' · '+esc(proj().ordner)+'/QS-Wissen/</div>')+
+    '<div style="height:12px"></div>'+
+  '</div>';
+}
+function onWissen(v){ state.wissenQuery = v; state.wissenOpen = -1; persistSoon(); render(); }
+function setWissenFilter(f){ state.wissenFilter=f; state.wissenOpen=-1; save(); render(); }
+function toggleWissen(i){ state.wissenOpen = (state.wissenOpen===i ? -1 : i); save(); render(); }
+function linkRef(i){
+  var o = state.obs[state.obsIndex];
+  var titel = wissenTitel(WISSEN[i]);
+  if(!Array.isArray(o.refs)) o.refs = [];
+  if(o.refs.indexOf(titel)<0) o.refs.push(titel);
+  markDirty(o); queueAdd(); save(); render();
+  toast(t('wissenRefOk')+': '+titel);
+}
+
+/* =================================================================
+   Screen: Einstellungen (4.5, 5.6, 6.1, 6.2, 6.3, 6.4, 3.9/4.3/4.4)
+   ================================================================= */
+var AKZENTE = [
+  {c:'#F2A93B', de:'NS-Amber', en:'NS amber'},
+  {c:'#1F4E79', de:'Blau',      en:'Blue'},
+  {c:'#107C10', de:'Grün',      en:'Green'},
+  {c:'#742774', de:'Kunde',     en:'Client'}
+];
+var LOGOS = [
+  {k:'NS', de:'NS', en:'NS'},
+  {k:'TNG', de:'Nordwind Netz',  en:'Nordwind Netz'},
+  {k:'KND', de:'Kunde',        en:'Client'}
+];
+function logoName(l){ return isEN() && l.en ? l.en : l.de; }
+function renderEinstellungen(){
+  var s = state.settings;
+  var p = proj();
+  var namingOpts = NAMING.map(function(n,i){ return {t:n, sel:i===s.naming}; });
+  var prev = fileName('foto', 12, {ort:'Feld -Q03, Sammelschienenanschluss', kat:3, uid:'2278', lfd:12});
+  var prevV = fileName('video', 12, {ort:'Feld -Q03, Sammelschienenanschluss', kat:3, uid:'2278', lfd:13});
+
+  var swatches = AKZENTE.map(function(a){
+    return '<button class="swatch'+(s.akzent===a.c?' sel':'')+'" style="background:'+a.c+'" '+
+      'onclick="setAkzent(\''+a.c+'\')" title="'+(isEN()?a.en:a.de)+'" aria-label="'+(isEN()?a.en:a.de)+'"></button>';
+  }).join('');
+  var logos = LOGOS.map(function(l){
+    return '<button class="logo-b'+(s.logo===l.k?' sel':'')+'" onclick="setLogo(\''+l.k+'\')">'+
+      '<span class="logo-sq" style="background:'+s.akzent+'"></span>'+esc(logoName(l))+'</button>';
+  }).join('');
+
+  return '<div class="scr">'+
+    /* 6.1 / 6.2 */
+    '<div class="card" style="padding:13px 14px">'+
+      '<div class="lbl" style="margin-top:0">'+t('setLang')+tier('mvp')+tier('prem')+'</div>'+
+      '<span class="mv-toggle" role="group" aria-label="'+t('setLang')+'">'+
+        '<button class="mv-b'+(state.lang!=='en'?' active':'')+'" style="width:auto;padding:0 14px;font-size:12px;font-weight:600" onclick="setLang(\'de\')">DE</button>'+
+        '<button class="mv-b'+(state.lang==='en'?' active':'')+'" style="width:auto;padding:0 14px;font-size:12px;font-weight:600" onclick="setLang(\'en\')">EN</button>'+
+      '</span>'+
+      '<div class="note">'+t('setLangHint')+'</div>'+
+    '</div>'+
+    /* 4.5 */
+    feat('prem',
+    '<div class="card" style="padding:13px 14px;margin-top:12px">'+
+      '<div class="lbl" style="margin-top:0">'+t('setNaming')+tier('prem')+'</div>'+
+      ddHTML('naming', esc(NAMING[s.naming]), namingOpts, 'setNaming', true)+
+      '<div class="note">'+t('setNamingHint')+'</div>'+
+      '<div class="lbl">'+t('setNamingPrev')+'</div>'+
+      '<div class="mono" style="font-size:11.5px;color:var(--hdr);background:#faf9f8;border:1px solid var(--line);'+
+        'border-radius:4px;padding:9px 10px;line-height:1.7">'+esc(prev)+'<br>'+esc(prevV)+'</div>'+
+    '</div>')+
+    /* 6.3 / 6.4 */
+    feat('light',
+    '<div class="card" style="padding:13px 14px;margin-top:12px">'+
+      '<div class="lbl" style="margin-top:0">'+t('setCI')+tier('light')+'</div>'+
+      '<div class="sw-row">'+swatches+'</div>'+
+      '<div class="lbl">'+t('setOwnLogo')+tier('prem')+'</div>'+
+      '<div class="logo-pick">'+logos+'</div>'+
+      '<div class="note">'+t('setCIHint')+'</div>'+
+    '</div>')+
+    /* 5.6 */
+    feat('prem',
+    '<div class="card" style="padding:13px 14px;margin-top:12px">'+
+      '<div class="opt-row" style="border-bottom:0;padding:0">'+
+        '<div class="or-tx"><div class="or-t1">'+t('setAI')+tier('prem')+'</div>'+
+        '<div class="or-t2">'+t('setAISub')+'</div></div>'+
+        '<label class="sw2"><input type="checkbox" '+(s.ai?'checked':'')+' onchange="setAi(this.checked)" aria-label="'+t('setAI')+'">'+
+          '<span class="sw2-track"></span><span class="sw2-knob"></span></label>'+
+      '</div>'+
+      '<div class="note-warn">'+t('setAICredits')+'</div>'+
+    '</div>')+
+    /* 4.3 / 4.4 / 3.9 */
+    '<div class="card" style="padding:13px 14px;margin-top:12px">'+
+      '<div class="lbl" style="margin-top:0">'+t('setAblage')+tier('mvp')+'</div>'+
+      '<div class="ro-row"><b>'+t('setListe')+'</b><span class="mono">QS_Beobachtungen · QS_Terminplan</span></div>'+
+      '<div class="ro-row"><b>'+t('setBib')+'</b><span class="mono">'+esc(p.ordner)+'/Begehung_'+HEUTE_ISO+'/</span></div>'+
+      '<div class="ro-row"><b>'+t('projId')+'</b><span class="mono">'+p.id+'</span></div>'+
+    '</div>'+
+    '<div style="height:14px"></div>'+
+  '</div>';
+}
+function setNaming(i){ state.settings.naming = i; state.ddOpen=''; save(); render(); toast(t('setNamingOk')); }
+function setAkzent(c){
+  state.settings.akzent = c; applyCI(); save(); render(); toast(t('setAkzentOk'));
+}
+function setLogo(k){ state.settings.logo = k; save(); render(); toast(t('setLogoOk')); }
+function setAi(v){ state.settings.ai = !!v; save(); render(); toast(v ? t('setAiOn') : t('setAiOff')); }
+function applyCI(){
+  var scr = el('screen');
+  if(scr && scr.style && scr.style.setProperty) scr.style.setProperty('--amber', state.settings.akzent);
+}
+function logoText(){
+  var l = state.settings.logo;
+  if(l==='TNG') return 'Nordwind Netz GmbH · Bauüberwachung';
+  if(l==='KND') return 'Auftraggeber · Qualitätssicherung';
+  return 'Nordstern Projektmanagement GmbH';
+}
+
+/* ---------- Screen: Terminplan (Screen 2) ---------- */
+function renderTerminplan(){
+  var total = state.vg.length;
+  var done = state.vg.filter(function(v){return v.fertig;}).length;
+  var pct = total ? Math.round(done/total*100) : 0;
+  var html = '<div class="scr">'+
+    '<div class="card tp-head">'+
+      '<div class="tp-t"><span>'+vgCheckedTxt(done, total)+'</span><span>'+(isEN() ? (total-done)+' remaining' : 'Noch '+(total-done)+' offen')+'</span></div>'+
+      '<div class="prog-track"><div class="prog-fill" style="width:'+pct+'%"></div></div>'+
+    '</div>';
+
+  state.vg.forEach(function(v, i){
+    var nFoto = v.medien.filter(function(m){ return m.typ!=='video'; }).length;
+    var nVid  = v.medien.length - nFoto;
+    var fotoInfo = v.medien.length
+      ? '<div style="font-size:12.5px;color:#0b5c0b;font-weight:600;margin-top:6px">'+
+        (isEN()
+          ? (nFoto===1 ? '1 photo' : nFoto+' photos')+(nVid ? ' · '+(nVid===1?'1 video':nVid+' videos') : '')+' captured ✓'
+          : (nFoto===1 ? '1 Foto' : nFoto+' Fotos')+(nVid ? ' · '+(nVid===1?'1 Video':nVid+' Videos') : '')+' erfasst ✓')+'</div>'
+      : '';
+    /* 2.11 – Fortschritt + Bemerkung + Medien + Plandaten bilden EINEN Eintrag */
+    var oneEntry = v.fertig
+      ? '<div style="margin-top:9px"><span class="vg-done-chip">'+IC.checkS+' '+t('vgParts')+'</span>'+tier('mvp')+'</div>'
+      : '';
+    html +=
+    '<div class="card vg-card'+(v.fertig?' done':'')+'"><div class="vg-body">'+
+      '<div class="vg-plan">'+
+        '<span class="vg-lock">'+IC.lock+' '+t('planChip')+'</span>'+
+        '<div class="vg-name">'+esc(v.name)+'</div>'+
+        '<div class="vg-uid">UID: '+esc(v.uid)+'</div>'+
+        '<div class="vg-meta">'+
+          '<span><b>'+t('sollStart')+':</b> '+v.s+'</span><span><b>'+t('sollEnde')+':</b> '+v.e+'</span>'+
+          '<span><b>'+t('bereich')+':</b> '+ortTxt(v.ort)+'</span>'+
+        '</div>'+
+      '</div>'+
+      /* Zusammenfassung in der Zeile. Kamera-/Anlagen-Steuerungen und die Eingabefelder
+         liegen in der Detailansicht – in einer Galerie-Vorlage arbeiten sie unzuverlässig. */
+      '<div class="vg-ist">'+
+        '<div class="lbl" style="margin-top:0">'+t('progIst')+tier('mvp')+(v.fertig?' &nbsp;<span class="vg-done-chip">'+IC.checkS+' '+t('geprueft')+'</span>':'')+'</div>'+
+        '<div class="vg-sum">'+
+          '<div class="prog-track"><div class="prog-fill" style="width:'+v.prog+'%"></div></div>'+
+          '<span class="vg-val">'+v.prog+' %</span>'+
+        '</div>'+
+        (v.bem ? '<div class="vg-bem">'+esc(v.bem)+'</div>' : '')+
+        fotoInfo+
+        '<div class="vg-actions">'+
+          '<button class="btn vg-media-btn" onclick="openVg('+i+')" title="'+esc(t('vgDetailTitle'))+'">'+
+            IC.cam+' '+t('medien')+'</button>'+
+          '<button class="btn vg-fertig '+(v.fertig?'btn-ghost':'btn-green')+'" onclick="vgFertig('+i+')">'+
+            (v.fertig ? t('geprueft')+' '+IC.checkS : IC.check+' '+t('fertig'))+'</button>'+
+        '</div>'+
+        oneEntry+
+      '</div>'+
+    '</div></div>';
+  });
+  return html + '</div>';
+}
+/* ---------- Screen: Vorgang-Detail (Medien, Bemerkung, Fortschritt) ---------- */
+function openVg(i){
+  if(!state.vg[i]) return;
+  state.vgIdx = i;
+  gotoView('vgdetail');
+}
+function renderVgDetail(){
+  var i = state.vgIdx;
+  var v = state.vg[i];
+  if(!v){ state.view='terminplan'; return renderTerminplan(); }
+  var vBlock = state.online ? '' : ' btn-blocked';
+  return '<div class="scr">'+
+    '<button class="btn btn-ghost" style="min-height:40px;font-size:13px;padding:0 12px;margin-bottom:12px" '+
+      'onclick="gotoView(\'terminplan\')">'+IC.chevL+' '+t('vgBack')+'</button>'+
+    '<div class="card vg-card'+(v.fertig?' done':'')+'">'+
+      '<div class="vg-plan">'+
+        '<span class="vg-lock">'+IC.lock+' '+t('planChip')+'</span>'+
+        '<div class="vg-name">'+esc(v.name)+'</div>'+
+        '<div class="vg-uid">UID: '+esc(v.uid)+'</div>'+
+        '<div class="vg-meta">'+
+          '<span><b>'+t('sollStart')+':</b> '+v.s+'</span><span><b>'+t('sollEnde')+':</b> '+v.e+'</span>'+
+          '<span><b>'+t('bereich')+':</b> '+ortTxt(v.ort)+'</span>'+
+        '</div>'+
+      '</div>'+
+    '</div>'+
+    '<div class="lbl">'+t('progIst')+tier('mvp')+(v.fertig?' &nbsp;<span class="vg-done-chip">'+IC.checkS+' '+t('geprueft')+'</span>':'')+'</div>'+
+    '<div class="vg-prog-row">'+
+      '<input type="range" min="0" max="100" step="5" value="'+v.prog+'" style="--p:'+v.prog+'%"'+
+        ' oninput="onVgProg('+i+', this)" onchange="save()" aria-label="'+t('progIst')+' '+esc(v.name)+'">'+
+      '<span class="vg-val" id="vgval'+i+'">'+v.prog+' %</span>'+
+    '</div>'+
+    /* Mehrzeiliges Feld: die eingegebene Bemerkung wird sonst abgeschnitten */
+    '<div class="lbl">'+t('bemerkung')+tier('mvp')+'</div>'+
+    '<textarea class="txt-area" rows="2" style="min-height:62px" placeholder="'+t('phBem')+'" '+
+      'oninput="onVgBem('+i+', this.value)">'+esc(v.bem)+'</textarea>'+
+    '<div class="lbl">'+t('medien')+' ('+v.medien.length+')'+tier('mvp')+'</div>'+
+    '<div class="media-btns">'+
+      '<button class="btn" onclick="vgAddMedia('+i+',\'foto\')">'+IC.cam+' '+t('foto')+'</button>'+
+      '<button class="btn'+vBlock+'" aria-disabled="'+(!state.online)+'" onclick="vgAddMedia('+i+',\'video\')">'+
+        IC.vid+' '+t('video')+'</button>'+
+    '</div>'+
+    (v.medien.length ? mediaListHTML(v.medien, 'vgDelMediaCur') : '<div class="gal-empty">'+t('vgNoMedia')+'</div>')+
+    '<div class="note">'+t('vgMediaNote')+'</div>'+
+    '<div class="note-warn">'+t('videoRecNote')+'</div>'+
+    '<div class="action-bar">'+
+      '<button class="btn '+(v.fertig?'btn-ghost':'btn-green')+'" onclick="vgFertig('+i+')">'+
+        (v.fertig ? t('geprueft')+' '+IC.checkS : IC.check+' '+t('fertig'))+'</button>'+
+      '<button class="btn btn-ghost" onclick="gotoView(\'terminplan\')">'+t('vgBack')+'</button>'+
+    '</div>'+
+  '</div>';
+}
+function vgDelMediaCur(mi){ vgDelMedia(state.vgIdx, mi); }
+function onVgProg(i, input){
+  var v = parseInt(input.value,10)||0;
+  state.vg[i].prog = v;
+  input.style.setProperty('--p', v+'%');
+  var lbl = el('vgval'+i); if(lbl) lbl.textContent = v+' %';
+  markDirty(state.vg[i]);
+  persistSoon();
+}
+function onVgBem(i, val){ state.vg[i].bem = val; markDirty(state.vg[i]); persistSoon(); }
+function vgAddMedia(i, typ){
+  if(typ==='video' && !state.online){ toast(t('videoOffline')); return; }
+  simulateCapture(typ, function(){
+    var v0 = state.vg[i];
+    var m = makeMedia(typ, 'V'+(i+1), {ort:v0.ort, uid:v0.uid});
+    state.vg[i].medien.push(m); queueAdd(); save(); render();
+    toast(isEN()
+      ? (typ==='video' ? 'Video' : 'Photo')+' added to activity '+state.vg[i].uid
+      : (typ==='video' ? 'Video' : 'Foto')+' zu Vorgang '+state.vg[i].uid+' hinzugefügt');
+  });
+}
+function vgDelMedia(i, mi){ state.vg[i].medien.splice(mi,1); queueAdd(); save(); render(); }
+function vgFertig(i){
+  var v = state.vg[i];
+  v.fertig = !v.fertig;
+  queueAdd(); save(); render();
+  /* 2.11 – ein Vorgang wird als EIN Eintrag gespeichert */
+  toast(v.fertig
+    ? (isEN() ? 'Activity '+v.uid+' '+t('vgOneEntry')+' ('+t('vgParts')+') ✓'
+              : 'Vorgang '+v.uid+' '+t('vgOneEntry')+' ('+t('vgParts')+') ✓')
+    : (isEN() ? 'Activity '+v.uid+' reopened' : 'Vorgang '+v.uid+' wieder geöffnet'));
+}
+
+/* ---------- Screen: Export / Bericht ---------- */
+var flowRunning = false;
+function renderExport(){
+  var nB = savedObs().length;
+  var nVdone = state.vg.filter(function(v){return v.fertig;}).length;
+  var nM = mediaCount();
+  var katCounts = [0,0,0,0];
+  savedObs().forEach(function(o){ if(o.kat>=0) katCounts[o.kat]++; });
+  var chips = '';
+  KATS.forEach(function(k,i){
+    if(katCounts[i]>0) chips += katChip(i, '&nbsp;· '+katCounts[i]);
+  });
+  if(!chips) chips = '<span style="font-size:12.5px;color:var(--ink2)">'+t('noKat')+'</span>';
+
+  var vorlOpts = VORLAGEN.map(function(v,i){ return {t:vorlName(v), sel:i===state.vorlage}; });
+  var canSend = state.online && !state.syncing && !flowRunning;
+  var p = proj();
+  var isWord = state.format==='word';
+
+  var html = '<div class="scr" style="max-width:620px">'+
+    '<div class="card exp-sum">'+
+      '<div class="exp-nums">'+
+        '<div class="exp-num"><b>'+nB+'</b><span>'+t('beobachtungen')+'</span></div>'+
+        '<div class="exp-num"><b>'+nVdone+'/'+state.vg.length+'</b><span>'+t('vorgGeprueft')+'</span></div>'+
+        '<div class="exp-num"><b>'+nM+'</b><span>'+t('medien')+'</span></div>'+
+      '</div>'+
+      '<div class="exp-chips">'+chips+'</div>'+
+      /* 3.9 – Projekt-ID, Erstelldatum und Zielordner im Projektordner */
+      '<div class="mono" style="font-size:11px;color:var(--ink2);margin-top:11px;line-height:1.6">'+
+        t('projId')+': '+p.id+' · '+HEUTE+'<br>'+t('expZielordner')+': '+esc(p.ordner)+'/Begehung_'+HEUTE_ISO+'/</div>'+
+    '</div>'+
+    /* 3.1 – zwei Ausgabeformate. Word trägt dauerhaft die Premium-Kennzeichnung,
+       die MVP-Kennzeichnung gilt allein für den PDF-Weg. */
+    '<div class="lbl">'+t('fmtLbl')+'</div>'+
+    '<div class="fmt-seg">'+
+      '<button class="fmt-b'+(isWord?' sel':'')+'" onclick="setFormat(\'word\')" aria-pressed="'+isWord+'">'+
+        '<span style="color:var(--hdr);flex:none">'+IC.doc+'</span>'+
+        '<span><span class="f-t1">'+t('fmtWord')+tier('prem')+'</span><span class="f-t2">'+t('fmtWordSub')+'</span></span></button>'+
+      '<button class="fmt-b'+(!isWord?' sel':'')+'" onclick="setFormat(\'pdf\')" aria-pressed="'+(!isWord)+'">'+
+        '<span style="color:var(--red);flex:none">'+IC.doc+'</span>'+
+        '<span><span class="f-t1">'+t('fmtPdf')+tier('mvp')+'</span><span class="f-t2">'+t('fmtPdfSub')+'</span></span></button>'+
+    '</div>'+
+    (isWord ? '<div class="note-warn">'+t('fmtWordNote')+'</div>' : '')+
+    /* 3.5 – Fotos nur als kleine Vorschau + Link in den Medienordner */
+    '<div class="note">'+t('pdfImgNote')+'</div>'+
+    /* 3.3 vordefinierte Vorlage · 3.4 konfigurierbar je Projekt/Kunde */
+    '<div class="lbl">'+t('vorlageLbl')+tier('light')+'</div>'+
+    ddHTML('vorl', esc(vorlName(VORLAGEN[state.vorlage])), vorlOpts, 'pickVorlage', true)+
+    '<div style="font-size:11.5px;color:var(--ink2);margin-top:5px">'+t('vorlagenHint')+'</div>'+
+    (state.vorlage===0 ? '<div class="note">'+t('tmplDefault')+tier('mvp')+'</div>' : '')+
+    /* 3.5.1 – Videos als Link */
+    feat('light','<div class="note-warn">'+t('videoLinkNote')+tier('light')+'</div>')+
+    /* 4.5 – Benennungsregel */
+    feat('prem','<div class="note mono">'+t('expNaming')+': '+esc(NAMING[state.settings.naming])+'</div>')+
+    '<div class="lbl">'+t('empf')+tier('mvp')+'</div>'+
+    '<div class="emp-row">'+IC.person+'<span>'+t('reportGoesTo')+' <b>'+EMPFAENGER+'</b><br><span style="font-size:11.5px;color:var(--ink2)">'+t('loggedUser')+'</span></span></div>'+
+    '<div style="margin-top:16px"><button class="btn" style="width:100%;min-height:56px" '+(canSend?'':'disabled')+' onclick="sendReport()">'+
+      IC.send+' '+t('createSend')+'</button></div>'+
+    (!state.online ? '<div class="exp-hint">'+t('expOffline')+'</div>' : '')+
+    /* 3.10 – Warnung vor offenen Punkten + Bestätigung */
+    (state.expWarn ? warnHTML() : '')+
+    '<div id="flowArea">'+(flowRunning ? flowBusyHTML() : (state.reportSent ? flowDoneHTML() : ''))+'</div>'+
+    /* M2 – in der App gibt es nur die Bestätigung; das Dokument selbst öffnet Launch(). */
+    '<div id="confirmArea">'+(state.reportSent && !flowRunning ? confirmHTML() : '')+'</div>'+
+    '<div style="height:14px"></div>'+
+  '</div>';
+  return html;
+}
+/* Bestätigungskarte statt Dokumentvorschau: eine Canvas-App kann Word/PDF nicht rendern. */
+function confirmHTML(){
+  var p = proj();
+  var word = state.format==='word';
+  var datei = p.kurz+'_QS-Bericht_'+HEUTE_ISO+(word ? '.docx' : '.pdf');
+  return '<div class="card" style="padding:14px;margin-top:14px">'+
+    '<div style="display:flex;align-items:flex-start;gap:11px">'+
+      '<span class="beg-ic" style="flex:none">'+IC.check+'</span>'+
+      '<div style="flex:1;min-width:0">'+
+        '<div class="beg-t1">'+t('expDone')+'</div>'+
+        '<div class="beg-t2">'+esc(EMPFAENGER)+' · '+(word ? t('fmtWord') : t('fmtPdf'))+'</div>'+
+        '<div class="mono" style="font-size:11px;color:var(--ink2);margin-top:6px;line-height:1.5;word-break:break-all">'+
+          esc(p.ordner)+'/Begehung_'+HEUTE_ISO+'/'+esc(datei)+'</div>'+
+      '</div>'+
+    '</div>'+
+    '<button class="btn btn-ghost" style="width:100%;min-height:44px;font-size:13.5px;margin-top:12px" onclick="openReport()">'+
+      IC.link+' '+t('expOpen')+'</button>'+
+    '<div class="note">'+t('expOpenNote')+'</div>'+
+  '</div>';
+}
+function openReport(){ toast(t('expOpenToast')); }
+function setFormat(f){ state.format=f; save(); render(); toast(t('fmtChanged')+': '+(f==='word'?t('fmtWord'):t('fmtPdf'))); }
+function pickVorlage(i){ state.vorlage=i; state.ddOpen=''; render(); save(); }
+/* 3.10 – offene Beobachtungen / Aufgaben zählen */
+function offeneEntwuerfe(){
+  return state.obs.filter(function(o){
+    return !o.saved && (o.standort || o.beschreibung || o.kat>=0 || o.medien.length>0);
+  }).length;
+}
+function offeneTodos(){
+  return state.obs.filter(function(o){ return o.saved && o.todo && !o.todoDone; }).length;
+}
+function warnHTML(){
+  var d = offeneEntwuerfe(), td = offeneTodos();
+  var li = '';
+  if(d>0)  li += '<li>'+d+' '+(d===1?t('warnDraft'):t('warnDrafts'))+'</li>';
+  if(td>0) li += '<li>'+td+' '+(td===1?t('warnTodo'):t('warnTodos'))+'</li>';
+  return '<div class="exp-warn" role="alertdialog" aria-live="assertive">'+
+    '<div class="ew-h">'+IC.warn+' '+t('warnTitle')+tier('mvp')+'</div>'+
+    '<ul>'+li+'</ul>'+
+    '<div style="margin-top:8px">'+t('warnAsk')+'</div>'+
+    '<div class="ew-btns">'+
+      '<button class="btn" style="background:var(--red)" onclick="confirmSend()">'+t('warnSend')+'</button>'+
+      '<button class="btn btn-ghost" onclick="cancelSend()">'+t('warnBack')+'</button>'+
+    '</div>'+
+  '</div>';
+}
+function cancelSend(){ state.expWarn=false; save(); render(); toast(t('warnBackToast')); }
+function confirmSend(){ state.expWarn=false; save(); doSendReport(); }
+/* M3 – Ein Flow-Aufruf, ein unbestimmter Zustand. Ein Schritt-für-Schritt-Fortschritt
+   aus einem synchronen Flow ist nicht realistisch (Timeout-Risiko). */
+function flowBusyHTML(){
+  return '<div class="flow-run" aria-live="polite">'+
+    '<div class="flow-step active"><span class="fs-ic"><span class="fs-spin"></span></span>'+
+      '<span>'+t('flowBusy')+'</span></div>'+
+  '</div>'+
+  '<div class="note">'+t('flowAsyncNote')+'</div>';
+}
+function flowResultTxt(){
+  return t('flowResult')
+    .replace('{V}', esc(vorlName(VORLAGEN[state.vorlage])))
+    .replace('{E}', EMPFAENGER);
+}
+function flowDoneHTML(){
+  return '<div class="flow-run" aria-live="polite">'+
+    '<div class="flow-step done"><span class="fs-ic"><span class="fs-check">'+IC.check+'</span></span>'+
+      '<span>'+flowResultTxt()+'</span></div>'+
+  '</div>'+
+  '<div class="note">'+t('flowAsyncNote')+'</div>';
+}
+function sendReport(){
+  if(flowRunning || !state.online) return;
+  /* 3.10 – vor dem finalen Export auf offene Punkte hinweisen und bestätigen lassen */
+  if(offeneEntwuerfe()>0 || offeneTodos()>0){
+    state.expWarn = true; save(); render();
+    /* C4 – die Warnung steht unterhalb des Buttons: in den sichtbaren Bereich holen */
+    var w = document.querySelector('.exp-warn');
+    if(w) w.scrollIntoView({behavior:'smooth', block:'center'});
+    return;
+  }
+  doSendReport();
+}
+function doSendReport(){
+  if(flowRunning || !state.online) return;
+  flowRunning = true;
+  state.reportSent = false;
+  render();
+  setTimeout(function(){
+    flowRunning = false;
+    state.reportSent = true;
+    save();
+    toast(isEN() ? 'Report sent to '+EMPFAENGER+' ✓' : 'Bericht an '+EMPFAENGER+' gesendet ✓');
+    render();
+    if(state.view==='export'){
+      var c = el('confirmArea');
+      if(c) c.scrollIntoView({behavior:'smooth', block:'start'});
+    }
+  }, 2400);
+}
+function pdfHTML(){
+  var p = proj();
+  var word = state.format==='word';
+  /* 3.5 – Foto, Nummer, Kategorie, Standort, Beschreibung
+     3.5.1 – Videos erscheinen als Link, die Datei bleibt im Medienordner */
+  var ordnerMedien = p.ordner+'/Begehung_'+HEUTE_ISO+'/Medien/';
+  var rows = '';
+  savedObs().forEach(function(o){
+    var foto = null, vids = [], nFoto = 0;
+    o.medien.forEach(function(m){
+      if(m.typ==='video'){ vids.push(m); } else { nFoto++; if(!foto) foto = m; }
+    });
+    /* 3.5 – kleine Vorschau im Dokument, Originale bleiben verlinkt im Medienordner */
+    var img = foto
+      ? '<img src="'+foto.src+'" alt="">'+
+        '<div class="pdf-medlink">&#128279; '+esc(ordnerMedien)+
+          (nFoto>1 ? ' ('+nFoto+')' : '')+'</div>'
+      : '–';
+    var vidTxt = vids.length
+      ? '<div style="margin-top:4px">'+vids.map(function(m){
+          return '<span style="color:#0F6CBD">&#128279; '+esc(m.name)+'</span>';
+        }).join('<br>')+'</div>'
+      : '';
+    var todoTxt = o.todo
+      ? '<div style="margin-top:4px"><b>To Do'+(o.todoDone?' (erledigt)':' (offen)')+':</b> '+esc(o.todoText||'–')+'</div>'
+      : '';
+    var refTxt = (o.refs && o.refs.length)
+      ? '<div style="margin-top:4px;color:#555">Referenz: '+esc(o.refs.join(', '))+'</div>'
+      : '';
+    var gpsTx = (state.settings.gpsConsent && o.gps)
+      ? '<div style="color:#555;font-size:9.5px">GPS '+o.gps.lat.toFixed(4)+'° N, '+o.gps.lon.toFixed(4)+'° E</div>'
+      : '';
+    rows += '<tr><td>'+String(o.nr).padStart(3,'0')+'</td><td>'+img+'</td><td>'+(o.kat>=0?esc(KATS[o.kat].name):'–')+'</td>'+
+      '<td>'+esc(o.standort||'–')+gpsTx+'</td><td>'+esc(o.beschreibung||'–')+vidTxt+todoTxt+refTxt+'</td></tr>';
+  });
+  var vrows = '';
+  state.vg.forEach(function(v){
+    vrows += '<tr><td>'+esc(v.uid)+'</td><td>'+esc(v.name)+'</td><td>'+v.s+' – '+v.e+'</td>'+
+      '<td style="text-align:right">'+v.prog+' %</td><td>'+(v.fertig?'geprüft ✓':'offen')+'</td></tr>';
+  });
+  var nB = savedObs().length, nVdone = state.vg.filter(function(v){return v.fertig;}).length;
+  var nTodo = state.obs.filter(function(o){ return o.saved && o.todo && !o.todoDone; }).length;
+  var ordner = p.ordner+'/Begehung_'+HEUTE_ISO+'/';
+  return '<div class="pdf-wrap"><div class="pdf-cap">'+IC.checkS+' '+(word ? t('wordCap') : t('pdfCap'))+'</div>'+
+  '<div class="pdf-page">'+
+    '<div class="pdf-head" style="border-bottom-color:'+state.settings.akzent+'">'+
+      '<div><div class="pdf-logo"><span class="pdf-logo-sq" style="background:'+state.settings.akzent+'"></span>'+esc(logoText())+'</div>'+
+      '<div style="font-size:9.5px;color:#777;margin-top:3px">Qualitätssicherung Bauüberwachung</div></div>'+
+      '<div class="pdf-meta"><b>QS-Bericht – Begehung vom '+HEUTE+'</b><br>Projekt: '+esc(p.name)+' ('+p.id+')<br>'+
+      'Auftraggeber: '+esc(p.kunde)+' · Auftragnehmer: '+esc(p.an)+'<br>'+
+      /* Bericht bleibt in der Vorlagensprache Deutsch – daher bewusst .de */
+      'Vorlage: '+esc(VORLAGEN[state.vorlage].de)+' · Verfasser: H. Harithas<br>Erstellt: '+HEUTE+', '+nowHM()+' Uhr · Format: '+(word?'DOCX':'PDF')+'</div>'+
+    '</div>'+
+    '<h3>1. Zusammenfassung</h3>'+
+    '<p>'+nB+' Beobachtungen erfasst, '+nVdone+' von '+state.vg.length+' Terminplan-Vorgängen geprüft, '+mediaCount()+' Medien dokumentiert'+
+    (nTodo>0 ? ', '+nTodo+' offene Aufgabe'+(nTodo===1?'':'n')+' zur Nachverfolgung' : '')+'. '+
+    'Fotos sind als verkleinerte Vorschau eingebettet; alle Originale, Videos und Rohdaten liegen in SharePoint unter <i>'+esc(ordner)+'</i>.</p>'+
+    '<h3>2. Beobachtungen</h3>'+
+    '<div style="overflow-x:auto"><table class="pdf-t"><tr><th>Nr.</th><th>Foto</th><th>Kategorie</th><th>Standort</th><th>Beschreibung</th></tr>'+rows+'</table></div>'+
+    '<h3>3. Terminplan-Check</h3>'+
+    '<div style="overflow-x:auto"><table class="pdf-t"><tr><th>UID</th><th>Vorgang</th><th>Soll</th><th>Ist</th><th>Status</th></tr>'+vrows+'</table></div>'+
+    '<div class="pdf-sign"><div>Ort, Datum</div><div>Bauüberwachung / QS (Nordstern)</div></div>'+
+    '<div class="pdf-foot">'+
+      '<span>Automatisch erstellt mit Power Automate'+(word ? ' (Word Online (Business) – Premium-Connector)' : ' (OneDrive for Business → Datei konvertieren, ohne Premium)')+'</span>'+
+      '<span class="mono">'+esc(NAMING[state.settings.naming])+'</span>'+
+      '<span>Seite 1 von 1</span>'+
+    '</div>'+
+  '</div></div>';
+}
+
+/* Exponat außerhalb des Geräts: das erzeugte Dokument. In der Canvas-App selbst
+   ist es nie sichtbar – dort gibt es nur die Bestätigung und Launch(). */
+function exhibitHTML(){
+  if(!state.reportSent || flowRunning) return '';
+  return '<div class="exhibit">'+
+    '<div class="exhibit-h"><b>'+t('exhibitCap')+'</b><span class="exhibit-tag">'+t('exhibitTag')+'</span></div>'+
+    '<div class="exhibit-sub">'+t('exhibitSub')+'</div>'+
+    pdfHTML()+
+  '</div>';
+}
+
+/* ---------- Navigation / Begehung-Lifecycle ---------- */
+function gotoView(v){
+  state.view = v; state.ddOpen='';
+  render(); save();
+  el('appBody').scrollTop = 0;
+}
+/* Zurück-Pfeil: aus der Vorgang-Detailansicht zurück in die Liste */
+function goBack(){ gotoView(state.view==='vgdetail' ? 'terminplan' : 'home'); }
+function startBegehung(){
+  /* Reale App: Begehung wird online-first angelegt (Plan §3.2) */
+  if(!state.online){
+    toast(isEN() ? 'New site walk requires a connection.' : 'Neue Begehung nur mit Verbindung möglich.');
+    return;
+  }
+  /* Schritt 1: Checkliste VOR der Begehung zusammenstellen (Spec Screen 2) */
+  state.vgSel = VGM().map(function(){ return true; });
+  state.impOpen = false;
+  gotoView('vgauswahl');
+}
+function toggleVgSel(i){
+  if(!state.vgSel) state.vgSel = VGM().map(function(){ return true; });
+  state.vgSel[i] = !state.vgSel[i];
+  render(); save();
+}
+function applyVgAuswahl(){
+  var sel = state.vgSel || VGM().map(function(){ return true; });
+  var nSel = sel.filter(Boolean).length;
+  if(nSel===0) return;
+  var nSaved = savedObs().length;
+  if(nSaved>0){
+    state.archiv.unshift({datum:HEUTE, beob:nSaved, vorg:state.vg.filter(function(v){return v.fertig;}).length, sent:state.reportSent});
+  }
+  state.obs = [blankObs(1)];
+  state.obsIndex = 0;
+  state.reportSent = false; state.expWarn = false;
+  state.vg = VGM().filter(function(m,i){ return sel[i]; }).map(vgFromMaster);
+  state.vgIdx = 0; impResult = false;
+  save();
+  gotoView('beobachtung');
+  toast(isEN() ? 'New site walk started · '+nVorgTxt(nSel)+' added' : 'Neue Begehung gestartet · '+nVorgTxt(nSel)+' übernommen');
+}
+/* 2.2 – Checkliste per Import aus Excel / MS Project aufbauen (Power Automate).
+   M3 – ein Aufruf, ein unbestimmter Zustand: kein Schritt-für-Schritt-Fortschritt. */
+function impBusyHTML(){
+  return '<div class="flow-run" aria-live="polite">'+
+    '<div class="flow-step active"><span class="fs-ic"><span class="fs-spin"></span></span>'+
+      '<span>'+t('impBusy')+'</span></div>'+
+  '</div>'+
+  '<div class="note">'+t('flowAsyncNote')+'</div>';
+}
+var impRunning = false, impResult = false;
+function toggleImport(){ state.impOpen = !state.impOpen; impResult = false; save(); render(); }
+function impResultHTML(){
+  if(!impResult) return '';
+  return '<div class="flow-run" style="margin:0 0 12px">'+
+    '<div class="flow-step done"><span class="fs-ic"><span class="fs-check">'+IC.check+'</span></span>'+
+      '<span>'+nVorgTxt(VGM().length)+' · '+t('impS3')+'</span></div>'+
+  '</div>';
+}
+function startImport(){
+  if(impRunning) return;
+  impRunning = true; impResult = false;
+  render();
+  setTimeout(function(){
+    impRunning = false; impResult = true;
+    state.vgSel = VGM().map(function(){ return true; });
+    state.impOpen = false;
+    save(); render();
+    toast(isEN() ? VGM().length+' activities imported' : VGM().length+' Vorgänge importiert');
+  }, 1800);
+}
+function importPanelHTML(){
+  if(!state.impOpen) return '';
+  var rows = '';
+  VGM().forEach(function(m){
+    rows += '<tr><td class="mono">'+esc(m.uid)+'</td><td>'+esc(m.name)+'</td><td>'+m.s+'</td><td>'+m.e+'</td><td>'+ortTxt(m.ort)+'</td></tr>';
+  });
+  return '<div class="card" style="padding:12px 14px;margin-bottom:12px">'+
+    '<div class="lbl" style="margin-top:0">'+t('impTitle')+tier('mvp')+'</div>'+
+    '<div class="imp-file">'+IC.excel+' <span style="flex:1">'+t('impFile')+'</span></div>'+
+    '<div class="lbl">'+t('impMapping')+'</div>'+
+    '<div style="overflow-x:auto"><table class="imp-t"><tr>'+
+      '<th>UID</th><th>'+t('colVorgang')+'</th><th>'+t('sollStart')+'</th><th>'+t('sollEnde')+'</th><th>'+t('bereich')+'</th>'+
+    '</tr>'+rows+'</table></div>'+
+    '<div class="note">'+t('impHint')+'</div>'+
+    '<div id="impArea">'+(impRunning ? impBusyHTML() : '')+'</div>'+
+    '<div style="display:flex;gap:9px;margin-top:12px">'+
+      '<button class="btn btn-green" style="flex:1;min-height:44px;font-size:13.5px" '+(impRunning?'disabled':'')+' onclick="startImport()">'+
+        IC.check+' '+t('impStart')+'</button>'+
+      '<button class="btn btn-ghost" style="min-height:44px;font-size:13.5px" onclick="toggleImport()">'+t('impClose')+'</button>'+
+    '</div>'+
+  '</div>';
+}
+function renderVgAuswahl(){
+  var MST = VGM();
+  if(!state.vgSel || state.vgSel.length!==MST.length) state.vgSel = MST.map(function(){ return true; });
+  var nSel = state.vgSel.filter(Boolean).length;
+  var html = '<div class="scr">'+
+    '<div class="card" style="padding:12px 14px;font-size:12.5px;color:var(--ink2);line-height:1.5;margin-bottom:12px">'+t('selIntro')+tier('mvp')+'</div>'+
+    feat('mvp',
+      impResultHTML()+
+      (state.impOpen ? '' :
+      '<button class="btn btn-ghost" style="width:100%;min-height:48px;font-size:13.5px;margin-bottom:12px" onclick="toggleImport()">'+
+        IC.excel+' '+t('impBtn')+tier('mvp')+'</button>')+
+      importPanelHTML());
+  MST.forEach(function(m, i){
+    var on = state.vgSel[i];
+    html += '<button class="card" role="checkbox" aria-checked="'+on+'" onclick="toggleVgSel('+i+')"'+
+      ' style="display:flex;gap:12px;align-items:flex-start;width:100%;text-align:left;cursor:pointer;'+
+      'appearance:none;font:inherit;padding:12px 14px'+(on?'':';opacity:.55')+'">'+
+      '<span aria-hidden="true" style="flex:none;width:22px;height:22px;border-radius:4px;margin-top:2px;'+
+        'display:inline-flex;align-items:center;justify-content:center;'+
+        (on ? 'background:var(--pa-purple);color:#fff;border:2px solid var(--pa-purple)'
+            : 'background:#fff;border:2px solid #8a8886')+'">'+(on?IC.checkS:'')+'</span>'+
+      /* position:relative ist Pflicht: .vg-lock ist absolut positioniert und würde sich
+         sonst am nächsten positionierten Vorfahren (dem Geräterahmen) ausrichten. */
+      '<span style="flex:1;min-width:0;position:relative;display:block">'+
+        '<span class="vg-lock">'+IC.lock+' '+t('planChip')+'</span>'+
+        '<div class="vg-name">'+esc(m.name)+'</div>'+
+        '<div class="vg-uid">UID: '+esc(m.uid)+'</div>'+
+        '<div class="vg-meta"><span><b>'+t('sollStart')+':</b> '+m.s+'</span><span><b>'+t('sollEnde')+':</b> '+m.e+'</span>'+
+        '<span><b>'+t('bereich')+':</b> '+ortTxt(m.ort)+'</span></div>'+
+      '</span></button>';
+  });
+  html += '<div class="action-bar">'+
+    '<button class="btn btn-green" '+((nSel===0 || !state.online)?'disabled':'')+' onclick="applyVgAuswahl()">'+
+      IC.check+' '+t('apply')+' ('+nVorgTxt(nSel)+')</button>'+
+    '<button class="btn btn-ghost" onclick="gotoView(\'home\')">'+t('cancel')+'</button>'+
+  '</div></div>';
+  return html;
+}
+
+/* ---------- Offline / Sync ---------- */
+var syncT = null;
+function setOnline(on){
+  state.online = on;
+  if(on && state.queue>0){
+    state.syncing = true;
+    render(); save();
+    clearTimeout(syncT);
+    syncT = setTimeout(function(){
+      if(!state.online){ state.syncing=false; render(); save(); return; }
+      var n = state.queue;
+      state.queue = 0; state.syncing = false;
+      state.obs.forEach(function(o){ delete o._dirty; });
+      state.vg.forEach(function(v){ delete v._dirty; });
+      render(); save();
+      toast(nEintraege(n)+(isEN() ? ' synced ✓' : ' synchronisiert ✓'));
+    }, 1700);
+  } else {
+    if(!on){ clearTimeout(syncT); state.syncing = false; }
+    render(); save();
+    if(!on) toast(t('offlineToast'));
+  }
+}
+
+/* ---------- Geräteumschaltung / Fit ---------- */
+function setDevice(d){
+  state.device = d;
+  document.body.setAttribute('data-dev', d);
+  el('segPhone').classList.toggle('active', d==='phone');
+  el('segTablet').classList.toggle('active', d==='tablet');
+  save(); render();
+  requestAnimationFrame(fitStage);
+}
+function fitStage(){
+  if(window.matchMedia('(max-width:560px)').matches){
+    el('stage').style.transform=''; el('stageWrap').style.height=''; el('stageWrap').style.width='';
+    return;
+  }
+  var stage = el('stage'), wrap = el('stageWrap');
+  stage.style.transform='';
+  wrap.style.height=''; wrap.style.width='';
+  var r = stage.getBoundingClientRect();
+  var availW = window.innerWidth - 40;
+  var availH = window.innerHeight - 260;
+  if(availH < 420) availH = 420;
+  var s = Math.min(1, availW/r.width, availH/r.height);
+  stage.style.transform = 'scale('+s+')';
+  wrap.style.height = (r.height*s)+'px';
+  wrap.style.width = (r.width*s)+'px';
+}
+window.addEventListener('resize', fitStage);
+
+/* ---------- Reset ---------- */
+function resetDemo(){
+  clearTimeout(persistT); clearTimeout(syncT);
+  try{ localStorage.removeItem(LS_KEY); }catch(e){}
+  location.reload();
+}
+
+/* ---------- Haupt-Render ---------- */
+function render(){
+  renderChrome();
+  var body = el('appBody');
+  if(state.view==='home')             body.innerHTML = renderHome();
+  else if(state.view==='vgauswahl')   body.innerHTML = renderVgAuswahl();
+  else if(state.view==='beobachtung') body.innerHTML = renderBeobachtung();
+  else if(state.view==='terminplan')  body.innerHTML = renderTerminplan();
+  else if(state.view==='vgdetail')    body.innerHTML = renderVgDetail();
+  else if(state.view==='export')      body.innerHTML = renderExport();
+  else if(state.view==='plan')        body.innerHTML = renderPlan();
+  else if(state.view==='todo')        body.innerHTML = renderTodo();
+  else if(state.view==='wissen')      body.innerHTML = renderWissen();
+  else if(state.view==='einstellungen') body.innerHTML = renderEinstellungen();
+  else                                body.innerHTML = renderHome();
+  /* Das Berichtsexponat liegt außerhalb des Geräterahmens (siehe exhibitHTML) */
+  var ex = el('exhibitWrap');
+  if(ex) ex.innerHTML = exhibitHTML();
+}
+
+/* ---------- Tastatur ----------
+   Kein Wischen zwischen Beobachtungen: Canvas-Apps kennen keine Wischgeste.
+   Die Pfeiltasten bleiben als reine Prototyp-Hilfe erhalten. */
+document.addEventListener('keydown', function(e){
+  if(!state || state.view!=='beobachtung') return;
+  var t = e.target.tagName;
+  if(t==='INPUT' || t==='TEXTAREA' || t==='SELECT') return;
+  if(e.key==='ArrowLeft') navObs(-1);
+  if(e.key==='ArrowRight') navObs(1);
+});
+
+/* ---------- Boot ---------- */
+(function(){
+  state = load();
+  el('sbTime').textContent = nowHM();
+  document.body.setAttribute('data-dev', state.device||'phone');
+  document.body.setAttribute('data-mvp', state.showMvpOnly ? '1' : '0');
+  el('segPhone').classList.toggle('active', state.device!=='tablet');
+  el('segTablet').classList.toggle('active', state.device==='tablet');
+  el('swOffline').checked = !state.online;
+  el('swMvp').checked = !!state.showMvpOnly;
+  applyCI();
+  render();
+  requestAnimationFrame(fitStage);
+  setTimeout(fitStage, 60);
+})();
+</script>
+
+<a class="pf-demo-badge" href="https://harispaartan.github.io/#work" title="Back to the portfolio">Portfolio demo · fictional company &amp; data · harispaartan.github.io</a>
+<style>.pf-demo-badge{position:fixed;right:12px;bottom:12px;z-index:2147483647;font:500 12px/1.3 system-ui,-apple-system,"Segoe UI",sans-serif;color:#E6EDF3;background:rgba(11,15,20,.92);border:1px solid #2a3340;border-radius:999px;padding:7px 12px;text-decoration:none;box-shadow:0 6px 20px rgba(0,0,0,.35);opacity:.92}.pf-demo-badge:hover{opacity:1;color:#F2A93B}@media print{.pf-demo-badge{display:none}}</style>
+</body>
+</html>

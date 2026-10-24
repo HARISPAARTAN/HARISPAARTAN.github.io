@@ -1,0 +1,1137 @@
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<style>body{margin:0}img{max-width:100%}[hidden]{display:none!important}</style>
+<title>PROJ05 Anonymizer Demo</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<style>
+/* corporate design v1.0 (one visual world, light): sand ground, slate-teal rail, electric yellow-green marks, mono for labels */
+:root{
+  --teal:#003C50; --teal2:#0B5670; --teal3:#06465C;
+  --lime:#E6FF80; --sand:#E6E2DC; --sandstone:#DED0BE; --sky:#D0E6EA; --off:#F6F6F6;
+  --urban:#9CA09C; --ink:#262C30; --muted:#545B60; --line:#DAD6CF; --white:#FFFFFF;
+  --okbg:#E2F0E4; --okfg:#1D5530; --badbg:#FBE3DF; --badfg:#8E1B12;
+  --client:#1C5D8C;
+  --sans:"Geist","Aptos","Segoe UI",system-ui,sans-serif;
+  --mono:"Sometype Mono","Cascadia Mono",Consolas,monospace;
+  color-scheme:light;
+}
+html{background:var(--sand)}
+body{background:var(--sand);color:var(--ink);font-family:var(--sans);font-size:14px;line-height:1.4}
+button{font-family:inherit}
+:focus-visible{outline:2px solid var(--teal);outline-offset:2px}
+
+.stage{max-width:1360px;margin:0 auto;padding-block:20px 40px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));display:flex;flex-direction:column;gap:12px}
+.top{display:flex;flex-wrap:wrap;gap:8px 20px;align-items:center;justify-content:space-between}
+.wordmark{font-family:var(--mono);font-weight:700;letter-spacing:.14em;color:rgba(38,44,48,.8);font-size:15px}
+.meta{font-family:var(--mono);font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);display:flex;gap:8px 16px;align-items:center;flex-wrap:wrap}
+.ghost{font:500 11px var(--mono);letter-spacing:.1em;text-transform:uppercase;background:var(--white);border:1px solid var(--urban);border-radius:3px;padding:7px 10px;color:var(--ink);cursor:pointer;min-height:32px}
+.ghost:hover{background:var(--off)}
+.note{margin:0;color:var(--muted);font-size:13px;max-width:90ch;line-height:1.5}
+
+/* window */
+.win{background:var(--white);border-radius:8px;box-shadow:0 1px 0 rgba(0,0,0,.04),0 22px 44px -22px rgba(0,40,55,.45);overflow:hidden;border:1px solid #CFCAC2;position:relative}
+.titlebar{height:34px;display:flex;align-items:center;gap:10px;padding-left:12px;background:var(--off);border-bottom:1px solid var(--line);font-size:12px;color:var(--ink)}
+.ico{width:18px;height:18px;background:var(--teal);color:var(--white);font:700 7px/18px var(--mono);text-align:center;border-radius:2px}
+.wc{margin-left:auto;display:flex}
+.wc span{width:44px;height:34px;display:grid;place-items:center;color:var(--muted);font-size:12px}
+.app{display:grid;grid-template-columns:236px minmax(0,1fr);height:780px}
+
+/* rail */
+.rail{background:var(--teal);color:var(--white);display:flex;flex-direction:column;padding:22px 16px 16px;gap:22px;min-width:0}
+.brand{display:flex;align-items:center;gap:12px}
+.sq{width:40px;height:40px;background:var(--lime);color:var(--teal);font:700 13px/40px var(--mono);text-align:center;letter-spacing:.04em;border-radius:2px;flex:none}
+.appname{font-weight:600;font-size:16px;display:block}
+.ver{font:11px var(--mono);color:rgba(255,255,255,.7);letter-spacing:.08em}
+.railtitle{font:500 11px var(--mono);letter-spacing:.12em;color:rgba(255,255,255,.72);margin:0 8px}
+.steps{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:4px}
+.step{display:flex;align-items:center;gap:12px;padding:8px;border-radius:4px;color:rgba(255,255,255,.75);background:none;border:0;font:inherit;font-size:14px;width:100%;text-align:left;cursor:default}
+.step.can{cursor:pointer}
+.step.can:hover{background:var(--teal3)}
+.dot{width:26px;height:26px;border-radius:50%;border:1.5px solid rgba(255,255,255,.45);display:grid;place-items:center;font:600 12px var(--mono);flex:none}
+.step.cur{color:var(--white);font-weight:600;background:var(--teal2)}
+.step.cur .dot{background:var(--lime);border-color:var(--lime);color:var(--teal)}
+.step.done .dot{border-color:var(--lime);color:var(--lime)}
+.spacer{flex:1}
+.lang{display:flex;flex-direction:column;gap:8px;margin:0 8px}
+.lang .lbl{font:500 11px var(--mono);letter-spacing:.12em;text-transform:uppercase;color:rgba(255,255,255,.72)}
+.lang .btns{display:flex;gap:6px}
+.lang button{font:500 12px var(--mono);letter-spacing:.06em;padding:6px 10px;border-radius:3px;border:1px solid rgba(255,255,255,.45);background:none;color:var(--white);cursor:pointer;min-height:32px}
+.lang button[aria-pressed="true"]{background:var(--lime);color:var(--teal);border-color:var(--lime)}
+.railfoot{font-size:12px;color:rgba(255,255,255,.72);line-height:1.45;margin:0 8px}
+
+/* main */
+.main{display:flex;flex-direction:column;min-width:0;min-height:0;background:var(--white)}
+.body{flex:1;overflow:auto;padding:24px 32px;display:flex;flex-direction:column;gap:18px;min-height:0}
+.head{display:flex;flex-direction:column;gap:6px}
+.row3{flex-direction:row;justify-content:space-between;align-items:flex-end;flex-wrap:wrap;gap:8px 16px}
+.eyebrow{font:500 11px var(--mono);letter-spacing:.12em;text-transform:uppercase;color:var(--muted)}
+h1{margin:0;font-size:26px;font-weight:600;color:var(--teal);text-wrap:balance;letter-spacing:-.01em;line-height:1.2}
+h2{margin:0;font-size:18px;font-weight:600;color:var(--teal);text-wrap:balance}
+.sub{margin:0;color:var(--muted);max-width:72ch;line-height:1.5}
+.tip{display:flex;gap:12px;align-items:flex-start;background:var(--lime);color:var(--teal);border-radius:4px;padding:9px 12px;font-size:13px;line-height:1.45}
+.tip b{font:700 11px/1.75 var(--mono);letter-spacing:.12em;white-space:nowrap}
+.foot{border-top:1px solid var(--line);padding:12px 32px;display:flex;gap:10px;align-items:center;flex-wrap:wrap;background:var(--white)}
+.grow{flex:1;min-width:0;color:var(--muted);font-size:13px}
+.info{font-size:13px;color:var(--muted);margin:0;line-height:1.45}
+.okline{font:500 12px var(--mono);letter-spacing:.04em;color:var(--okfg);background:var(--okbg);padding:5px 9px;border-radius:3px}
+
+.btn{font:500 14px var(--sans);border:1px solid #B9B5AE;background:var(--white);color:var(--ink);border-radius:4px;padding:8px 16px;cursor:pointer;display:inline-flex;gap:8px;align-items:center;min-height:40px;text-align:left}
+.btn:hover{background:var(--off)}
+.btn svg{width:18px;height:18px;flex:none}
+.btn.pri{background:var(--teal);border-color:var(--teal);color:var(--white);font-weight:600}
+.btn.pri:hover{background:var(--teal2)}
+.btn.lime{background:var(--lime);border-color:#C9E35A;color:var(--teal);font-weight:600}
+.btn:disabled{opacity:.45;cursor:not-allowed}
+.btn.sm{min-height:34px;padding:5px 12px;font-size:13px}
+.tog[aria-pressed="true"]{background:var(--teal);color:var(--white);border-color:var(--teal)}
+.lnk{background:none;border:0;color:var(--teal);text-decoration:underline;text-underline-offset:2px;font:inherit;font-weight:500;cursor:pointer;padding:2px 0;text-align:left}
+
+/* step 1 */
+.detect{display:flex;gap:14px;align-items:center;flex-wrap:wrap;border:1px dashed var(--urban);border-radius:6px;padding:12px 14px;background:var(--off)}
+.clients{display:grid;gap:6px}
+.clh{display:flex;align-items:center;gap:14px}
+.clh label{font-size:13px;font-weight:500;margin-right:auto}
+.clist{border:1px solid #B9B5AE;border-radius:4px;background:var(--white);display:grid;max-height:112px;overflow:auto}
+.crow{all:unset;box-sizing:border-box;cursor:pointer;padding:7px 10px;font-size:13px;display:flex;gap:10px;align-items:baseline;border-bottom:1px solid #EEEBE6;min-height:34px}
+.crow:last-child{border-bottom:0}
+.crow:hover{background:var(--off)}
+.crow.sel{background:var(--sky);box-shadow:inset 3px 0 0 var(--teal)}
+.crow .cn{font-weight:500}
+.crow .cf{margin-left:auto;font:400 11px var(--mono);color:var(--muted);white-space:nowrap}
+.crow:focus-visible{outline:2px solid var(--teal);outline-offset:-2px}
+.kept{font:400 12px var(--sans);color:var(--muted);margin-top:4px}
+.suggest{font-size:13px;display:flex;flex-direction:column;gap:3px;min-width:0;flex:1 1 260px}
+.grid1{display:grid;grid-template-columns:minmax(0,1.25fr) minmax(0,1fr);gap:20px}
+.fields{display:grid;gap:12px;min-width:0}
+.field{display:grid;gap:5px}
+.field label{font-size:13px;font-weight:500}
+.req{color:var(--badfg)}
+input[type="text"],textarea{font:inherit;border:1px solid #B9B5AE;border-radius:4px;padding:8px 10px;background:var(--white);color:var(--ink);width:100%;box-sizing:border-box;min-height:38px}
+textarea{min-height:60px;resize:vertical}
+input[type="text"]:focus,textarea:focus{border-color:var(--teal);outline:none;box-shadow:0 0 0 3px rgba(0,60,80,.16)}
+input.filled{background:#F9FFDE;border-color:#B7CC5A}
+.panel{background:var(--off);border:1px solid var(--line);border-radius:6px;padding:14px 16px;display:flex;flex-direction:column;gap:10px;min-width:0;align-self:start}
+.panel h3,.grp h3{margin:0;font:500 11px var(--mono);letter-spacing:.12em;text-transform:uppercase;color:var(--muted)}
+.chips{display:flex;flex-wrap:wrap;gap:6px}
+.chip{font:12px var(--mono);background:var(--white);border:1px solid var(--line);border-radius:3px;padding:3px 7px;color:var(--ink);word-break:break-all}
+.chip.more{background:var(--sky);border-color:var(--sky);color:var(--teal)}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.grp{border:1px solid var(--line);border-radius:6px;padding:14px 16px;display:flex;flex-direction:column;gap:10px;min-width:0}
+.checks{display:grid;gap:8px}
+.check{display:flex;gap:10px;align-items:flex-start;line-height:1.4;cursor:pointer;font-size:14px}
+.check input{margin:2px 0 0;accent-color:var(--teal);width:16px;height:16px;flex:none}
+
+/* step 2 */
+.drop{border:2px dashed var(--urban);border-radius:8px;background:var(--off);padding:22px;display:flex;flex-direction:column;align-items:center;gap:12px;text-align:center}
+.dropt{display:flex;gap:10px;align-items:center;font-weight:500;color:var(--teal)}
+.dropt svg{width:26px;height:26px}
+.btnrow{display:flex;gap:8px;flex-wrap:wrap;justify-content:center}
+.tbl-wrap{overflow-x:auto;border:1px solid var(--line);border-radius:6px}
+table{border-collapse:collapse;width:100%;font-size:13px}
+.tbl-wrap th{font:500 11px var(--mono);letter-spacing:.1em;text-transform:uppercase;color:var(--muted);text-align:left;padding:9px 12px;background:var(--off);border-bottom:1px solid var(--line);white-space:nowrap}
+.tbl-wrap td{padding:9px 12px;border-bottom:1px solid #EEEBE6;vertical-align:top}
+.tbl-wrap tr:last-child td{border-bottom:0}
+.num{text-align:right;font-variant-numeric:tabular-nums}
+.fname{font-weight:500;overflow-wrap:anywhere}
+.out{font:12px var(--mono);color:var(--teal);overflow-wrap:anywhere}
+.type{font:500 11px var(--mono);letter-spacing:.04em;padding:2px 6px;border-radius:3px;background:var(--sky);color:var(--teal);white-space:nowrap}
+.x{background:none;border:0;cursor:pointer;color:var(--muted);font-size:20px;line-height:1;width:32px;height:32px;border-radius:4px}
+.x:hover{background:var(--off);color:var(--badfg)}
+.empty{margin:0;padding:18px;border:1px solid var(--line);border-radius:6px;color:var(--muted);text-align:center}
+
+/* step 3 */
+.s3body{overflow:hidden}
+.filebar{display:flex;gap:6px;flex-wrap:wrap}
+.ftab{font:12px var(--mono);border:1px solid var(--line);background:var(--white);color:var(--ink);border-radius:3px;padding:5px 8px;cursor:pointer;display:flex;gap:8px;align-items:center;max-width:100%;min-height:34px}
+.ftab .fn{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:230px}
+.ftab[aria-selected="true"]{background:var(--teal);color:var(--white);border-color:var(--teal)}
+.ftab[aria-selected="true"] .type{background:var(--teal3);color:var(--white)}
+.ftab .n{background:var(--lime);color:var(--teal);border-radius:9px;padding:0 7px;font-weight:700}
+.s3{display:grid;grid-template-columns:340px minmax(0,1fr);flex:1;min-height:0;border:1px solid var(--line);border-radius:6px;overflow:hidden}
+.side{display:flex;flex-direction:column;min-height:0;min-width:0;border-right:1px solid var(--line)}
+.tabs{display:flex;border-bottom:1px solid var(--line)}
+.tab{flex:1;background:none;border:0;border-bottom:2px solid transparent;padding:10px 8px;font:500 13px var(--sans);color:var(--muted);cursor:pointer;min-height:42px}
+.tab[aria-selected="true"]{color:var(--teal);border-bottom-color:var(--teal);font-weight:600}
+.flist{flex:1;overflow:auto;padding:4px 0 8px}
+.gh{display:flex;justify-content:space-between;padding:12px 14px 4px;font:500 11px var(--mono);letter-spacing:.1em;text-transform:uppercase;color:var(--muted)}
+.fi{display:grid;grid-template-columns:auto minmax(0,1fr);gap:1px 10px;padding:6px 14px;cursor:pointer;align-items:start}
+.fi:hover{background:var(--off)}
+.fi input{grid-row:span 2;margin:2px 0 0;accent-color:var(--teal);width:16px;height:16px}
+.fi .ft{font-weight:500;overflow-wrap:anywhere}
+.fw{font-size:12px;color:var(--muted)}
+.fi.off .ft{color:var(--muted);text-decoration:line-through}
+.pad{padding:10px 14px 4px}
+.tile{display:grid;grid-template-columns:auto 84px minmax(0,1fr);gap:10px;padding:10px 14px;align-items:center;cursor:pointer;border-bottom:1px solid #EEEBE6}
+.tile:hover{background:var(--off)}
+.tile input{accent-color:var(--teal);width:16px;height:16px;margin:0}
+.thumb{width:84px;height:56px;border:1px solid var(--line);border-radius:3px;background:var(--white);display:grid;place-items:center;overflow:hidden}
+.thumb svg{width:76px;height:48px}
+.tl{display:flex;flex-direction:column;gap:3px;min-width:0}
+.tl b{font-weight:600}
+.likely{align-self:flex-start;font:700 10px var(--mono);letter-spacing:.08em;text-transform:uppercase;background:var(--lime);color:var(--teal);padding:2px 6px;border-radius:3px}
+.addterm{border-top:1px solid var(--line);padding:10px 14px;display:flex;flex-direction:column;gap:6px;background:var(--off)}
+.addterm .row{display:flex;gap:6px}
+.addterm input{flex:1;min-width:0}
+.viewer{display:flex;flex-direction:column;min-height:0;min-width:0}
+.vbar{display:flex;gap:10px 14px;align-items:center;flex-wrap:wrap;padding:8px 12px;background:var(--off);border-bottom:1px solid var(--line);font-size:13px}
+.pg{display:flex;align-items:center;gap:6px;font:12px var(--mono)}
+.sqb{width:32px;height:32px;border:1px solid #B9B5AE;background:var(--white);border-radius:4px;cursor:pointer;font-size:16px;color:var(--ink)}
+.sqb:disabled{opacity:.4;cursor:default}
+.legend{display:flex;align-items:center;gap:6px;color:var(--muted);font-size:12px;margin-left:auto}
+.lg{display:inline-block;width:14px;height:10px;border-radius:2px}
+.lg.on{background:var(--lime);box-shadow:0 0 0 1.5px var(--teal)}
+.lg.off{box-shadow:0 0 0 1.5px var(--urban)}
+.varea{flex:1;overflow:auto;background:#D6D1C9;padding:22px;display:flex;justify-content:center;align-items:flex-start}
+.onote{background:var(--white);border-radius:6px;padding:24px;max-width:460px;display:flex;flex-direction:column;gap:12px;box-shadow:0 2px 10px rgba(0,0,0,.12)}
+.onote p{margin:0;line-height:1.55}
+.onote .doci{display:flex;gap:12px;align-items:center;font-weight:600;color:var(--teal)}
+.onote .doci svg{width:34px;height:34px}
+
+/* the sample PDF page (a made-up client document, so it keeps its own client colours) */
+.page{container-type:inline-size;width:min(100%,560px);aspect-ratio:1/1.414;background:#FFFFFF;box-shadow:0 2px 12px rgba(0,0,0,.2);position:relative;flex:none;overflow:hidden}
+.pin{position:absolute;inset:0;color:#1E2A33;font-family:Arial,Helvetica,sans-serif;font-size:2.1cqw;line-height:1.45;padding:5cqw 7cqw 4cqw;box-sizing:border-box;display:flex;flex-direction:column;gap:2.6cqw}
+.page.draw{cursor:crosshair;touch-action:none}
+.page p{margin:0 0 1.1cqw}
+.ph{display:flex;align-items:center;gap:3cqw;padding-bottom:1.4cqw;border-bottom:.35cqw solid var(--client);font-size:1.75cqw;color:var(--client)}
+.ph .iw svg{width:19cqw;height:auto;display:block}
+.phx{flex:1}
+.phr{white-space:nowrap}
+.ttl{display:flex;flex-direction:column;gap:1cqw;padding:2cqw 0 .5cqw}
+.ttl .k{font-size:1.9cqw;letter-spacing:.12em;text-transform:uppercase;color:#5D6B75}
+.ttl .big{font-size:4.4cqw;font-weight:700;line-height:1.15;color:#12212B}
+.cov{border:.25cqw solid #C9D3DA;font-size:1.85cqw}
+.cov .r{display:grid;grid-template-columns:36% 1fr;border-bottom:.2cqw solid #E1E7EB}
+.cov .r:last-child{border-bottom:0}
+.cov .r>span{padding:1cqw 1.6cqw}
+.cov .r>span:first-child{background:#EEF3F6;font-weight:700}
+.sec .h{font-weight:700;font-size:2.4cqw;margin-bottom:.8cqw;color:#12212B}
+.pf{margin-top:auto;font-size:1.6cqw;color:#7A8790;display:flex;justify-content:space-between;border-top:.2cqw solid #E1E7EB;padding-top:1cqw}
+.fig{display:block;width:64%;margin:0 auto}
+.fig svg{display:block;width:100%;height:auto}
+.cap{font-size:1.65cqw;color:#5D6B75;text-align:center;margin-top:-1.4cqw}
+.sigrow{display:flex;align-items:flex-end;gap:4cqw}
+.sig svg{width:22cqw;height:auto;display:block}
+.sigl{font-size:1.6cqw;color:#5D6B75;border-top:.2cqw solid #9AA6AE;padding-top:.5cqw;min-width:26cqw}
+.ht{width:100%;border-collapse:collapse;font-size:1.7cqw;margin-top:.6cqw}
+.ht th,.ht td{border:.2cqw solid #C9D3DA;padding:.6cqw 1.1cqw;text-align:left;font-weight:400}
+.ht th{background:#EEF3F6;font-weight:700}
+.iw{position:relative;display:inline-block}
+.ocr,.mbox{position:absolute}
+.ocr{left:17%;top:79%;width:66%;height:16%}
+
+.page [data-f]{border-radius:.4cqw;-webkit-box-decoration-break:clone;box-decoration-break:clone}
+.hl [data-f].mk,.hl .iw.mk{cursor:pointer}
+.hl [data-f].mk.on{background:rgba(230,255,128,.85);box-shadow:0 0 0 .4cqw var(--teal)}
+.hl [data-f].mk.no{box-shadow:0 0 0 .3cqw var(--urban);background:repeating-linear-gradient(135deg,transparent 0 .8cqw,rgba(156,160,156,.18) .8cqw 1.6cqw)}
+.hl .iw.mk::after{content:"";position:absolute;inset:0;border-radius:.4cqw}
+.hl .iw.mk.on::after{background:rgba(230,255,128,.55);box-shadow:0 0 0 .4cqw var(--teal)}
+.hl .iw.mk.no::after{box-shadow:0 0 0 .3cqw var(--urban)}
+.fin [data-f].mk.on{background:#000000;color:transparent;box-shadow:none;border-radius:0}
+.fin [data-f].mk.on *{visibility:hidden}
+.fin .iw.mk.on::after{content:"";position:absolute;inset:0;background:#000000}
+.page .flash{animation:flash .9s 2}
+@keyframes flash{50%{box-shadow:0 0 0 1.3cqw rgba(0,60,80,.45)}}
+
+/* step 4 */
+.sumrow{display:flex;gap:12px;flex-wrap:wrap}
+.stat{display:flex;align-items:baseline;gap:8px;padding:10px 16px;border-radius:6px;min-width:130px}
+.stat b{font:600 28px var(--sans);font-variant-numeric:tabular-nums}
+.stat span{font:500 11px var(--mono);letter-spacing:.1em;text-transform:uppercase}
+.stat.ok{background:var(--okbg);color:var(--okfg)}
+.stat.bad{background:var(--badbg);color:var(--badfg)}
+.stat.zero,.stat.neutral{background:var(--off);color:var(--muted)}
+.stat.neutral b{color:var(--teal)}
+.badge{font:700 11px var(--mono);letter-spacing:.08em;padding:4px 8px;border-radius:3px;white-space:nowrap;display:inline-block}
+.badge.ok{background:var(--okbg);color:var(--okfg)}
+.badge.bad{background:var(--badbg);color:var(--badfg)}
+.qc{display:flex;gap:4px;flex-wrap:wrap}
+.qc span{font:11px var(--mono);padding:2px 6px;border-radius:3px;background:var(--okbg);color:var(--okfg);white-space:nowrap}
+.qc span.f{background:var(--badbg);color:var(--badfg)}
+.problem{font:400 12px var(--sans);color:var(--badfg);margin-top:4px}
+.cards4{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px}
+.qcard{border:1px solid var(--line);border-radius:6px;padding:12px 14px;display:flex;flex-direction:column;gap:6px}
+.qcard b{font-weight:600;color:var(--teal)}
+.qcard p{margin:0;font-size:13px;color:var(--muted);line-height:1.45}
+
+/* dialogs, toast */
+.scrim{position:absolute;inset:34px 0 0 0;background:rgba(0,30,40,.45);display:grid;place-items:center;z-index:20;padding:16px}
+.dlg{background:var(--white);border-radius:8px;width:min(500px,100%);max-height:100%;overflow:auto;padding:20px 22px;display:flex;flex-direction:column;gap:14px;box-shadow:0 20px 50px rgba(0,0,0,.3);box-sizing:border-box}
+.dlg.wide{width:min(760px,100%)}
+.dlgfoot{display:flex;gap:8px;justify-content:flex-end;flex-wrap:wrap}
+.plabel{font:13px var(--mono);white-space:pre-wrap;overflow-wrap:anywhere;min-height:2.8em}
+.bar{height:8px;background:var(--sky);border-radius:4px;overflow:hidden}
+.bar i{display:block;height:100%;background:var(--teal);width:0;transition:width .25s}
+.rep-head{display:flex;justify-content:space-between;align-items:baseline;gap:10px;flex-wrap:wrap;border-bottom:2px solid var(--teal);padding-bottom:10px}
+.toast{position:absolute;left:50%;bottom:76px;transform:translateX(-50%);background:var(--teal);color:var(--white);padding:10px 14px;border-radius:4px;z-index:30;font-size:13px;width:max-content;max-width:min(520px,90%);box-shadow:0 8px 24px rgba(0,0,0,.25)}
+.sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+
+/* launch screen */
+.splash{position:absolute;inset:34px 0 0 0;background:var(--teal);color:var(--white);z-index:40;display:flex;flex-direction:column;justify-content:space-between;gap:24px;padding:34px 44px;overflow:hidden;transition:opacity .5s ease}
+.splash.gone{opacity:0;pointer-events:none}
+.splash::before{content:"";position:absolute;inset:0;background-image:linear-gradient(rgba(255,255,255,.055) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.055) 1px,transparent 1px);background-size:48px 48px;pointer-events:none}
+.splash>*{position:relative}
+.gridline{position:absolute;left:0;right:0;top:44%;width:100%;height:34%;pointer-events:none}
+.gridline path{fill:none;stroke:var(--lime);stroke-width:2;stroke-dasharray:1700;stroke-dashoffset:1700;animation:draw 2.6s ease-out forwards;vector-effect:non-scaling-stroke}
+.gridline circle{fill:var(--lime);opacity:0;animation:pop .3s ease-out forwards}
+@keyframes draw{to{stroke-dashoffset:0}}
+@keyframes pop{to{opacity:1}}
+.sp-top,.sp-row{display:flex;justify-content:space-between;align-items:center;gap:10px 20px;flex-wrap:wrap}
+.sp-top .wm{font:700 14px var(--mono);letter-spacing:.16em;color:rgba(255,255,255,.88)}
+.mono{font:500 12px var(--mono);letter-spacing:.12em;text-transform:uppercase}
+.dim{color:rgba(255,255,255,.65)}
+.sp-mid{display:flex;align-items:center;gap:26px;flex-wrap:wrap}
+.sq.big{width:96px;height:96px;font-size:28px;line-height:96px}
+.sp-name{font:600 64px/1 var(--sans);letter-spacing:-.02em;margin-bottom:12px}
+.sp-mid .mono{color:var(--lime)}
+.sp-bot{display:flex;flex-direction:column;gap:12px}
+.sp-bar{height:4px;background:var(--teal3);border-radius:2px;overflow:hidden}
+.sp-bar i{display:block;height:100%;width:0;background:var(--lime);transition:width .7s ease}
+.tag{font-size:15px;color:var(--lime)}
+.sp-skip{font:500 11px var(--mono);letter-spacing:.12em;text-transform:uppercase;background:none;border:1px solid rgba(255,255,255,.4);color:var(--white);border-radius:3px;padding:7px 10px;cursor:pointer;min-height:32px}
+.sp-skip:hover{background:var(--teal3)}
+
+@media (max-width:900px){
+  .app{grid-template-columns:1fr;height:auto}
+  .rail{flex-direction:row;flex-wrap:wrap;align-items:center;padding:12px 14px;gap:12px}
+  .railtitle,.railfoot,.spacer,.lang .lbl,.wc{display:none}
+  .steps{flex-direction:row;order:3;flex:1 1 100%;gap:4px}
+  .step{width:auto;padding:6px}
+  .step .lbl{display:none}
+  .step.cur .lbl{display:inline}
+  .lang{margin-left:auto;margin-right:0}
+  .grid1,.grid2,.s3{grid-template-columns:1fr}
+  .body{padding:18px 16px;overflow:visible}
+  .s3body{overflow:visible}
+  .foot{padding:12px 16px}
+  .side{border-right:0;border-bottom:1px solid var(--line);max-height:440px}
+  .varea{padding:12px;min-height:360px}
+  .cards4{grid-template-columns:1fr 1fr}
+  .scrim{position:fixed;inset:0}
+  .toast{position:fixed;bottom:24px}
+  .splash{padding:24px 20px}
+  .sp-name{font-size:44px}
+  .sq.big{width:72px;height:72px;line-height:72px;font-size:22px}
+  .legend{margin-left:0}
+}
+@media (max-width:480px){.cards4{grid-template-columns:1fr}}
+@media (prefers-reduced-motion:reduce){
+  *,*::before,*::after{animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important}
+}
+</style>
+<link rel="stylesheet" href="../_fonts/fonts.css">
+</head>
+<body>
+<div class="stage">
+  <header class="top">
+    <span class="wordmark">NORDSTERN PROJEKTMANAGEMENT</span>
+    <div class="meta">
+      <span>PROJ05 · Anonymizer v1.3</span>
+      <span data-t="demoTop"></span>
+      <button class="ghost" type="button" data-act="replay" data-t="replay"></button>
+    </div>
+  </header>
+  <p class="note" data-t="demoNote"></p>
+
+  <div class="win" id="win">
+    <div class="titlebar"><span class="ico">NS</span><span>Anonymizer</span><span class="wc" aria-hidden="true"><span>&#8212;</span><span>&#9744;</span><span>&#10005;</span></span></div>
+    <div class="app">
+      <nav class="rail" id="rail">
+        <div class="brand"><span class="sq">NS</span><span><span class="appname">Anonymizer</span><span class="ver">V1.3 · OFFLINE</span></span></div>
+        <div class="railtitle" data-t="appTag"></div>
+        <ol class="steps" id="steps"></ol>
+        <div class="spacer"></div>
+        <div class="lang">
+          <span class="lbl" data-t="lang"></span>
+          <div class="btns"><button type="button" data-act="lang" data-l="de">Deutsch</button><button type="button" data-act="lang" data-l="en">English</button></div>
+        </div>
+        <p class="railfoot" data-t="offline"></p>
+      </nav>
+      <main class="main" id="main"></main>
+    </div>
+
+    <div class="splash" id="splash">
+      <svg class="gridline" viewBox="0 0 1000 200" preserveAspectRatio="none" aria-hidden="true">
+        <path d="M0 150 H160 L200 70 H340 L380 130 H540 L580 40 H740 L780 110 H1000"/>
+      </svg>
+      <div class="sp-top"><span class="wm">NORDSTERN PROJEKTMANAGEMENT</span><span class="mono dim">PROJ05 · V1.3</span></div>
+      <div class="sp-mid">
+        <span class="sq big">NS</span>
+        <div><div class="sp-name">Anonymizer</div><div class="mono" data-t="spSub"></div></div>
+      </div>
+      <div class="sp-bot">
+        <div class="sp-bar"><i id="spbar"></i></div>
+        <div class="sp-row"><span class="mono" id="spstat"></span><button class="sp-skip" type="button" data-act="skip" data-t="spSkip"></button></div>
+        <div class="sp-row"><span class="tag">Shaping sustainable grids</span><span class="mono dim" data-t="spOff"></span></div>
+      </div>
+    </div>
+
+    <div class="scrim" id="scrim" hidden><div class="dlg" id="dlg" role="dialog" aria-modal="true"></div></div>
+    <div class="toast" id="toast" role="status" hidden></div>
+  </div>
+</div>
+
+<script>
+"use strict";
+const S = {
+  demoTop:["Interaktive Demo","Interactive demo"],
+  demoNote:["Klickbare Vorschau des Programms mit erfundenen Beispieldokumenten. Das echte Programm läuft offline auf dem PC; hier wird nichts hochgeladen oder verarbeitet.","Clickable preview of the program with made-up sample documents. The real program runs offline on the PC; nothing is uploaded or processed here."],
+  replay:["Startbildschirm zeigen","Show launch screen"],
+  appTag:["DOKUMENTE ANONYMISIEREN","ANONYMIZE DOCUMENTS"],
+  s0:["Kunde & Optionen","Client & options"], s1:["Dateien","Files"], s2:["Analyse & Vorschau","Scan & preview"], s3:["Ergebnis & Prüfung","Result & check"],
+  lang:["Sprache","Language"],
+  offline:["Arbeitet offline. Originaldateien werden nie verändert.","Works offline. Original files are never changed."],
+  spSub:["Dokumente sicher anonymisieren","Anonymize documents safely"],
+  sp1:["Programm wird gestartet …","Starting …"], sp2:["Texterkennung (OCR) wird geladen …","Loading text recognition (OCR) …"],
+  sp3:["Sprachmodell für Personennamen wird geladen …","Loading the language model for person names …"], sp4:["Bereit","Ready"],
+  spSkip:["Überspringen","Skip"], spOff:["Offline · keine Cloud · Originale bleiben unverändert","Offline · no cloud · originals stay unchanged"],
+  stepOf:["Schritt {i} von 4","Step {i} of 4"],
+  tip0:["Klicken Sie auf „Aus Dokumenten erkennen…“. Das Programm schlägt den Kundennamen aus den Beispieldokumenten vor.","Click “Detect from documents…”. The program suggests the client name from the sample documents."],
+  tip0b:["Jede Datei wurde einzeln gelesen: zwei Kunden gefunden. Klicken Sie einen Kunden in der Liste an, um ihn zu bearbeiten (z. B. NWN als Abkürzung). Der Lieferant „Kabelwerk Süd AG“ wird nur angeboten, nicht automatisch geschwärzt.","Each file was read on its own: two clients found. Click a client in the list to edit it (e.g. add NWN as an abbreviation). The supplier “Kabelwerk Süd AG” is only offered, not redacted automatically."],
+  tip1:["Die Dateien aus der Erkennung stehen schon in der Liste. Die Originale bleiben unverändert; zu jeder Datei entsteht eine Kopie mit _ANON.","The files from the detection are already listed. The originals stay unchanged; each file gets a copy ending in _ANON."],
+  tip2:["Gelb = wird geschwärzt. Ein Klick auf ein gelbes Kästchen behält nur diese eine Stelle; der Haken links schaltet alle Stellen eines Begriffs. Probieren Sie „Endergebnis zeigen“, die Unterschrift unter „Bilder & Grafiken“ und den Begriff „Lindenau“ unten links.","Yellow = will be redacted. Clicking a yellow box keeps just that one spot; the tick on the left switches every spot of a term. Try “Show as final”, the signature under “Images & graphics” and the term “Lindenau” bottom left."],
+  tip3:["Jede Ausgabedatei wurde nach dem Schwärzen neu geöffnet und erneut durchsucht. Stellen, die Sie in der Vorschau bewusst behalten haben, stehen im Bericht – so ist später klar, dass es eine Entscheidung war.","Every output was re-opened and searched again after redacting. Spots you kept on purpose in the preview are listed in the report, so it is clear later that it was a choice."],
+  tip3f:["Die Prüfung hat den Kundennamen noch gefunden. Die Datei wurde als _ANON_QC-FAILED gespeichert und darf so nicht weitergegeben werden. „Zurück zur Vorschau“, Haken setzen, erneut schwärzen.","The check still found the client name. The file was saved as _ANON_QC-FAILED and must not be shared. “Back to preview”, tick it, redact again."],
+  h1:["Wer ist der Kunde?","Who is the client?"],
+  sub1:["Geben Sie alle Bezeichnungen des Kunden ein. Alle Formen und Schreibweisen werden automatisch geschwärzt.","Enter every way the client is named. All forms and spellings are redacted automatically."],
+  detect:["Aus Dokumenten erkennen…","Detect from documents…"],
+  detectHint:["Liest die Dokumente offline und schlägt den Kundennamen vor. Sie können ihn ändern.","Reads the documents offline and suggests the client name. You can change it."],
+  found:["{k} Kunde(n) in {n} Dokument(en) gefunden – bitte prüfen und anpassen.","Found {k} client(s) in {n} document(s) – please check and edit."],
+  alsoAdd:["Außerdem erwähnt (Lieferanten?) – anklicken, um als Kunde hinzuzufügen:","Also mentioned (suppliers?) – click to add as client:"],
+  fClients:["Kunden","Clients"], addClient:["+ Kunde hinzufügen","+ Add client"], rmClient:["Entfernen","Remove"],
+  newClient:["(neuer Kunde)","(new client)"], nFile:["{n} Datei(en)","{n} file(s)"],
+  addClientHint:["Mehrere Kunden in einem Durchgang: die Namen aller Kunden werden in jeder Datei geschwärzt.","Several clients in one run: the names of every client are redacted in every file."],
+  clickKeep:["Klicken, um diese Stelle zu behalten (nicht schwärzen)","Click to keep this (no redaction)"],
+  clickRedact:["Bleibt lesbar. Klicken, um wieder zu schwärzen","Kept. Click to redact again"],
+  legClick:["Kästchen anklicken: Stelle behalten oder schwärzen","Click a box to keep or redact that spot"],
+  keptN:["{n} Stelle(n) bewusst nicht geschwärzt ({w})","{n} spot(s) kept on purpose ({w})"],
+  alsoStep2:["Die Dokumente wurden auch in Schritt 2 übernommen.","The documents were also added to step 2."],
+  fClient:["Kundenname","Client name"], fLegal:["Vollständiger Firmenname","Full legal company name"],
+  fAbbr:["Bekannte Abkürzungen","Known abbreviations"], fSpell:["Andere Schreibweisen","Alternative spellings"], fExtra:["Weitere zu schwärzende Begriffe","Additional terms to redact"],
+  phClient:["z. B. Nordwind Netz","e.g. Nordwind Netz"], phLegal:["z. B. Nordwind Netz GmbH","e.g. Nordwind Netz GmbH"], phAbbr:["z. B. NWN","e.g. NWN"], phSpell:["z. B. Nordwind-Netz","e.g. Nordwind-Netz"],
+  phExtra:["Projektnamen, Standorte, … einer pro Zeile","Project names, site names, … one per line"],
+  varH:["Wird automatisch ebenfalls erkannt","Will also match automatically"], varEmpty:["Hier erscheinen die erkannten Varianten.","Matching variants appear here."], more:["+ {n} weitere","+ {n} more"],
+  always:["Immer geschwärzt","Always redacted"],
+  optPers:["Personenbezogene Daten – Namen, E-Mail-Adressen, Telefon- und Faxnummern","Personal data – names, e-mail addresses, phone and fax numbers"],
+  optAbbr:["Abkürzungen in Großbuchstaben (z. B. TTP, FZS) – außer der Ausnahmeliste","Upper-case abbreviations (e.g. TTP, FZS) – except the safe list"],
+  optMeta:["Metadaten und versteckte Inhalte – Autor, Kommentare, Lesezeichen, Anhänge","Metadata and hidden content – author, comments, bookmarks, attachments"],
+  safelist:["Ausnahmeliste der Fachbegriffe bearbeiten …","Edit safe list of technical terms …"],
+  safeToast:["Ausnahmeliste: DIN, EN, VDE, IEC, ISO, PDF, RGB, UND, DIE … Diese Begriffe bleiben stehen. Im Programm bearbeitbar.","Safe list: DIN, EN, VDE, IEC, ISO, PDF, RGB, AND, THE … These stay visible. Editable in the program."],
+  zones:["Dokumentbereiche","Document zones"],
+  zTitle:["Dokumenttitel auf dem Deckblatt","Document title on the cover page"], zCover:["Infoblock Deckblatt (Geltungsbereich, Zuständigkeit, Klassifizierung, Beschluss)","Cover information block (scope, responsible unit, classification, approval)"],
+  zHeader:["Kopfzeile (auf jeder Seite)","Running page header (every page)"], zHist:["Tabelle Änderungshistorie","Revision history table"],
+  logosNote:["ⓘ  Logos und Unterschriften: Sie wählen die zu entfernenden Bilder in Schritt 3 aus.","ⓘ  Logos and signatures: you pick the images to remove in step 3."],
+  clear:["Formular leeren","Clear form"], next1:["Weiter: Dateien wählen","Next: choose files"],
+  dlgPick:["Dokumente wählen, aus denen der Kunde erkannt wird","Choose documents to detect the client from"],
+  open:["Öffnen","Open"], cancel:["Abbrechen","Cancel"], close:["Schließen","Close"],
+  reading:["Dokumente werden gelesen …","Reading documents …"],
+  h2:["Welche Dokumente?","Which documents?"],
+  sub2:["PDF, Word, PowerPoint und Excel. Dateien oder einen ganzen Ordner hineinziehen.","PDF, Word, PowerPoint and Excel. Drop files or a whole folder."],
+  dropT:["Dateien oder Ordner hierher ziehen","Drag files or folders here"],
+  addFiles:["Dateien hinzufügen…","Add files…"], addFolder:["Ordner hinzufügen…","Add folder…"], subf:["Unterordner einbeziehen","Include subfolders"],
+  allIn:["Alle Beispieldateien stehen schon in der Liste.","All sample files are already in the list."],
+  folderAdded:["Ordner „Beispiele“: {n} Datei(en) hinzugefügt.","Folder “Samples”: {n} file(s) added."],
+  thFile:["Datei","File"], thType:["Typ","Type"], thOut:["Wird gespeichert als","Will be saved as"], remove:["Aus der Liste entfernen","Remove from list"],
+  empty2:["Noch keine Dateien in der Liste.","No files in the list yet."],
+  save:["Ergebnisse speichern","Save results"], saveNext:["Neben dem jeweiligen Original","Next to each original"], saveFolder:["In einem Ordner:","In one folder:"],
+  back:["Zurück","Back"], nFiles:["{n} Datei(en) in der Liste","{n} file(s) in the list"], scanN:["{n} Datei(en) analysieren","Scan {n} file(s)"],
+  scanning:["Dokumente werden analysiert…","Scanning documents…"], progLine:["{name}\n({i} von {n})","{name}\n({i} of {n})"],
+  ocrNote:["Texterkennung (OCR) kann einen Moment dauern.","Text recognition (OCR) can take a moment."],
+  h3:["Prüfen, was geschwärzt wird","Check what will be redacted"], scanned:["✓ {n} Datei(en) analysiert (mit OCR)","✓ {n} file(s) scanned (OCR included)"],
+  tabF:["Fundstellen","Findings"], tabI:["Bilder & Grafiken","Images & graphics"],
+  imgHint:["Haken Sie Logos, Unterschriften oder alles andere an, das den Kunden erkennen lässt. Ein Haken entfernt das Bild auf jeder Seite, auf der es vorkommt.","Tick logos, signatures or anything else that identifies the client. Ticking one removes it on every page where it appears."],
+  noImgs:["Diese Datei enthält keine Bilder.","This file has no images."],
+  likely:["Vermutlich Logo","Likely logo"], kImg:["Bild","Image"], kVec:["Vektorgrafik","Vector graphic"], kLogo:["Logo","Logo"],
+  missed:["Etwas übersehen? Begriff hinzufügen…","Missed something? Add a term…"], addRescan:["Hinzufügen & neu analysieren","Add & re-scan"],
+  page:["Seite {p} von {n}","Page {p} of {n}"], drawBox:["Rahmen zeichnen","Draw box"], final:["Endergebnis zeigen (schwarz)","Show as final (black)"],
+  legOn:["wird geschwärzt","will be redacted"], legOff:["ohne Haken, bleibt","unticked, kept"],
+  drawHint:["Ziehen Sie auf der Seite einen Rahmen auf.","Drag a box on the page."],
+  officeNote:["Keine Seitenvorschau für Word-, PowerPoint- und Excel-Dateien. Jede Fundstelle links zeigt, wo sie steht (Text, Kopfzeile, Folie, Blatt …). Entfernen Sie den Haken bei allem, was bleiben soll.","No page preview for Word, PowerPoint and Excel files. Each finding on the left shows where it is (body, header, slide, sheet …). Untick anything that should stay."],
+  foundIn:["Fundstellen in:","Findings in:"], formatKept:["Das Format bleibt erhalten; geschwärzte Stellen werden durch █ ersetzt.","The format is kept; redacted text is replaced with █."],
+  fileSum:["Diese Datei: {on} von {total} Fundstellen angehakt · {imgs} Bild(er) werden entfernt","This file: {on} of {total} findings ticked · {imgs} image(s) to remove"],
+  redactN:["{n} Datei(en) schwärzen","Redact {n} file(s)"],
+  hits:["„{t}“: {n} Treffer gefunden und angehakt.","“{t}”: {n} match(es) found and ticked."], noHits:["„{t}“: keine Treffer in diesen Dateien.","“{t}”: no matches in these files."],
+  g_client:["Kunde","Client"], g_extra:["Weitere Begriffe","Additional terms"], g_zone:["Dokumentbereiche","Document zones"], g_pers:["Personenbezogene Daten","Personal data"],
+  g_abbr:["Abkürzungen","Abbreviations"], g_ocr:["OCR-Treffer in Bildern","OCR hits in images"], g_meta:["Metadaten","Metadata"], g_manual:["Manuelle Rahmen","Manual boxes"],
+  redacting:["Schwärzen und prüfen…","Redacting and checking…"],
+  h4:["Ergebnis & Prüfung","Result & check"],
+  sub4:["Jede Ausgabedatei wurde neu geöffnet und erneut durchsucht: Text, OCR jeder Seite und jedes Bildes und versteckte Inhalte.","Every output was re-opened and searched again: text, OCR of every page and image, and hidden content."],
+  passed:["Bestanden","Passed"], failed:["Nicht bestanden","Failed"], thStatus:["Status","Status"], thOutF:["Ausgabedatei","Output file"], thRed:["Schwärzungen","Redactions"], thQC:["Qualitätsprüfung","Quality check"],
+  PASS:["OK","PASS"], FAIL:["NICHT OK","FAIL"],
+  qS1:["Text","Text"], qS2:["OCR","OCR"], qS3:["Versteckt","Hidden"], qS4:["Bilder","Images"],
+  q1:["1 · Textsuche","1 · Text search"], q1t:["Jeder Text und jeder interne Teil der Datei nach jedem Begriff durchsucht.","All text and every internal part of the file searched for each term."],
+  q2:["2 · OCR-Suche","2 · OCR search"], q2t:["Jede Seite und jedes Bild als Bild gelesen und erneut durchsucht.","Every page and image read as a picture, then searched again."],
+  q3:["3 · Versteckte Inhalte","3 · Hidden content"], q3t:["Kein Autor, keine Kommentare, Änderungsverfolgung, Lesezeichen oder alten Versionen mehr.","No author, comments, tracked changes, bookmarks or old versions left."],
+  q4:["4 · Entfernte Bilder","4 · Removed images"], q4t:["Jedes angehakte Logo und jede Unterschrift ist wirklich aus der Datei entfernt.","Each ticked logo or signature is really gone from the file."],
+  stillFound:["„{t}“ noch vorhanden ({w})","“{t}” still present ({w})"],
+  renamed:["Umbenannt, damit sie nicht mit einer sauberen Datei verwechselt wird","Renamed so it can't be mistaken for a clean file"],
+  newBatch:["Neuen Durchgang starten","Start a new batch"], backPrev:["Zurück zur Vorschau","Back to preview"],
+  openReport:["Prüfbericht öffnen","Open QC report"], openFolder:["Ausgabeordner öffnen","Open output folder"],
+  folderToast:["Im Programm öffnet sich jetzt der Windows-Explorer mit den _ANON-Dateien.","The program now opens Windows Explorer with the _ANON files."],
+  repTitle:["Prüfbericht Anonymisierung","Anonymization QC report"], repMeta:["Erstellt am 20.10.2026 · {n} Datei(en) · offline","Created 20 Oct 2026 · {n} file(s) · offline"],
+  repSaved:["Wird als HTML-Datei neben den Ergebnissen gespeichert.","Saved as an HTML file next to the results."],
+  repFoot:["Nur Dateien mit OK dürfen weitergegeben werden. Der Bericht enthält keine geschwärzten Inhalte.","Only files marked PASS may be shared. The report contains no redacted content."]
+};
+let L = "de";
+try { const v = localStorage.getItem("proj05demo.lang"); if (v === "de" || v === "en") L = v; } catch (e) {}
+const t = (k, p) => { let s = (S[k] || [k, k])[L === "de" ? 0 : 1]; if (p) for (const x in p) s = s.split("{" + x + "}").join(p[x]); return s; };
+const tt = x => Array.isArray(x) ? x[L === "de" ? 0 : 1] : x;
+const esc = s => String(s).replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+const $ = (s, r = document) => r.querySelector(s);
+const split = s => String(s || "").split(/[,;\n]/).map(x => x.trim()).filter(Boolean);
+const stripForm = n => n.trim().replace(/\s*,?\s*(GmbH\s*&\s*Co\.?\s*KG|GmbH|AG|SE|KG|mbH|e\.\s?V\.|Ltd\.?|Inc\.?)$/i, "").trim();
+const anonName = n => n.replace(/(\.[^.]+)$/, "_ANON$1");
+const failName = n => n.replace(/(\.[^.]+)$/, "_ANON_QC-FAILED$1");
+
+/* ---------- sample data (all made up) ---------- */
+const FILE = {
+  tr:{name:"TR-NWN-2041_Pruefrichtlinie_Schaltanlagen.pdf", type:"PDF", pages:2},
+  doc:{name:"Projektbericht_Q3_2026.docx", type:"Word"},
+  ppt:{name:"Kickoff_Netzausbau_Nord.pptx", type:"PowerPoint"},
+  xls:{name:"Kontaktliste_Elmshagen.xlsx", type:"Excel"}
+};
+const ORDER = ["tr", "doc", "ppt", "xls"];
+const W = (de, en) => [de, en];
+const FINDS = {
+  tr:[
+    {id:"z_head", g:"zone", z:"zHeader", t:W("Kopfzeile","Running page header"), w:W("Seite 1–2 · Kopfzeile","Pages 1–2 · header"), p:1},
+    {id:"z_title", g:"zone", z:"zTitle", t:W("Dokumenttitel","Document title"), w:W("Seite 1 · Deckblatt","Page 1 · cover"), p:1},
+    {id:"z_cover", g:"zone", z:"zCover", t:W("Infoblock Deckblatt","Cover information block"), w:W("Seite 1 · Deckblatt","Page 1 · cover"), p:1},
+    {id:"z_hist", g:"zone", z:"zHist", t:W("Tabelle Änderungshistorie","Revision history table"), w:W("Seite 2","Page 2"), p:2},
+    {id:"c1", g:"client", who:"nordwind", t:"Nordwind Netz GmbH", w:W("Seite 1 · Text","Page 1 · body"), p:1},
+    {id:"c2", g:"client", who:"nordwind", t:"Nordwind-Netz", w:W("Seite 2 · Text","Page 2 · body"), p:2},
+    {id:"k1", g:"client", who:"kabelwerk", t:"Kabelwerk Süd AG", w:W("Seite 1 · Text","Page 1 · body"), p:1},
+    {id:"x1", g:"extra", key:"umspannwerk lindenau", t:"Umspannwerk Lindenau", w:W("Seite 2 · Text","Page 2 · body"), p:2},
+    {id:"p1", g:"pers", t:"Dr. Jana Brenner", w:W("Seite 2 · Person","Page 2 · person"), p:2},
+    {id:"p2", g:"pers", t:"j.brenner@nordwind-netz.de", w:W("Seite 2 · E-Mail","Page 2 · e-mail"), p:2},
+    {id:"p3", g:"pers", t:"+49 711 555 0142", w:W("Seite 2 · Telefon/Fax","Page 2 · phone/fax"), p:2},
+    {id:"a1", g:"abbr", dyn:"NWN", t:"NWN", w:W("Seite 1 · Text","Page 1 · body"), p:1},
+    {id:"a2", g:"abbr", dyn:"NWN", t:"NWN-AM", w:W("Seite 2 · Text","Page 2 · body"), p:2},
+    {id:"a3", g:"abbr", t:"TTP", w:W("Seite 2 · Text","Page 2 · body"), p:2},
+    {id:"o1", g:"ocr", t:"NORDWIND NETZ", w:W("Seite 2 · Bild (Abb. 1)","Page 2 · image (fig. 1)"), p:2},
+    {id:"m1", g:"meta", t:W("Autor: J. Brenner","Author: J. Brenner"), w:W("Dokumenteigenschaften","Document properties")},
+    {id:"m2", g:"meta", t:W("Firma: Nordwind Netz GmbH","Company: Nordwind Netz GmbH"), w:W("Dokumenteigenschaften","Document properties")},
+    {id:"m3", g:"meta", t:W("3 Lesezeichen","3 bookmarks"), w:W("Lesezeichen","Bookmarks")}
+  ],
+  doc:[
+    {id:"d1", g:"client", who:"nordwind", t:"Nordwind Netz GmbH", w:W("Kopfzeile","Header")},
+    {id:"d2", g:"client", who:"nordwind", t:"Nordwind Netz GmbH", w:W("Text · Absatz 2","Body · paragraph 2")},
+    {id:"d3", g:"client", who:"nordwind", t:"Nordwind-Netz", w:W("Text · Absatz 7","Body · paragraph 7")},
+    {id:"d4", g:"client", who:"nordwind", t:"www.nordwind-netz.de", w:W("Fußzeile","Footer")},
+    {id:"dk", g:"client", who:"kabelwerk", t:"Kabelwerk Süd AG", w:W("Text · Absatz 6","Body · paragraph 6")},
+    {id:"x2", g:"extra", key:"umspannwerk lindenau", t:"Umspannwerk Lindenau", w:W("Text · Absatz 5","Body · paragraph 5")},
+    {id:"d7", g:"pers", t:"Lukas Wendt", w:W("Text · Absatz 1","Body · paragraph 1")},
+    {id:"d8", g:"pers", t:"Jana Brenner", w:W("Tabelle 2, Zeile 1","Table 2, row 1")},
+    {id:"d9", g:"pers", t:"l.wendt@nordwind-netz.de", w:W("Fußzeile","Footer")},
+    {id:"d5", g:"abbr", dyn:"NWN", t:"NWN", w:W("Tabelle 1, Zeile 3","Table 1, row 3")},
+    {id:"d6", g:"abbr", t:"FZS", w:W("Text · Absatz 4","Body · paragraph 4")},
+    {id:"dm1", g:"meta", t:W("Autor: Lukas Wendt","Author: Lukas Wendt"), w:W("Dokumenteigenschaften","Document properties")},
+    {id:"dm2", g:"meta", t:W("2 Kommentare","2 comments"), w:W("Kommentare","Comments")},
+    {id:"dm3", g:"meta", t:W("Änderungsverfolgung (5 Änderungen)","Tracked changes (5)"), w:W("Überarbeitung","Revisions")}
+  ],
+  ppt:[
+    {id:"s1", g:"client", who:"nordwind", t:"Nordwind Netz", w:W("Folie 1 · Titel","Slide 1 · title")},
+    {id:"s2", g:"client", who:"nordwind", t:"NORDWIND NETZ", w:W("Folie 4 · Textfeld","Slide 4 · text box")},
+    {id:"s3", g:"pers", t:"Jana Brenner", w:W("Folie 2 · Textfeld","Slide 2 · text box")},
+    {id:"s4", g:"pers", t:"j.brenner@nordwind-netz.de", w:W("Folie 4 · Notizen","Slide 4 · notes")},
+    {id:"s5", g:"abbr", dyn:"NWN", t:"NWN", w:W("Folie 3 · Tabelle","Slide 3 · table")},
+    {id:"s6", g:"ocr", t:"Nordwind Netz", w:W("Folie 2 · Bild (Foto)","Slide 2 · image (photo)")},
+    {id:"sm1", g:"meta", t:W("Autor: Jana Brenner","Author: Jana Brenner"), w:W("Dokumenteigenschaften","Document properties")}
+  ],
+  xls:[
+    {id:"e1", g:"client", who:"elmshagen", t:"Stadtwerke Elmshagen AG", w:W("Blatt „Kontakte“ · A1","Sheet “Kontakte” · A1")},
+    {id:"e8", g:"client", who:"elmshagen", t:"SW Elmshagen", w:W("Blatt „Projekte“ · B1","Sheet “Projekte” · B1")},
+    {id:"e2", g:"pers", t:"Jana Brenner", w:W("Blatt „Kontakte“ · B4","Sheet “Kontakte” · B4")},
+    {id:"e3", g:"pers", t:"Lukas Wendt", w:W("Blatt „Kontakte“ · B5","Sheet “Kontakte” · B5")},
+    {id:"e4", g:"pers", t:"Mira Okafor", w:W("Blatt „Kontakte“ · B6","Sheet “Kontakte” · B6")},
+    {id:"e5", g:"pers", t:"j.brenner@nordwind-netz.de", w:W("Blatt „Kontakte“ · C4","Sheet “Kontakte” · C4")},
+    {id:"e6", g:"pers", t:"+49 711 555 0142", w:W("Blatt „Kontakte“ · D4","Sheet “Kontakte” · D4")},
+    {id:"e7", g:"abbr", dyn:"NWN", t:"NWN", w:W("Blatt „Projekte“ · C2","Sheet “Projekte” · C2")},
+    {id:"em1", g:"meta", t:W("Autor: Mira Okafor","Author: Mira Okafor"), w:W("Dokumenteigenschaften","Document properties")},
+    {id:"em2", g:"meta", t:W("Ausgeblendetes Blatt „Alt“","Hidden sheet “Alt”"), w:W("Arbeitsmappe","Workbook")}
+  ]
+};
+const IMGS = {
+  tr:[{id:"logo", kind:"logo", w:W("Seite 1, 2 · Kopfzeile","Pages 1, 2 · header"), on:true},
+      {id:"sig", kind:"sig", w:W("Seite 2","Page 2"), on:false},
+      {id:"diag", kind:"vec", w:W("Seite 2 · Abb. 1","Page 2 · fig. 1"), on:false}],
+  doc:[{id:"dlogo", kind:"logo", w:W("Kopfzeile (jede Seite)","Header (every page)"), on:true},
+       {id:"dphoto", kind:"photo", w:W("Text · Abb. 2","Body · fig. 2"), on:false}],
+  ppt:[{id:"plogo", kind:"logo", w:W("Folienmaster (alle Folien)","Slide master (all slides)"), on:true},
+       {id:"pphoto", kind:"photo", w:W("Folie 2","Slide 2"), on:false}],
+  xls:[]
+};
+const GROUPS = ["client", "extra", "zone", "pers", "abbr", "ocr", "meta", "manual"];
+
+/* ---------- small drawings ---------- */
+const LOGO = '<svg viewBox="0 0 170 40" role="img" aria-label="Logo"><g fill="none" stroke="#1C5D8C" stroke-width="3.2" stroke-linecap="round"><path d="M4 11h20a5 5 0 1 0-5-5"/><path d="M4 20h28a5 5 0 1 1-5 5"/><path d="M4 29h15"/></g><text x="42" y="18" font-family="Arial" font-weight="700" font-size="13" fill="#1C5D8C" letter-spacing="1">NORDWIND</text><text x="42" y="33" font-family="Arial" font-weight="700" font-size="13" fill="#3A8FC4" letter-spacing="1">NETZ</text></svg>';
+const SIG = '<svg viewBox="0 0 160 60" role="img" aria-label="Signature"><path d="M6 44c10-22 18-34 22-30s-10 32-4 34 14-30 22-28-2 26 6 24 10-18 16-16 2 14 10 12 16-10 24-8 18 2 46-4" fill="none" stroke="#1B2B6B" stroke-width="2.2" stroke-linecap="round"/></svg>';
+const DIAG = '<svg viewBox="0 0 300 120" role="img" aria-label="Diagram"><rect width="300" height="120" fill="#F5F8FA"/><g stroke="#33424D" stroke-width="2" fill="none"><path d="M20 30H280"/><path d="M70 30v22M150 30v22M230 30v22"/><rect x="58" y="52" width="24" height="24"/><rect x="138" y="52" width="24" height="24"/><rect x="218" y="52" width="24" height="24"/><path d="M70 76v10M150 76v10M230 76v10"/><circle cx="150" cy="30" r="4" fill="#33424D"/></g><text x="150" y="20" text-anchor="middle" font-family="Arial" font-size="10" fill="#33424D">Sammelschiene 20 kV</text><text x="150" y="108" text-anchor="middle" font-family="Arial" font-weight="700" font-size="11" fill="#1C5D8C">Schaltfeld 3 · NORDWIND NETZ</text></svg>';
+const PHOTO = '<svg viewBox="0 0 76 48" aria-hidden="true"><rect width="76" height="48" fill="#C9D9E2"/><path d="M0 40l18-14 14 9 16-15 28 20v8H0z" fill="#7F9AA8"/><path d="M38 6v30M30 12h16M32 18h12" stroke="#33424D" stroke-width="1.5"/></svg>';
+const THUMB = {logo:LOGO, sig:SIG, vec:DIAG, photo:PHOTO};
+const ICON = {
+  scan:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14 3H6a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h5"/><path d="M14 3l5 5h-5z"/><circle cx="16.5" cy="15.5" r="3.5"/><path d="M19 18l2.5 2.5"/></svg>',
+  files:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8 3h7l4 4v11a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2z"/><path d="M15 3v4h4"/><path d="M12 10v6M9.5 13.5L12 16l2.5-2.5"/></svg>',
+  box:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-dasharray="3 2.5" aria-hidden="true"><rect x="4" y="5" width="16" height="14" rx="1"/></svg>',
+  doc:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 3h7l4 4v12a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2z"/><path d="M14 3v4h4M8.5 12h7M8.5 15.5h7M8.5 8.5h3"/></svg>'
+};
+
+const PAGES = {
+1:`<div class="ph" data-f="z_head"><span class="iw" data-img="logo">${LOGO}</span><span class="phx">Technische Richtlinie · TR-NWN-2041</span><span class="phr">Version 2.0</span></div>
+<div class="ttl" data-f="z_title"><span class="k">Technische Richtlinie</span><span class="big">Prüfung von Mittelspannungs&shy;schaltanlagen</span><span>TR-NWN-2041 · Ausgabe 03/2026</span></div>
+<div class="cov" data-f="z_cover">
+  <div class="r"><span>Geltungsbereich</span><span>Nordwind Netz GmbH, alle Netzregionen</span></div>
+  <div class="r"><span>Fachlich zuständige Stelle</span><span>Asset Management Schaltanlagen</span></div>
+  <div class="r"><span>Klassifizierung</span><span>Intern</span></div>
+  <div class="r"><span>Beschlussfassung</span><span>Freigegeben durch die Geschäftsführung am 12.03.2026</span></div>
+</div>
+<div class="sec"><div class="h">1  Zweck und Geltungsbereich</div>
+<p>Diese Richtlinie regelt die wiederkehrende Prüfung aller Mittelspannungs&shy;schaltanlagen der <span data-f="c1">Nordwind Netz GmbH</span>. Die Prüfungen führt die <span data-f="a1">NWN</span> selbst oder ein beauftragter Dienstleister wie die <span data-f="k1">Kabelwerk Süd AG</span> durch.</p>
+<p>Grundlage sind DIN EN 62271-200 und VDE 0105-100. Die Prüffristen richten sich nach Anlagentyp, Baujahr und Schutzart (siehe Abschnitt 2).</p></div>
+<div class="pf"><span>TR-NWN-2041</span><span>Seite 1 von 2</span></div>`,
+2:`<div class="ph" data-f="z_head"><span class="iw" data-img="logo">${LOGO}</span><span class="phx">Technische Richtlinie · TR-NWN-2041</span><span class="phr">Version 2.0</span></div>
+<div class="sec"><div class="h">2  Prüfumfang</div>
+<p>Zu prüfen sind Isolierung, Schaltgeräte, Verriegelungen und Erdungsanlagen nach <span data-f="a3">TTP</span> 4.2. Abweichungen meldet der Prüfer an das Asset Management der <span data-f="c2">Nordwind-Netz</span> (<span data-f="a2">NWN-AM</span>). Pilotanlage ist das <span data-f="x1">Umspannwerk Lindenau</span>.</p></div>
+<span class="iw fig" data-img="diag">${DIAG}<span class="ocr" data-f="o1"></span></span>
+<div class="cap">Abb. 1 – Einliniendarstellung Schaltfeld 3</div>
+<div class="sec"><div class="h">3  Ansprechpartner</div>
+<p><span data-f="p1">Dr. Jana Brenner</span>, Leitung Asset Management<br>E-Mail <span data-f="p2">j.brenner@nordwind-netz.de</span> · Tel. <span data-f="p3">+49 711 555 0142</span></p>
+<div class="sigrow"><span class="iw sig" data-img="sig">${SIG}</span><span class="sigl">Freigabe, 12.03.2026</span></div></div>
+<div data-f="z_hist"><div class="sec"><div class="h">Änderungshistorie</div></div>
+<table class="ht"><thead><tr><th>Version</th><th>Datum</th><th>Änderung</th><th>Bearbeiter</th></tr></thead>
+<tbody><tr><td>1.0</td><td>04.05.2024</td><td>Erstausgabe</td><td>M. Okafor</td></tr><tr><td>2.0</td><td>12.03.2026</td><td>Prüffristen angepasst</td><td>J. Brenner</td></tr></tbody></table></div>
+<div class="pf"><span>TR-NWN-2041</span><span>Seite 2 von 2</span></div>`
+};
+
+/* ---------- state ---------- */
+const CK = ["client", "legal", "abbr", "spell"];
+const blankClient = () => ({client:"", legal:"", abbr:"", spell:"", files:[]});
+const freshProfile = () => ({clients:[blankClient()], sel:0, extra:"", pers:true, abbrs:true, meta:true, zTitle:true, zCover:true, zHeader:true, zHist:true});
+const st = {step:0, prof:freshProfile(), det:null, sugg:[], files:[], subf:true, save:"next", scans:null, cur:"tr", tab:0, page:1, fin:false, draw:false, out:null, manN:0, added:[], busy:false, spT:0, toastT:0, pcancel:null};
+
+const cur = () => st.prof.clients[st.prof.sel];
+const named = () => st.prof.clients.filter(c => c.client.trim() || c.legal.trim());
+const hasClient = () => named().length > 0;
+function rowHTML(c, i) {
+  const main = c.legal.trim() || c.client.trim() || t("newClient");
+  const sub = c.client.trim() && c.legal.trim() && c.client.trim() !== c.legal.trim() ? c.client.trim() : "";
+  return `<span class="cn">${esc(main)}</span>${sub ? `<span>${esc(sub)}</span>` : ""}${c.files.length ? `<span class="cf">${t("nFile", {n:c.files.length})}</span>` : ""}`;
+}
+function canGo(i) {
+  if (st.busy) return false;
+  if (i === 0) return true;
+  if (i === 1) return hasClient();
+  if (i === 2) return !!st.scans;
+  return !!st.out;
+}
+function invalidate() { st.scans = null; st.out = null; }
+
+/* ---------- rendering ---------- */
+function applyStatic() {
+  document.documentElement.lang = L;
+  document.querySelectorAll("[data-t]").forEach(el => { el.textContent = t(el.dataset.t); });
+  document.querySelectorAll("[data-act=lang]").forEach(b => b.setAttribute("aria-pressed", String(b.dataset.l === L)));
+  $("#rail").setAttribute("aria-label", L === "de" ? "Schritte" : "Steps");
+}
+function renderRail() {
+  $("#steps").innerHTML = ["s0", "s1", "s2", "s3"].map((k, i) => {
+    const cur = i === st.step, done = i < st.step, can = !cur && canGo(i);
+    return `<li><button type="button" class="step ${cur ? "cur" : done ? "done" : ""} ${can ? "can" : ""}" ${can ? `data-act="go" data-i="${i}"` : ""} ${cur ? 'aria-current="step"' : ""} ${!cur && !can ? "disabled" : ""}><span class="dot">${done ? "✓" : i + 1}</span><span class="lbl">${t(k)}</span></button></li>`;
+  }).join("");
+}
+function render() {
+  const fl = $("#flist"), va = $(".varea");
+  const keep = [fl ? fl.scrollTop : 0, va ? va.scrollTop : 0];
+  applyStatic();
+  renderRail();
+  $("#main").innerHTML = [scr0, scr1, scr2, scr3][st.step]();
+  if (st.step === 2) {
+    paintPage();
+    const f2 = $("#flist"), v2 = $(".varea");
+    if (f2) f2.scrollTop = keep[0];
+    if (v2) v2.scrollTop = keep[1];
+  }
+}
+const tip = k => `<div class="tip"><b>DEMO</b><span>${t(k)}</span></div>`;
+function go(i) { st.step = i; st.draw = false; render(); const b = $(".body"); if (b) b.scrollTop = 0; }
+
+/* step 1 */
+function variants() {
+  const p = st.prof, out = [];
+  const add = v => { v = v.trim(); if (v && !out.includes(v)) out.push(v); };
+  for (const n of p.clients.flatMap(c => [c.client, c.legal, ...split(c.spell)])) {
+    if (!n.trim()) continue;
+    const s = n.trim();
+    add(s); add(s.toUpperCase());
+    if (/\s/.test(s)) { add(s.replace(/\s+/g, "-")); add(s.replace(/\s+/g, "")); }
+    const b = stripForm(s);
+    if (b !== s) { add(b); add(b.toUpperCase()); }
+  }
+  p.clients.forEach(c => split(c.abbr).forEach(add));
+  split(p.extra).forEach(add);
+  return out;
+}
+function variantsHTML() {
+  const v = variants();
+  if (!v.length) return `<h3>${t("varH")}</h3><p class="info">${t("varEmpty")}</p>`;
+  const shown = v.slice(0, 14);
+  return `<h3>${t("varH")}</h3><div class="chips">${shown.map(x => `<span class="chip">${esc(x)}</span>`).join("")}${v.length > 14 ? `<span class="chip more">${t("more", {n:v.length - 14})}</span>` : ""}</div>`;
+}
+function fld(k, label, ph, req) {
+  const p = CK.includes(k) ? cur() : st.prof;
+  return `<div class="field"><label for="f-${k}">${t(label)}${req ? ' <span class="req">*</span>' : ""}</label><input type="text" id="f-${k}" data-p="${k}" value="${esc(p[k])}" placeholder="${esc(t(ph))}" class="${st.sugg.includes(k) ? "filled" : ""}" autocomplete="off"></div>`;
+}
+const chk = (k, label) => `<label class="check"><input type="checkbox" id="o-${k}" data-o="${k}" ${st.prof[k] ? "checked" : ""}><span>${t(label)}</span></label>`;
+function scr0() {
+  const p = st.prof, d = st.det;
+  return `<div class="body">${tip(d ? "tip0b" : "tip0")}
+  <div class="head"><span class="eyebrow">${t("stepOf", {i:1})}</span><h1>${t("h1")}</h1><p class="sub">${t("sub1")}</p></div>
+  <div class="detect"><button type="button" class="btn" data-act="detect" title="${esc(t("detectHint"))}">${ICON.scan}${t("detect")}</button>
+    <div class="suggest">${d
+      ? `<span><b>${t("found", {k:d.k, n:d.n})}</b></span>${d.alts.length ? `<span>${t("alsoAdd")} ${d.alts.map((a, i) => `<button type="button" class="lnk" data-act="alt" data-i="${i}">${esc(a)}</button>`).join(", ")}</span>` : ""}<span class="info">${t("alsoStep2")}</span>`
+      : `<span class="info">${t("detectHint")}</span>`}</div></div>
+  <div class="grid1">
+    <div class="fields"><div class="clients"><div class="clh"><label id="cl-l">${t("fClients")} <span class="req">*</span></label><button type="button" class="lnk" data-act="addClient" title="${esc(t("addClientHint"))}">${t("addClient")}</button><button type="button" class="lnk" data-act="rmClient">${t("rmClient")}</button></div>
+      <div class="clist" role="listbox" aria-labelledby="cl-l">${p.clients.map((c, i) => `<button type="button" class="crow ${i === p.sel ? "sel" : ""}" role="option" aria-selected="${i === p.sel}" data-act="selClient" data-i="${i}">${rowHTML(c, i)}</button>`).join("")}</div></div>
+      ${fld("client", "fClient", "phClient", true)}${fld("legal", "fLegal", "phLegal")}${fld("abbr", "fAbbr", "phAbbr")}${fld("spell", "fSpell", "phSpell")}
+      <div class="field"><label for="f-extra">${t("fExtra")}</label><textarea id="f-extra" data-p="extra" placeholder="${esc(t("phExtra"))}">${esc(p.extra)}</textarea></div></div>
+    <div class="panel" id="variants">${variantsHTML()}</div>
+  </div>
+  <div class="grid2">
+    <div class="grp"><h3>${t("always")}</h3><div class="checks">${chk("pers", "optPers")}${chk("abbrs", "optAbbr")}${chk("meta", "optMeta")}</div><button type="button" class="lnk" data-act="safelist">${t("safelist")}</button></div>
+    <div class="grp"><h3>${t("zones")}</h3><div class="checks">${chk("zTitle", "zTitle")}${chk("zCover", "zCover")}${chk("zHeader", "zHeader")}${chk("zHist", "zHist")}</div></div>
+  </div>
+  <p class="info">${t("logosNote")}</p></div>
+  <div class="foot"><button type="button" class="btn" data-act="clear">${t("clear")}</button><span class="grow"></span><button type="button" class="btn pri" data-act="next0" ${hasClient() ? "" : "disabled"}>${t("next1")} →</button></div>`;
+}
+
+/* step 2 */
+function scr1() {
+  const n = st.files.length;
+  const rows = st.files.map(id => { const f = FILE[id];
+    return `<tr><td class="fname">${esc(f.name)}</td><td><span class="type">${f.type}</span></td><td class="out">${esc(anonName(f.name))}</td><td><button type="button" class="x" data-act="rm" data-id="${id}" aria-label="${esc(t("remove"))}" title="${esc(t("remove"))}">×</button></td></tr>`; }).join("");
+  return `<div class="body">${tip("tip1")}
+  <div class="head"><span class="eyebrow">${t("stepOf", {i:2})}</span><h1>${t("h2")}</h1><p class="sub">${t("sub2")}</p></div>
+  <div class="drop"><div class="dropt">${ICON.files}${t("dropT")}</div>
+    <div class="btnrow"><button type="button" class="btn" data-act="addFiles">${t("addFiles")}</button><button type="button" class="btn" data-act="addFolder">${t("addFolder")}</button></div>
+    <label class="check"><input type="checkbox" id="subf" ${st.subf ? "checked" : ""}><span>${t("subf")}</span></label></div>
+  ${n ? `<div class="tbl-wrap"><table><thead><tr><th>${t("thFile")}</th><th>${t("thType")}</th><th>${t("thOut")}</th><th><span class="sr">${t("remove")}</span></th></tr></thead><tbody>${rows}</tbody></table></div>` : `<p class="empty">${t("empty2")}</p>`}
+  <div class="grp"><h3>${t("save")}</h3><div class="checks">
+    <label class="check"><input type="radio" name="save" id="save-next" data-save="next" ${st.save === "next" ? "checked" : ""}><span>${t("saveNext")}</span></label>
+    <label class="check"><input type="radio" name="save" id="save-folder" data-save="folder" ${st.save === "folder" ? "checked" : ""}><span>${t("saveFolder")} <span class="out">D:\\Anonymisiert</span></span></label></div></div></div>
+  <div class="foot"><button type="button" class="btn" data-act="go" data-i="0">← ${t("back")}</button><span class="grow">${t("nFiles", {n})}</span><button type="button" class="btn pri" data-act="scan" ${n ? "" : "disabled"}>${t("scanN", {n})} →</button></div>`;
+}
+
+/* step 3 */
+function findsHTML(sc) {
+  return GROUPS.map(g => {
+    const items = sc.finds.filter(f => f.grp === g);
+    if (!items.length) return "";
+    return `<div class="gh"><span>${t("g_" + g)}</span><span>${items.filter(f => f.on).length}/${items.length}</span></div>` +
+      items.map(f => `<label class="fi ${f.on ? "" : "off"}"><input type="checkbox" data-fid="${f.id}" ${f.on ? "checked" : ""}><span class="ft">${esc(tt(f.t))}</span><span class="fw">${esc(tt(f.w))}</span></label>`).join("");
+  }).join("");
+}
+function imgsHTML(sc) {
+  if (!sc.imgs.length) return `<p class="info pad">${t("noImgs")}</p>`;
+  const kind = {logo:"kLogo", sig:"kImg", vec:"kVec", photo:"kImg"};
+  return `<p class="info pad">${t("imgHint")}</p>` + sc.imgs.map(m => `<label class="tile"><input type="checkbox" data-iid="${m.id}" ${m.on ? "checked" : ""}><span class="thumb">${THUMB[m.kind]}</span><span class="tl"><b>${t(kind[m.kind])}</b>${m.kind === "logo" ? `<span class="likely">${t("likely")}</span>` : ""}<span class="fw">${esc(tt(m.w))}</span></span></label>`).join("");
+}
+function scr2() {
+  const sc = st.scans[st.cur], f = FILE[st.cur], pdf = f.type === "PDF";
+  const on = sc.finds.filter(x => x.on).length, imgs = sc.imgs.filter(x => x.on).length;
+  const tabs = st.files.map(id => { const s = st.scans[id];
+    return `<button type="button" class="ftab" role="tab" aria-selected="${id === st.cur}" data-act="file" data-id="${id}"><span class="type">${FILE[id].type}</span><span class="fn">${esc(FILE[id].name)}</span><span class="n">${s.finds.filter(x => x.on).length + s.imgs.filter(x => x.on).length}</span></button>`; }).join("");
+  const where = [...new Set(sc.finds.filter(x => x.w).map(x => tt(x.w).split(/ · |,/)[0]))].join(", ");
+  const viewer = pdf
+    ? `<div class="vbar"><div class="pg"><button type="button" class="sqb" data-act="pg" data-d="-1" aria-label="${L === "de" ? "Vorherige Seite" : "Previous page"}" ${st.page <= 1 ? "disabled" : ""}>‹</button><span>${t("page", {p:st.page, n:f.pages})}</span><button type="button" class="sqb" data-act="pg" data-d="1" aria-label="${L === "de" ? "Nächste Seite" : "Next page"}" ${st.page >= f.pages ? "disabled" : ""}>›</button></div>
+       <button type="button" class="btn sm tog" data-act="draw" aria-pressed="${st.draw}">${ICON.box}${t("drawBox")}</button>
+       <label class="check"><input type="checkbox" id="fin" ${st.fin ? "checked" : ""}><span>${t("final")}</span></label>
+       <span class="legend"><i class="lg on"></i>${t("legOn")} <i class="lg off"></i>${t("legOff")} · ${t("legClick")}</span></div>
+       <div class="varea"><div class="page ${st.fin ? "fin" : "hl"} ${st.draw ? "draw" : ""}" id="page"><div class="pin">${PAGES[st.page]}</div></div></div>`
+    : `<div class="varea"><div class="onote"><span class="doci">${ICON.doc}${esc(f.type)}</span><p>${t("officeNote")}</p><p class="info"><b>${t("foundIn")}</b> ${esc(where)}</p><p class="info">${t("formatKept")}</p></div></div>`;
+  return `<div class="body s3body">${tip("tip2")}
+  <div class="head row3"><div class="head"><span class="eyebrow">${t("stepOf", {i:3})}</span><h1>${t("h3")}</h1></div><span class="okline">${t("scanned", {n:st.files.length})}</span></div>
+  <div class="filebar" role="tablist">${tabs}</div>
+  <div class="s3">
+    <div class="side"><div class="tabs" role="tablist"><button type="button" class="tab" role="tab" aria-selected="${st.tab === 0}" data-act="tab" data-i="0">${t("tabF")} (${sc.finds.length})</button><button type="button" class="tab" role="tab" aria-selected="${st.tab === 1}" data-act="tab" data-i="1">${t("tabI")} (${sc.imgs.length})</button></div>
+      <div class="flist" id="flist">${st.tab === 0 ? findsHTML(sc) : imgsHTML(sc)}</div>
+      <div class="addterm"><label for="addterm" class="info">${t("missed")}</label><div class="row"><input type="text" id="addterm" placeholder="${L === "de" ? "z. B. Lindenau" : "e.g. Lindenau"}" autocomplete="off"><button type="button" class="btn sm" data-act="addterm">${t("addRescan")}</button></div></div></div>
+    <div class="viewer">${viewer}</div>
+  </div></div>
+  <div class="foot"><button type="button" class="btn" data-act="go" data-i="1">← ${t("back")}</button><span class="grow">${t("fileSum", {on, total:sc.finds.length, imgs})}</span><button type="button" class="btn pri" data-act="redact">${t("redactN", {n:st.files.length})} →</button></div>`;
+}
+function paintPage() {
+  const pg = $("#page"); if (!pg) return;
+  const sc = st.scans[st.cur];
+  pg.querySelectorAll("[data-f]").forEach(el => {
+    const f = sc.finds.find(x => x.id === el.dataset.f);
+    el.classList.toggle("mk", !!f); el.classList.toggle("on", !!f && f.on); el.classList.toggle("no", !!f && !f.on);
+    if (f && !st.fin) el.title = `${tt(f.t)} – ${t(f.on ? "clickKeep" : "clickRedact")}`; else el.removeAttribute("title");
+  });
+  pg.querySelectorAll("[data-img]").forEach(el => {
+    const m = sc.imgs.find(x => x.id === el.dataset.img);
+    el.classList.toggle("mk", !!m); el.classList.toggle("on", !!m && m.on); el.classList.toggle("no", !!m && !m.on);
+  });
+  sc.finds.filter(f => f.g === "manual" && f.p === st.page).forEach(f => {
+    const b = document.createElement("span");
+    b.className = "mbox mk " + (f.on ? "on" : "no");
+    b.dataset.f = f.id;
+    Object.assign(b.style, {left:f.box.x + "%", top:f.box.y + "%", width:f.box.w + "%", height:f.box.h + "%"});
+    pg.appendChild(b);
+  });
+}
+function flash(id) {
+  requestAnimationFrame(() => {
+    const el = document.querySelector(`#page [data-f="${id}"]`);
+    if (!el) return;
+    el.classList.add("flash");
+    el.scrollIntoView({block:"nearest", behavior:"smooth"});
+  });
+}
+
+/* scanning */
+function buildScans(keep) {
+  const p = st.prof, who = p.clients.map(c => c.client + " " + c.legal + " " + c.spell).join(" ").toLowerCase();
+  const abbr = p.clients.flatMap(c => split(c.abbr)).map(s => s.toUpperCase());
+  const terms = [...split(p.extra), ...st.added].map(s => s.toLowerCase()).filter(s => s.length >= 3);
+  const res = {};
+  for (const id of st.files) {
+    const old = keep && keep[id];
+    const finds = [];
+    for (const f of FINDS[id]) {
+      let g = f.g;
+      if (g === "zone" && !p[f.z]) continue;
+      if (g === "pers" && !p.pers) continue;
+      if (g === "meta" && !p.meta) continue;
+      if (g === "client" && !who.includes(f.who)) continue;
+      if (g === "extra" && !terms.some(x => f.key.includes(x) || x.includes(f.key))) continue;
+      if (f.dyn && abbr.includes(f.dyn)) g = "client";
+      else if (g === "abbr" && !p.abbrs) continue;
+      const prev = old && old.finds.find(x => x.id === f.id);
+      finds.push({...f, grp:g, on:prev ? prev.on : true});
+    }
+    if (old) finds.push(...old.finds.filter(x => x.g === "manual"));
+    const imgs = (IMGS[id] || []).map(m => { const prev = old && old.imgs.find(x => x.id === m.id); return {...m, on:prev ? prev.on : m.on}; });
+    res[id] = {finds, imgs};
+  }
+  return res;
+}
+function computeOut() {
+  return st.files.map(id => {
+    const f = FILE[id], sc = st.scans[id];
+    // spots unticked or clicked to keep are a choice: the check allows exactly them and the report lists them
+    const kept = sc.finds.filter(x => !x.on && x.g !== "meta");
+    const meta = sc.finds.filter(x => !x.on && x.grp === "meta");
+    const checks = [true, true, !meta.length, true];
+    const ok = checks.every(Boolean);
+    return {id, ok, out:ok ? anonName(f.name) : failName(f.name), n:sc.finds.filter(x => x.on).length + sc.imgs.filter(x => x.on).length, checks, probs:meta, kept};
+  });
+}
+
+/* step 4 */
+function scr3() {
+  const o = st.out, pass = o.filter(x => x.ok).length, fail = o.length - pass;
+  const rows = o.map(r => `<tr><td><span class="badge ${r.ok ? "ok" : "bad"}">${t(r.ok ? "PASS" : "FAIL")}</span></td>
+    <td class="fname">${esc(FILE[r.id].name)}${r.probs.length ? `<div class="problem">${r.probs.map(x => esc(t("stillFound", {t:tt(x.t), w:tt(x.w)}))).join("<br>")}</div>` : ""}${r.kept.length ? `<div class="kept">${esc(t("keptN", {n:r.kept.length, w:[...new Set(r.kept.map(x => tt(x.w).split(" · ")[0]))].join(", ")}))}</div>` : ""}</td>
+    <td class="out">${esc(r.out)}${r.ok ? "" : `<div class="problem">${t("renamed")}</div>`}</td><td class="num">${r.n}</td>
+    <td><div class="qc">${["qS1", "qS2", "qS3", "qS4"].map((k, i) => `<span class="${r.checks[i] ? "" : "f"}">${r.checks[i] ? "✓" : "✗"} ${t(k)}</span>`).join("")}</div></td></tr>`).join("");
+  return `<div class="body">${tip(fail ? "tip3f" : "tip3")}
+  <div class="head"><span class="eyebrow">${t("stepOf", {i:4})}</span><h1>${t("h4")}</h1><p class="sub">${t("sub4")}</p></div>
+  <div class="sumrow"><div class="stat ok"><b>${pass}</b><span>${t("passed")}</span></div><div class="stat ${fail ? "bad" : "zero"}"><b>${fail}</b><span>${t("failed")}</span></div><div class="stat neutral"><b>${o.reduce((a, x) => a + x.n, 0)}</b><span>${t("thRed")}</span></div></div>
+  <div class="tbl-wrap"><table><thead><tr><th>${t("thStatus")}</th><th>${t("thFile")}</th><th>${t("thOutF")}</th><th class="num">${t("thRed")}</th><th>${t("thQC")}</th></tr></thead><tbody>${rows}</tbody></table></div>
+  <div class="cards4">${[1, 2, 3, 4].map(i => `<div class="qcard"><b>${t("q" + i)}</b><p>${t("q" + i + "t")}</p></div>`).join("")}</div></div>
+  <div class="foot"><button type="button" class="btn" data-act="restart">${t("newBatch")}</button><button type="button" class="btn ${fail ? "lime" : ""}" data-act="go" data-i="2">${t("backPrev")}</button><span class="grow"></span><button type="button" class="btn" data-act="folder">${t("openFolder")}</button><button type="button" class="btn pri" data-act="report">${t("openReport")}</button></div>`;
+}
+function reportHTML() {
+  const o = st.out;
+  const rows = o.map(r => `<tr><td><span class="badge ${r.ok ? "ok" : "bad"}">${t(r.ok ? "PASS" : "FAIL")}</span></td><td class="out">${esc(r.out)}${r.probs.length ? `<div class="problem">${r.probs.map(x => esc(t("stillFound", {t:tt(x.t), w:tt(x.w)}))).join("<br>")}</div>` : ""}${r.kept.length ? `<div class="kept">${esc(t("keptN", {n:r.kept.length, w:[...new Set(r.kept.map(x => tt(x.w).split(" · ")[0]))].join(", ")}))}</div>` : ""}</td><td class="num">${r.n}</td><td><div class="qc">${["qS1", "qS2", "qS3", "qS4"].map((k, i) => `<span class="${r.checks[i] ? "" : "f"}">${r.checks[i] ? "✓" : "✗"} ${t(k)}</span>`).join("")}</div></td></tr>`).join("");
+  return `<div class="rep-head"><h2>${t("repTitle")}</h2><span class="eyebrow">${t("repMeta", {n:o.length})}</span></div>
+  <div class="tbl-wrap"><table><thead><tr><th>${t("thStatus")}</th><th>${t("thOutF")}</th><th class="num">${t("thRed")}</th><th>${t("thQC")}</th></tr></thead><tbody>${rows}</tbody></table></div>
+  <p class="info">${t("repFoot")} ${t("repSaved")}</p>
+  <div class="dlgfoot"><button type="button" class="btn pri" data-act="close">${t("close")}</button></div>`;
+}
+
+/* ---------- dialogs, toast, progress ---------- */
+function modal(html, wide) {
+  const d = $("#dlg");
+  d.className = "dlg" + (wide ? " wide" : "");
+  d.innerHTML = html;
+  $("#scrim").hidden = false;
+  const f = d.querySelector("button.pri, button");
+  if (f) f.focus();
+}
+function closeModal() { $("#scrim").hidden = true; $("#dlg").innerHTML = ""; }
+function toast(msg) {
+  const el = $("#toast");
+  el.textContent = msg; el.hidden = false;
+  clearTimeout(st.toastT);
+  st.toastT = setTimeout(() => { el.hidden = true; }, 4200);
+}
+function progress(title, names, ms, done) {
+  st.busy = true; renderRail();
+  let i = 0, cancelled = false;
+  modal(`<h2>${esc(title)}</h2><div class="plabel" id="pl"></div><div class="bar"><i id="pb"></i></div><p class="info">${t("ocrNote")}</p><div class="dlgfoot"><button type="button" class="btn" data-act="pcancel">${t("cancel")}</button></div>`);
+  st.pcancel = () => { cancelled = true; };
+  const step = () => {
+    if (cancelled) { st.busy = false; closeModal(); renderRail(); return; }
+    const pb = $("#pb"), pl = $("#pl");
+    if (!pb) return;
+    if (i >= names.length) { pb.style.width = "100%"; setTimeout(() => { st.busy = false; closeModal(); if (!cancelled) done(); else renderRail(); }, 280); return; }
+    pl.textContent = t("progLine", {name:names[i], i:i + 1, n:names.length});
+    pb.style.width = ((i + 0.5) / names.length * 100) + "%";
+    i++;
+    setTimeout(step, ms);
+  };
+  step();
+}
+
+/* ---------- actions ---------- */
+function applyDetect(ids) {
+  const p = st.prof, typed = Object.fromEntries(p.clients.filter(c => c.client.trim()).map(c => [c.client.trim().toLowerCase(), c]));
+  const found = [];
+  const nw = ids.filter(id => id !== "xls"), el = ids.filter(id => id === "xls");
+  if (nw.length) found.push({client:"Nordwind Netz", legal:"Nordwind Netz GmbH", abbr:"", spell:"Nordwind-Netz", files:nw});
+  if (el.length) found.push({client:"Stadtwerke Elmshagen", legal:"Stadtwerke Elmshagen AG", abbr:"", spell:"SW Elmshagen", files:el});
+  for (const c of found) { const old = typed[c.client.toLowerCase()]; if (old) c.abbr = old.abbr; }
+  p.clients = found; p.sel = 0;
+  st.det = {n:ids.length, k:found.length, alts:ids.includes("tr") || ids.includes("doc") ? ["Kabelwerk Süd AG"] : []};
+  st.sugg = ["client", "legal", "spell"];
+  ids.forEach(id => { if (!st.files.includes(id)) st.files.push(id); });
+  st.files.sort((a, b) => ORDER.indexOf(a) - ORDER.indexOf(b));
+  invalidate();
+}
+function startScan(keep) {
+  progress(t("scanning"), st.files.map(id => FILE[id].name), 650, () => {
+    st.scans = buildScans(keep);
+    if (!st.files.includes(st.cur)) st.cur = st.files[0];
+    st.out = null;
+    go(2);
+  });
+}
+function rescanWithTerm(term) {
+  term = term.trim();
+  if (!term) return;
+  const before = Object.values(st.scans).reduce((a, s) => a + s.finds.filter(f => f.grp === "extra").length, 0);
+  st.added.push(term);
+  const keep = st.scans;
+  progress(t("scanning"), st.files.map(id => FILE[id].name), 300, () => {
+    st.scans = buildScans(keep);
+    st.out = null;
+    const after = Object.values(st.scans).reduce((a, s) => a + s.finds.filter(f => f.grp === "extra").length, 0);
+    st.tab = 0;
+    render();
+    toast(after > before ? t("hits", {t:term, n:after - before}) : t("noHits", {t:term}));
+  });
+}
+
+document.addEventListener("click", e => {
+  const a = e.target.closest("[data-act]");
+  if (!a) {
+    const pg = e.target.closest("#page");
+    if (pg && !st.draw && st.scans) {
+      const sc = st.scans[st.cur];
+      const fe = e.target.closest("[data-f].mk"), ie = e.target.closest("[data-img].mk");
+      const inner = fe && ie ? (ie.contains(fe) ? fe : ie) : (fe || ie);
+      if (!inner) return;
+      const item = inner.dataset.f ? sc.finds.find(x => x.id === inner.dataset.f) : sc.imgs.find(x => x.id === inner.dataset.img);
+      if (item) { item.on = !item.on; st.out = null; st.tab = inner.dataset.f ? 0 : 1; render(); }
+    }
+    return;
+  }
+  const act = a.dataset.act;
+  if (a.disabled) return;
+  switch (act) {
+    case "lang":
+      L = a.dataset.l;
+      try { localStorage.setItem("proj05demo.lang", L); } catch (err) {}
+      render();
+      if (!$("#splash").hidden) $("#spstat").textContent = t($("#spstat").dataset.t || "sp1");
+      break;
+    case "replay": splash(); break;
+    case "skip": endSplash(); break;
+    case "go": if (canGo(+a.dataset.i)) go(+a.dataset.i); break;
+    case "detect":
+      modal(`<h2>${t("dlgPick")}</h2><div class="checks">${ORDER.map(id => `<label class="check"><input type="checkbox" data-pick="${id}" checked><span class="fname">${esc(FILE[id].name)}</span></label>`).join("")}</div><div class="dlgfoot"><button type="button" class="btn" data-act="close">${t("cancel")}</button><button type="button" class="btn pri" data-act="detectGo">${t("open")}</button></div>`);
+      break;
+    case "detectGo": {
+      const ids = [...document.querySelectorAll("[data-pick]:checked")].map(x => x.dataset.pick);
+      closeModal();
+      if (!ids.length) break;
+      progress(t("reading"), ids.map(id => FILE[id].name), 380, () => { applyDetect(ids); render(); const c = $("#f-client"); if (c) { c.focus(); c.select(); } });
+      break;
+    }
+    case "alt": {
+      const alt = st.det.alts[+a.dataset.i];
+      st.prof.clients.push({client:stripForm(alt), legal:alt, abbr:"", spell:"", files:[]});
+      st.prof.sel = st.prof.clients.length - 1;
+      st.det.alts.splice(+a.dataset.i, 1);
+      st.sugg = ["client", "legal"]; invalidate(); render();
+      break;
+    }
+    case "selClient": st.prof.sel = +a.dataset.i; st.sugg = []; render(); break;
+    case "addClient":
+      st.prof.clients.push(blankClient()); st.prof.sel = st.prof.clients.length - 1; st.sugg = []; invalidate(); render();
+      { const c = $("#f-client"); if (c) c.focus(); }
+      break;
+    case "rmClient":
+      st.prof.clients.splice(st.prof.sel, 1);
+      if (!st.prof.clients.length) st.prof.clients.push(blankClient());
+      st.prof.sel = Math.min(st.prof.sel, st.prof.clients.length - 1); st.sugg = []; invalidate(); render();
+      break;
+    case "safelist": toast(t("safeToast")); break;
+    case "clear":
+      st.prof = freshProfile(); st.det = null; st.sugg = []; invalidate(); render();
+      break;
+    case "next0": go(1); break;
+    case "addFiles": case "addFolder": {
+      const add = ORDER.filter(id => !st.files.includes(id));
+      if (!add.length) { toast(t("allIn")); break; }
+      st.files.push(...add);
+      st.files.sort((x, y) => ORDER.indexOf(x) - ORDER.indexOf(y));
+      invalidate(); render();
+      if (act === "addFolder") toast(t("folderAdded", {n:add.length}));
+      break;
+    }
+    case "rm": st.files = st.files.filter(x => x !== a.dataset.id); invalidate(); render(); break;
+    case "scan": startScan(null); break;
+    case "file": st.cur = a.dataset.id; st.page = 1; st.draw = false; render(); { const fl = $("#flist"); if (fl) fl.scrollTop = 0; } break;
+    case "tab": st.tab = +a.dataset.i; render(); break;
+    case "pg": st.page = Math.min(FILE[st.cur].pages, Math.max(1, st.page + (+a.dataset.d))); render(); { const v = $(".varea"); if (v) v.scrollTop = 0; } break;
+    case "draw": st.draw = !st.draw; if (st.draw) { st.fin = false; toast(t("drawHint")); } render(); break;
+    case "addterm": rescanWithTerm($("#addterm").value); break;
+    case "redact":
+      progress(t("redacting"), st.files.map(id => anonName(FILE[id].name)), 600, () => { st.out = computeOut(); go(3); });
+      break;
+    case "restart": st.files = []; st.scans = null; st.out = null; st.added = []; st.det = null; st.sugg = []; st.page = 1; st.tab = 0; go(0); break;
+    case "folder": toast(t("folderToast")); break;
+    case "report": modal(reportHTML(), true); break;
+    case "close": closeModal(); break;
+    case "pcancel": if (st.pcancel) st.pcancel(); break;
+  }
+});
+
+document.addEventListener("input", e => {
+  const el = e.target;
+  if (!el.dataset || !el.dataset.p) return;
+  if (CK.includes(el.dataset.p)) {
+    cur()[el.dataset.p] = el.value;
+    const row = document.querySelector(".crow.sel");
+    if (row) row.innerHTML = rowHTML(cur(), st.prof.sel);
+  } else st.prof[el.dataset.p] = el.value;
+  el.classList.remove("filled");
+  st.sugg = st.sugg.filter(k => k !== el.dataset.p);
+  invalidate();
+  $("#variants").innerHTML = variantsHTML();
+  const nb = $("[data-act=next0]");
+  if (nb) nb.disabled = !hasClient();
+  renderRail();
+});
+
+document.addEventListener("change", e => {
+  const el = e.target;
+  if (el.dataset.o) { st.prof[el.dataset.o] = el.checked; invalidate(); renderRail(); return; }
+  if (el.id === "subf") { st.subf = el.checked; return; }
+  if (el.dataset.save) { st.save = el.dataset.save; return; }
+  if (el.id === "fin") { st.fin = el.checked; st.draw = false; render(); return; }
+  if (el.dataset.fid) {
+    const f = st.scans[st.cur].finds.find(x => x.id === el.dataset.fid);
+    f.on = el.checked; st.out = null;
+    if (f.p && FILE[st.cur].type === "PDF" && f.p !== st.page) st.page = f.p;
+    render();
+    if (f.p) flash(f.id);
+    return;
+  }
+  if (el.dataset.iid) {
+    const m = st.scans[st.cur].imgs.find(x => x.id === el.dataset.iid);
+    m.on = el.checked; st.out = null; render();
+  }
+});
+
+document.addEventListener("keydown", e => {
+  if (e.key === "Enter" && e.target.id === "addterm") { e.preventDefault(); rescanWithTerm(e.target.value); }
+});
+
+document.addEventListener("pointerdown", e => {
+  const pg = e.target.closest("#page");
+  if (!pg || !st.draw) return;
+  e.preventDefault();
+  const r = pg.getBoundingClientRect();
+  const clamp = v => Math.max(0, Math.min(100, v));
+  const x0 = clamp((e.clientX - r.left) / r.width * 100), y0 = clamp((e.clientY - r.top) / r.height * 100);
+  const b = document.createElement("span");
+  b.className = "mbox mk on";
+  b.dataset.f = "drawing";
+  pg.appendChild(b);
+  let box = null;
+  const mv = ev => {
+    const x = clamp((ev.clientX - r.left) / r.width * 100), y = clamp((ev.clientY - r.top) / r.height * 100);
+    box = {x:Math.min(x0, x), y:Math.min(y0, y), w:Math.abs(x - x0), h:Math.abs(y - y0)};
+    Object.assign(b.style, {left:box.x + "%", top:box.y + "%", width:box.w + "%", height:box.h + "%"});
+  };
+  const up = () => {
+    removeEventListener("pointermove", mv);
+    removeEventListener("pointerup", up);
+    if (!box || box.w < 1.5 || box.h < 1) { b.remove(); return; }
+    st.manN++;
+    st.scans[st.cur].finds.push({id:"m" + st.manN, g:"manual", grp:"manual", t:[`Rahmen ${st.manN}`, `Box ${st.manN}`], w:[`Seite ${st.page}`, `Page ${st.page}`], p:st.page, box, on:true});
+    st.draw = false; st.out = null; st.tab = 0;
+    render();
+  };
+  addEventListener("pointermove", mv);
+  addEventListener("pointerup", up);
+});
+
+/* ---------- launch screen ---------- */
+function splash() {
+  const sp = $("#splash"), bar = $("#spbar"), txt = $("#spstat");
+  clearTimeout(st.spT);
+  sp.hidden = false;
+  sp.classList.remove("gone");
+  const path = sp.querySelector(".gridline path");
+  path.style.animation = "none"; void path.getBoundingClientRect(); path.style.animation = "";
+  const quick = matchMedia("(prefers-reduced-motion: reduce)").matches;
+  const keys = ["sp1", "sp2", "sp3", "sp4"];
+  let i = 0;
+  bar.style.width = "0";
+  const next = () => {
+    txt.dataset.t = keys[i];
+    txt.textContent = t(keys[i]);
+    bar.style.width = ((i + 1) / keys.length * 100) + "%";
+    i++;
+    st.spT = setTimeout(i < keys.length ? next : endSplash, quick ? 200 : (i < keys.length ? 800 : 1100));
+  };
+  st.spT = setTimeout(next, quick ? 0 : 250);
+}
+function endSplash() {
+  clearTimeout(st.spT);
+  const sp = $("#splash");
+  sp.classList.add("gone");
+  st.spT = setTimeout(() => { sp.hidden = true; }, 520);
+  const b = $("#main button:not([disabled])");
+  if (b) b.focus({preventScroll:true});
+}
+
+/* ---------- start ---------- */
+const VIEWS = {kunde:0, client:0, dateien:1, files:1, vorschau:2, preview:2, ergebnis:3, result:3};
+const h = (location.hash || "").slice(1).toLowerCase();
+if (h in VIEWS) {
+  const step = VIEWS[h];
+  if (step >= 1) applyDetect(ORDER.slice());
+  if (step >= 2) st.scans = buildScans(null);
+  if (step >= 3) st.out = computeOut();
+  st.step = step;
+  $("#splash").hidden = true;
+  render();
+} else {
+  render();
+  splash();
+}
+</script>
+
+
+<a class="pf-demo-badge" href="https://harispaartan.github.io/#work" title="Back to the portfolio">Portfolio demo · fictional company &amp; data · harispaartan.github.io</a>
+<style>.pf-demo-badge{position:fixed;right:12px;bottom:12px;z-index:2147483647;font:500 12px/1.3 system-ui,-apple-system,"Segoe UI",sans-serif;color:#E6EDF3;background:rgba(11,15,20,.92);border:1px solid #2a3340;border-radius:999px;padding:7px 12px;text-decoration:none;box-shadow:0 6px 20px rgba(0,0,0,.35);opacity:.92}.pf-demo-badge:hover{opacity:1;color:#F2A93B}@media print{.pf-demo-badge{display:none}}</style>
+</body>
+</html>
