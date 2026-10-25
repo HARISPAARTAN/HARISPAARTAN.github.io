@@ -220,6 +220,46 @@
               <div class="links"><a href="https://github.com/HARISPAARTAN/facial-recognition-attendance">Source</a></div>
             </div>
           </article>
+
+          <article class="card reveal">
+            <div class="body">
+              <div class="meta"><span>python · text-to-sql benchmark</span><span class="badge">v0.1.1</span></div>
+              <h3>Energie-SQL-Bench</h3>
+              <p>Text-to-SQL benchmark in German and English on a SQL Server energy data warehouse. 70 reference questions with gold SQL (drafted by a language model, verified by execution), a fail-closed SQL guard with a read-only login, six prompt variants, scoring with an error taxonomy, Anthropic and Ollama adapters and a DuckDB sample in CI. Live model runs are still pending; until then the results page shows only the pipeline test.</p>
+              <div class="tags"><span>Python</span><span>SQL Server</span><span>DuckDB</span><span>sqlglot</span><span>GitHub Actions</span></div>
+              <div class="links"><a href="https://harispaartan.github.io/energie-sql-bench/">Results page</a><a href="https://github.com/HARISPAARTAN/energie-sql-bench">Source</a></div>
+            </div>
+          </article>
+
+          <article class="card reveal">
+            <div class="body">
+              <div class="meta"><span>python · probabilistic forecasting</span><span class="badge">in progress</span></div>
+              <h3>Netzlast-Prognose</h3>
+              <p>Probabilistic day-ahead forecast of German grid load (SMARD, CC BY 4.0) with LightGBM quantile regression and conformal calibration. Pre-registered backtest protocol (tag protocol-v1) over 730 test days: CRPS 42 % below the seasonal-naive baseline, with 80 % and 90 % intervals covering 80.1 % and 89.8 %. FastAPI service in a Docker image and a daily live run into a forecast-log branch. Tag v0.1.0 is still to come.</p>
+              <div class="tags"><span>Python</span><span>LightGBM</span><span>statsforecast</span><span>FastAPI</span><span>Docker</span><span>GitHub Actions</span></div>
+              <div class="links"><a href="https://harispaartan.github.io/netzlast-prognose/">Plots</a><a href="https://github.com/HARISPAARTAN/netzlast-prognose">Source</a></div>
+            </div>
+          </article>
+
+          <article class="card reveal">
+            <div class="body">
+              <div class="meta"><span>python · rag evaluation</span><span class="badge">in progress</span></div>
+              <h3>RAG-Prüfstand</h3>
+              <p>Evaluation bench for retrieval-augmented generation on five German energy laws (public domain, § 5 UrhG). 240 questions drafted by a language model, human review still pending; six retrieval variants times two chunkings, scored with Recall@k, MRR and nDCG with bootstrap intervals. In the published run, hybrid plus reranker reaches Recall@5 of 0.71 against 0.54 for BM25, and the gain comes from the reranking. LLM layer with Anthropic and Ollama backends and record and replay. Results page and tag v0.1.0 follow; answer and judge runs are pending.</p>
+              <div class="tags"><span>Python</span><span>sentence-transformers</span><span>BM25</span><span>CPU</span></div>
+              <div class="links"><a href="https://github.com/HARISPAARTAN/rag-pruefstand">Source</a></div>
+            </div>
+          </article>
+
+          <article class="card reveal">
+            <div class="body">
+              <div class="meta"><span>analytics engineering · dbt</span><span class="badge">in progress</span></div>
+              <h3>ANAC Appalti dbt</h3>
+              <p>Analytics-engineering pipeline for Italian public procurement data (ANAC Open Data, CC BY-SA 4.0): an immutable raw archive with checksums, a landing layer that redacts personal data of natural persons before writing, dbt layers with 40 models and contract tests, a star schema and nine marts for a later Power BI report, a data quality report and Dagster orchestration. The dbt docs are on GitHub Pages. The full 2024 to 2026 run and tag v0.1.0 follow.</p>
+              <div class="tags"><span>Python</span><span>dbt-core</span><span>DuckDB</span><span>Dagster</span><span>GitHub Actions</span></div>
+              <div class="links"><a href="https://harispaartan.github.io/anac-appalti-dbt/">dbt docs</a><a href="https://github.com/HARISPAARTAN/anac-appalti-dbt">Source</a></div>
+            </div>
+          </article>
         </div>
       </div>
     </section>
