@@ -1,0 +1,676 @@
+# Case study 01: the S01 website demos (a public gallery of six design directions).
+# Format reference: content/case-studies/SCHEMA.md
+
+[meta]
+slug = "s01-website-demos"
+order = 1
+status.en = "internal design review"
+status.de = "interne Design-Abstimmung"
+tech = ["Node 22", "JavaScript", "JSON", "GitHub Actions", "GitHub Pages", "Playwright"]
+demo_url = "https://harispaartan.github.io/s01-demos/"
+facts_as_of = 2026-10-26
+notice.en = """
+Simplified description of an internal design review. No client data, internal addresses or source code are shown.
+The linked gallery is a separate public site that search engines are asked not to index; the English copy of its
+demos is a draft translation awaiting the employer's review.
+"""
+notice.de = """
+Vereinfachte Beschreibung einer internen Design-Abstimmung. Es werden weder Kundendaten noch interne Adressen oder
+Quellcode gezeigt. Die verlinkte Galerie ist eine eigene öffentliche Website, die Suchmaschinen nicht indexieren
+sollen; die englischen Texte ihrer Demos sind eine Entwurfsübersetzung, die noch auf die Prüfung durch den
+Arbeitgeber wartet.
+"""
+
+# ---------------------------------------------------------------------------------------------------------------------
+[hero]
+eyebrow.en = "website demos"
+eyebrow.de = "Website-Demos"
+title.en = "S01 website demos"
+title.de = "S01 Website-Demos"
+subtitle.en = "Six design directions for the company website, generated from one bilingual content source"
+subtitle.de = "Sechs Designrichtungen für die Firmenwebsite, erzeugt aus einer zweisprachigen Inhaltsquelle"
+lead.en = """
+Each direction is a complete, navigable site in German and in a draft English translation, assembled by a Node static
+generator from the shared content, a component kit and one small recipe per demo. The supervisor can compare them on
+the real text and all eight pages instead of placeholders. The English copy still awaits the employer's review.
+**I set the brief and released the gallery**, which is public but not indexed by search engines.
+"""
+lead.de = """
+Ein statischer Node-Generator setzt jede Richtung aus den gemeinsamen Inhalten, einem Komponenten-Baukasten und einem
+kleinen Rezept pro Demo zu einer vollständigen, durchklickbaren Website zusammen, auf Deutsch und in einer englischen
+Entwurfsübersetzung. Die Führungskraft kann sie am echten Text und an allen acht Seiten vergleichen statt an
+Platzhaltern. Die englischen Texte warten noch auf die Prüfung durch den Arbeitgeber. **Ich habe den Auftrag
+festgelegt und die Galerie veröffentlicht**; sie ist öffentlich, wird aber von Suchmaschinen nicht indexiert.
+"""
+
+[[hero.stats]]
+value = "6"
+label.en = "redesign demos, German plus a draft English translation"
+label.de = "Redesign-Demos, Deutsch plus englische Entwurfsübersetzung"
+
+[[hero.stats]]
+value = "96"
+label.en = "pages generated: 6 demos × 2 languages × 8 pages"
+label.de = "erzeugte Seiten: 6 Demos × 2 Sprachen × 8 Seiten"
+
+[[hero.stats]]
+value = "36"
+label.en = "layout variants in 8 kit components"
+label.de = "Layoutvarianten in 8 Komponenten des Baukastens"
+
+[[hero.stats]]
+value = "119"
+label.en = "automated tests before every deploy"
+label.de = "automatisierte Tests vor jedem Deployment"
+
+[[hero.facts]]
+label.en = "Role"
+label.de = "Rolle"
+value.en = "development, as a working student at S01 Projektmanagement GmbH (brief, revisions and release)"
+value.de = "Entwicklung, als Werkstudent bei S01 Projektmanagement GmbH (Auftrag, Überarbeitungen und Veröffentlichung)"
+
+[[hero.facts]]
+label.en = "Built for"
+label.de = "Gebaut für"
+value.en = "the supervisor, who picks a direction"
+value.de = "die Führungskraft, die eine Richtung auswählt"
+
+[[hero.facts]]
+label.en = "Platform"
+label.de = "Plattform"
+value.en = "static site on GitHub Pages, not indexed"
+value.de = "statische Seite auf GitHub Pages, nicht indexiert"
+
+[[hero.facts]]
+label.en = "Status"
+label.de = "Status"
+value.en = "internal design review, live since October 2026"
+value.de = "interne Design-Abstimmung, online seit Oktober 2026"
+
+# ---------------------------------------------------------------------------------------------------------------------
+[why]
+heading.en = "Comparing designs on real content, and changing course cheaply"
+heading.de = "Designs an echtem Inhalt vergleichen und den Kurs mit wenig Aufwand ändern"
+
+[[why.paragraphs]]
+en = """
+The supervisor wanted to compare design directions for the company website on the real content and all eight pages,
+not on placeholders: home, services, projects, company, careers, contact, legal notice and privacy. A direction
+therefore had to be a whole site, German by default with an English toggle and a looping video in the hero. 
+"""
+de = """
+Die Führungskraft wollte Designrichtungen für die Firmenwebsite am echten Inhalt und an allen acht Seiten
+vergleichen, nicht an Platzhaltern: Startseite, Leistungen, Projekte, Unternehmen, Karriere, Kontakt, Impressum und
+Datenschutz. Eine Richtung musste also eine komplette Website sein, standardmäßig auf Deutsch mit einem Schalter für
+Englisch und mit einem Video in Endlosschleife im Hero-Bereich. 
+"""
+
+[[why.paragraphs]]
+en = """
+The brief kept changing within about two weeks, and the corporate colours reached every demo in a single commit.
+**Changes had to be cheap.** One content source, a shared component kit and a small recipe per demo turn a new
+direction or a global change into a small edit, and automatic checks stop a broken link or a missing translation
+before it goes online.
+"""
+de = """
+Der Auftrag änderte sich innerhalb von etwa zwei Wochen mehrfach, und die Firmenfarben kamen in einem einzigen Commit
+in jede Demo. **Änderungen mussten mit wenig Aufwand möglich sein.** Eine Inhaltsquelle, ein gemeinsamer
+Komponenten-Baukasten und ein kleines Rezept pro Demo machen aus einer neuen Richtung oder einer globalen Änderung
+eine kleine Anpassung, und automatische Prüfungen stoppen einen kaputten Link oder eine fehlende Übersetzung, bevor
+sie online gehen.
+"""
+
+[[why.notes]]
+title.en = "Who uses it"
+title.de = "Wer sie nutzt"
+text.en = """
+The supervisor, who picks a direction, and the reviewers who have the link. The gallery is public but not indexed by
+search engines.
+"""
+text.de = """
+Die Führungskraft, die eine Richtung auswählt, und die Prüfenden, die den Link haben. Die Galerie ist öffentlich,
+wird aber von Suchmaschinen nicht indexiert.
+"""
+
+[[why.notes]]
+title.en = "What it costs to run"
+title.de = "Was der Betrieb kostet"
+text.en = """
+Nothing: static files on GitHub Pages, no backend, no cookies and no analytics, so there are no visitor figures
+either.
+"""
+text.de = """
+Nichts: statische Dateien auf GitHub Pages, kein Backend, keine Cookies und keine Analyse, es gibt also auch keine
+Besucherzahlen.
+"""
+
+# ---------------------------------------------------------------------------------------------------------------------
+[flow]
+heading.en = "How content becomes a checked, live gallery"
+heading.de = "Wie aus Inhalt eine geprüfte, veröffentlichte Galerie wird"
+description.en = """
+The bilingual content, the demo recipes with their themes and the component kit feed the static generator. Its
+output goes through the quality gates and the CI and deploy workflow to the live gallery, where the motion runtime
+upgrades the pages in the browser.
+"""
+description.de = """
+Die zweisprachigen Texte, die Demo-Rezepte mit ihren Themes und der Komponenten-Baukasten speisen den statischen
+Generator. Seine Ausgabe durchläuft die Qualitätsprüfung und den CI- und Deployment-Ablauf bis zur Live-Galerie, wo
+die Animation im Browser die Seiten aufwertet.
+"""
+
+[[flow.nodes]]
+id = "content"
+tag = "JSON"
+title.en = "Bilingual content"
+title.de = "Zweisprachige Texte"
+role.en = "DE and EN, identical keys"
+role.de = "DE und EN, gleiche Schlüssel"
+wide = [20, 20, 200]
+tall = [50, 20, 300]
+
+[[flow.nodes]]
+id = "recipes"
+tag = "JSON · CSS"
+title.en = "Recipes and themes"
+title.de = "Rezepte und Themes"
+role.en = "variants, video, motion"
+role.de = "Varianten, Video, Bewegung"
+wide = [20, 170, 200]
+tall = [50, 140, 300]
+
+[[flow.nodes]]
+id = "kit"
+tag = "JAVASCRIPT"
+title.en = "Component kit"
+title.de = "Baukasten"
+role.en = "8 components, 36 variants"
+role.de = "8 Komponenten, 36 Varianten"
+wide = [20, 320, 200]
+tall = [50, 260, 300]
+
+[[flow.nodes]]
+id = "generator"
+tag = "NODE 22"
+title.en = "Static generator"
+title.de = "Statischer Generator"
+role.en = "renders 96 pages + gallery"
+role.de = "erzeugt 96 Seiten + Galerie"
+wide = [275, 170, 200]
+tall = [50, 380, 300]
+
+[[flow.nodes]]
+id = "checks"
+tag = "NODE:TEST"
+title.en = "Quality gates"
+title.de = "Qualitätsprüfung"
+role.en = "119 tests + output checker"
+role.de = "119 Tests + Ausgabeprüfung"
+wide = [530, 170, 200]
+tall = [50, 500, 300]
+
+[[flow.nodes]]
+id = "ci"
+tag = "GITHUB ACTIONS"
+title.en = "CI and deploy"
+title.de = "CI und Deployment"
+role.en = "tests, builds, publishes"
+role.de = "testet, baut, veröffentlicht"
+wide = [785, 170, 200]
+tall = [50, 620, 300]
+
+[[flow.nodes]]
+id = "pages"
+tag = "GITHUB PAGES"
+title.en = "Live gallery"
+title.de = "Live-Galerie"
+role.en = "six demos, not indexed"
+role.de = "sechs Demos, nicht indexiert"
+wide = [785, 320, 200]
+tall = [50, 740, 300]
+
+[[flow.nodes]]
+id = "motion"
+tag = "CSS · JS"
+title.en = "Motion runtime"
+title.de = "Animation im Browser"
+role.en = "scroll effects, transitions"
+role.de = "Scroll-Effekte, Übergänge"
+wide = [530, 320, 200]
+tall = [50, 860, 300]
+
+[[flow.edges]]
+id = "read-content"
+wide = ["content.right", "generator.top"]
+tall = ["content.left", "generator.left"]
+
+[[flow.edges]]
+id = "read-recipes"
+wide = ["recipes.right", "generator.left"]
+tall = ["recipes.right", "generator.right"]
+
+[[flow.edges]]
+id = "read-kit"
+wide = ["kit.right", "generator.bottom"]
+tall = ["kit.bottom", "generator.top"]
+
+[[flow.edges]]
+id = "to-checks"
+wide = ["generator.right", "checks.left"]
+tall = ["generator.bottom", "checks.top"]
+
+[[flow.edges]]
+id = "to-ci"
+wide = ["checks.right", "ci.left"]
+tall = ["checks.bottom", "ci.top"]
+
+[[flow.edges]]
+id = "to-pages"
+wide = ["ci.bottom", "pages.top"]
+tall = ["ci.bottom", "pages.top"]
+
+[[flow.edges]]
+id = "to-motion"
+wide = ["pages.left", "motion.right"]
+tall = ["pages.bottom", "motion.top"]
+
+[[flow.steps]]
+id = "write"
+title.en = "Write the content once"
+title.de = "Inhalt einmal schreiben"
+text.en = """
+Two language files hold all text under the same keys, and **the build stops** if a key exists in only one language.
+
+"""
+text.de = """
+Zwei Sprachdateien enthalten allen Text unter denselben Schlüsseln, und **der Build bricht ab**, wenn ein Schlüssel
+nur in einer Sprache existiert. 
+"""
+nodes = ["content", "generator"]
+edges = ["read-content"]
+
+[[flow.steps]]
+id = "recipe"
+title.en = "Describe each demo as a recipe"
+title.de = "Jede Demo als Rezept beschreiben"
+text.en = """
+A recipe names the layout variants, fonts, video and motion level of one demo; a theme file sets its colours.
+**Unknown names are rejected** and the build lists the valid ones.
+"""
+text.de = """
+Ein Rezept legt Layoutvarianten, Schriften, Video und Bewegungsstufe einer Demo fest, eine Theme-Datei die Farben.
+**Unbekannte Namen werden abgelehnt**, und der Build nennt die gültigen.
+"""
+nodes = ["recipes", "generator"]
+edges = ["read-recipes"]
+
+[[flow.steps]]
+id = "render"
+title.en = "Render every page"
+title.de = "Jede Seite erzeugen"
+text.en = """
+The generator takes the chosen variants from the kit and writes **96 pages** plus the gallery.
+"""
+text.de = """
+Der Generator holt die gewählten Varianten aus dem Baukasten und schreibt **96 Seiten** plus die Galerie.
+"""
+nodes = ["kit", "generator"]
+edges = ["read-kit"]
+badge = { node = "generator", text.en = "96 PAGES", text.de = "96 SEITEN" }
+
+[[flow.steps]]
+id = "check"
+title.en = "Check the output"
+title.de = "Ausgabe prüfen"
+text.en = """
+A checker walks the result. A broken link or anchor, a wrong number of h1 headings, a wrong language, missing
+navigation or theme contrast below 4.5:1 **fails the build**.
+"""
+text.de = """
+Ein Prüfprogramm geht das Ergebnis durch. Ein kaputter Link oder Anker, eine falsche Anzahl von h1-Überschriften, eine
+falsche Sprache, fehlende Navigation oder ein Theme-Kontrast unter 4,5:1 **lässt den Build scheitern**.
+"""
+nodes = ["generator", "checks"]
+edges = ["to-checks"]
+badge = { node = "checks", text.en = "FAILS THE BUILD", text.de = "STOPPT DEN BUILD" }
+
+[[flow.steps]]
+id = "deploy"
+title.en = "Push to deploy"
+title.de = "Deployment per Push"
+text.en = """
+On a push to main, GitHub Actions runs the tests, the build and the checker again and publishes only if
+**all of them pass**.
+"""
+text.de = """
+Bei einem Push auf main führt GitHub Actions Tests, Build und Prüfprogramm erneut aus und veröffentlicht nur, wenn
+**alles besteht**.
+"""
+nodes = ["checks", "ci", "pages"]
+edges = ["to-ci", "to-pages"]
+badge = { node = "ci", text.en = "ONLY IF GREEN", text.de = "NUR BEI GRÜN" }
+
+[[flow.steps]]
+id = "open"
+title.en = "Open the gallery"
+title.de = "Galerie öffnen"
+text.en = """
+A reviewer opens a demo. The page is plain pre-rendered HTML that a small script upgrades with reveals, parallax,
+counters and page transitions.
+"""
+text.de = """
+Wer prüft, öffnet eine Demo. Die Seite ist schlichtes, vorab erzeugtes HTML, das ein kleines Skript um
+Einblendungen, Parallaxe, Zähler und Seitenübergänge erweitert.
+"""
+nodes = ["pages", "motion"]
+edges = ["to-motion"]
+
+# ---------------------------------------------------------------------------------------------------------------------
+[model]
+heading.en = "One content model, six recipes, 36 variants"
+heading.de = "Ein Inhaltsmodell, sechs Rezepte, 36 Varianten"
+description.en = """
+A language edition has many pages, a page has many sections and a section has many items. A demo recipe has one theme
+and picks one variant for each of the eight slots of the component kit.
+"""
+description.de = """
+Eine Sprachfassung hat mehrere Seiten, eine Seite mehrere Abschnitte und ein Abschnitt mehrere Einträge. Ein
+Demo-Rezept hat ein Theme und wählt für jeden der acht Slots des Baukastens eine Variante.
+"""
+caption.en = """
+Simplified: 7 of 12 entities. Left out: site meta, page slugs, video clips, photos and the slot registry. The 96
+output pages (6 recipes × 2 editions × 8 pages) are built, not stored.
+"""
+caption.de = """
+Vereinfacht: 7 von 12 Objekten. Weggelassen: Website-Metadaten, Seitenkürzel (Slugs), Videoclips, Fotos und das
+Slot-Register. Die 96 Ausgabeseiten (6 Rezepte × 2 Sprachfassungen × 8 Seiten) werden erzeugt, nicht gespeichert.
+"""
+
+[[model.entities]]
+id = "edition"
+kind = "object"
+name.en = "Language edition"
+name.de = "Sprachfassung"
+note.en = "one file per language"
+note.de = "eine Datei pro Sprache"
+wide = [20, 44, 190]
+fields = [
+  { key = "PK", name.en = "Language: de or en", name.de = "Sprache: de oder en" },
+  { name.en = "Site meta", name.de = "Website-Metadaten" },
+  { name.en = "Pages", name.de = "Seiten" },
+]
+
+[[model.entities]]
+id = "page"
+kind = "object"
+name.en = "Page"
+name.de = "Seite"
+note.en = "8 per edition"
+note.de = "8 pro Sprachfassung"
+wide = [285, 20, 170]
+fields = [
+  { key = "PK", name.en = "Page key", name.de = "Seitenschlüssel" },
+  { key = "FK", name.en = "Language edition", name.de = "Sprachfassung" },
+  { name.en = "Title", name.de = "Titel" },
+  { name.en = "Description", name.de = "Beschreibung" },
+  { name.en = "Hero", name.de = "Hero-Bereich" },
+]
+
+[[model.entities]]
+id = "section"
+kind = "object"
+name.en = "Section"
+name.de = "Abschnitt"
+note.en = "36 per edition"
+note.de = "36 pro Sprachfassung"
+wide = [530, 20, 170]
+fields = [
+  { key = "PK", name.en = "Key path", name.de = "Schlüsselpfad" },
+  { key = "FK", name.en = "Page", name.de = "Seite" },
+  { name.en = "Eyebrow", name.de = "Dachzeile" },
+  { name.en = "Title", name.de = "Überschrift" },
+  { name.en = "Text", name.de = "Text" },
+]
+
+[[model.entities]]
+id = "item"
+kind = "object"
+name.en = "Item"
+name.de = "Eintrag"
+note.en = "repeated entries"
+note.de = "wiederkehrende Einträge"
+wide = [775, 20, 200]
+fields = [
+  { key = "PK", name.en = "Id or position", name.de = "Kennung oder Position" },
+  { key = "FK", name.en = "Section", name.de = "Abschnitt" },
+  { name.en = "Title", name.de = "Titel" },
+  { name.en = "Text", name.de = "Text" },
+  { name.en = "Question and answer", name.de = "Frage und Antwort" },
+]
+
+[[model.entities]]
+id = "theme"
+kind = "object"
+name.en = "Theme"
+name.de = "Theme"
+note.en = "one CSS file per demo"
+note.de = "eine CSS-Datei pro Demo"
+wide = [80, 264, 240]
+fields = [
+  { key = "PK", name.en = "Demo id", name.de = "Demo-Kennung" },
+  { name.en = "Background and text colours", name.de = "Hintergrund- und Textfarben" },
+  { name.en = "Accent colour", name.de = "Akzentfarbe" },
+  { name.en = "Fonts", name.de = "Schriften" },
+  { name.en = "Corner radius", name.de = "Eckenradius" },
+]
+
+[[model.entities]]
+id = "recipe"
+kind = "object"
+name.en = "Demo recipe"
+name.de = "Demo-Rezept"
+note.en = "6, one per direction"
+note.de = "6, eines pro Richtung"
+wide = [410, 264, 220]
+fields = [
+  { key = "PK", name.en = "Demo id", name.de = "Demo-Kennung" },
+  { name.en = "Description (de, en)", name.de = "Beschreibung (de, en)" },
+  { name.en = "One variant per slot", name.de = "Eine Variante je Slot" },
+  { name.en = "Video clip", name.de = "Videoclip" },
+  { name.en = "Motion level", name.de = "Bewegungsstufe" },
+]
+
+[[model.entities]]
+id = "variant"
+kind = "object"
+name.en = "Variant"
+name.de = "Variante"
+note.en = "36 in 8 slots"
+note.de = "36 in 8 Slots"
+wide = [720, 288, 200]
+fields = [
+  { key = "PK", name.en = "Slot", name.de = "Slot" },
+  { key = "PK", name.en = "Name", name.de = "Name" },
+  { name.en = "Render function", name.de = "Darstellungsfunktion" },
+]
+
+[[model.relations]]
+from = "edition"
+to = "page"
+cardinality = "one-to-many"
+wide = ["edition.right", "page.left"]
+text.en = "1 edition → 8 pages"
+text.de = "1 Sprachfassung → 8 Seiten"
+
+[[model.relations]]
+from = "page"
+to = "section"
+cardinality = "one-to-many"
+wide = ["page.right", "section.left"]
+text.en = "1 page → many sections"
+text.de = "1 Seite → viele Abschnitte"
+
+[[model.relations]]
+from = "section"
+to = "item"
+cardinality = "one-to-many"
+wide = ["section.right", "item.left"]
+text.en = "1 section → many items"
+text.de = "1 Abschnitt → viele Einträge"
+
+[[model.relations]]
+from = "recipe"
+to = "theme"
+cardinality = "one-to-one"
+wide = ["recipe.left", "theme.right"]
+text.en = "1 recipe → 1 theme"
+text.de = "1 Rezept → 1 Theme"
+
+[[model.relations]]
+from = "recipe"
+to = "variant"
+cardinality = "many-to-many"
+wide = ["recipe.right", "variant.left"]
+text.en = "1 recipe → 8 variants, one per slot"
+text.de = "1 Rezept → 8 Varianten, eine pro Slot"
+
+[[model.notes]]
+title.en = "German and English cannot drift apart"
+title.de = "Deutsch und Englisch laufen nicht auseinander"
+text.en = """
+The build fails when a key exists in only one language: 424 keys each. 
+"""
+text.de = """
+Der Build scheitert, wenn ein Schlüssel nur in einer Sprache existiert: je 424 Schlüssel. 
+"""
+
+[[model.notes]]
+title.en = "A new direction is a small file"
+title.de = "Eine neue Richtung ist eine kleine Datei"
+text.en = """
+A recipe in JSON and a theme file with colours and fonts are enough; the content and the kit stay as they are.
+"""
+text.de = """
+Ein Rezept in JSON und eine Theme-Datei mit Farben und Schriften genügen; Inhalt und Baukasten bleiben unverändert.
+"""
+
+[[model.notes]]
+title.en = "Every output page is checked"
+title.de = "Jede Ausgabeseite wird geprüft"
+text.en = """
+The 96 pages are built, not stored, and each one passes the output checker before it is published.
+"""
+text.de = """
+Die 96 Seiten werden erzeugt, nicht gespeichert, und jede einzelne durchläuft das Prüfprogramm, bevor sie
+veröffentlicht wird.
+"""
+
+# ---------------------------------------------------------------------------------------------------------------------
+[decisions]
+
+[[decisions.items]]
+title.en = "One content source, the same structure everywhere"
+title.de = "Eine Inhaltsquelle, überall dieselbe Struktur"
+text.en = """
+All text lives in two language files with identical keys, and the page set and section order are fixed in code.
+Reviewers compare design, not copy, and the two files cannot drift apart. **Trade-off:** every demo has the same
+pages in the same order.
+"""
+text.de = """
+Der gesamte Text liegt in zwei Sprachdateien mit identischen Schlüsseln; Seitenumfang und Reihenfolge der Abschnitte
+sind im Code festgelegt. Wer prüft, vergleicht Design statt Text, und die beiden Dateien können nicht
+auseinanderlaufen. **Abwägung:** Jede Demo hat dieselben Seiten in derselben Reihenfolge.
+"""
+
+[[decisions.items]]
+title.en = "Recipes, a kit and theme tokens"
+title.de = "Rezepte, Baukasten und Theme-Variablen"
+text.en = """
+A demo is a small recipe plus a theme file; the kit holds eight swappable components as plain functions that return
+HTML. New directions and global changes become small edits. **Trade-off:** the demos share one markup skeleton, so
+they differ only as far as the variants and styles allow.
+"""
+text.de = """
+Eine Demo besteht aus einem kleinen Rezept und einer Theme-Datei; der Baukasten enthält acht austauschbare
+Komponenten als einfache Funktionen, die HTML liefern. Neue Richtungen und globale Änderungen werden zu kleinen
+Anpassungen. **Abwägung:** Alle Demos teilen sich ein Markup-Gerüst und unterscheiden sich nur so weit, wie Varianten
+und Stile es erlauben.
+"""
+
+[[decisions.items]]
+title.en = "Pre-rendered pages behind a gate"
+title.de = "Vorab erzeugte Seiten hinter einer Prüfschranke"
+text.en = """
+Node writes plain HTML for every demo, language and page, with relative links, so the site works under a GitHub
+Pages sub-path and locally. GitHub Actions runs the tests, the build and the checker before it publishes.
+**Trade-off:** no CMS and no backend, so the demo forms send nothing, and the Playwright layout checks run only
+locally.
+"""
+text.de = """
+Node schreibt schlichtes HTML für jede Demo, Sprache und Seite, mit relativen Links, sodass die Seite unter einem
+GitHub-Pages-Unterpfad und lokal funktioniert. GitHub Actions führt Tests, Build und Prüfprogramm aus, bevor es
+veröffentlicht. **Abwägung:** Es gibt kein CMS und kein Backend, die Demo-Formulare senden also nichts, und die
+Playwright-Layoutprüfungen laufen nur lokal.
+"""
+
+[[decisions.items]]
+title.en = "Motion as an enhancement"
+title.de = "Bewegung als Zusatz"
+text.en = """
+Reveals, parallax and page transitions are switched on only for visitors who have not asked for reduced motion, and
+one demo opts in to a cinematic level. Content is never hidden from visitors without scripts, with reduced motion or
+when printing. **Trade-off:** more runtime code to maintain, and page transitions only in newer Chrome and Safari.
+"""
+text.de = """
+Einblendungen, Parallaxe und Seitenübergänge laufen nur, wenn keine reduzierte Bewegung eingestellt ist; eine Demo wählt zusätzlich eine filmische Stufe. Ohne Skripte, mit reduzierter Bewegung und beim Drucken bleiben alle Inhalte sichtbar. **Abwägung:** mehr Laufzeitcode zu pflegen, und Seitenübergänge gibt es nur
+in neueren Versionen von Chrome und Safari.
+"""
+
+# ---------------------------------------------------------------------------------------------------------------------
+[role]
+
+[[role.bullets]]
+en = """
+Set the brief and made the main choices: a bilingual site, all eight pages, a video hero, a generator with a shared
+component kit and public links.
+"""
+de = """
+Den Auftrag festgelegt und die wichtigsten Weichen gestellt: eine zweisprachige Website, alle acht Seiten, ein Video
+im Hero-Bereich, ein Generator mit gemeinsamem Komponenten-Baukasten und öffentliche Links.
+"""
+
+[[role.bullets]]
+en = "Decided every later revision, from the corporate colours in every demo to the motion system."
+de = "Über jede spätere Überarbeitung entschieden, von den Firmenfarben in jeder Demo bis zum Bewegungssystem."
+
+[[role.bullets]]
+en = """
+Owned the repository, GitHub Pages and the deploy workflow, and released every update to the public gallery.
+"""
+de = """
+Repository, GitHub Pages und Deployment-Ablauf verantwortet und jede Aktualisierung in der öffentlichen Galerie
+veröffentlicht.
+"""
+
+[[role.bullets]]
+en = "Brought the supervisor's choice of reference designs into the project."
+de = "Die Vorgaben der Führungskraft zu den Referenzdesigns in das Projekt eingebracht."
+
+[[role.bullets]]
+en = "Delivered the six directions as public links for the supervisor's review."
+de = "Die sechs Richtungen als öffentliche Links zur Prüfung durch die Führungskraft bereitgestellt."
+
+# ---------------------------------------------------------------------------------------------------------------------
+[result]
+heading.en = "Six design directions online, in internal design review"
+heading.de = "Sechs Designrichtungen online, in interner Design-Abstimmung"
+text.en = """
+**Six design directions are online** for the supervisor's review, in a public gallery that has been live since
+October 2026. They were built in October 2026, in 109 commits over 15 days, and a deploy only goes out when all 119
+tests and the output checker pass. Status: internal design review. 
+"""
+text.de = """
+**Sechs Designrichtungen sind online** und liegen der Führungskraft zur Prüfung vor, in einer öffentlichen Galerie, die
+seit Oktober 2026 besteht. Gebaut wurden sie im Oktober 2026, in 109 Commits innerhalb von 15 Tagen, und
+veröffentlicht wird nur, wenn alle 119 Tests und das Prüfprogramm bestehen. Stand: interne Design-Abstimmung. 
+"""

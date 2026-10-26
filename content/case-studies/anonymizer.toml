@@ -1,0 +1,547 @@
+# Case study 04 / 05: the anonymizer. Format reference: content/case-studies/SCHEMA.md
+
+[meta]
+slug = "anonymizer"
+order = 4
+status.en = "version 1.3, delivered October 2026"
+status.de = "Version 1.3, geliefert im Oktober 2026"
+tech = ["Python", "PySide6", "PyMuPDF", "spaCy", "Tesseract OCR", "lxml", "PyInstaller"]
+demo_url = "/demos/anonymizer/"
+facts_as_of = 2026-10-26
+
+[hero]
+eyebrow.en = "desktop tool"
+eyebrow.de = "Desktop-Werkzeug"
+title.en = "Anonymizer"
+title.de = "Anonymizer"
+subtitle.en = "Offline tool that removes client identifiers from documents for good, then proves it"
+subtitle.de = "Offline-Werkzeug, das alle kundenbezogenen Hinweise endgültig aus Dokumenten entfernt und anschließend belegt, dass sie weg sind"
+lead.en = """
+A Windows tool that **removes client identifiers for good** from PDF, Word, PowerPoint and Excel files and then proves
+it: every saved copy is re-opened and searched again. A person reviews what the tool found before anything is written,
+and everything runs offline from a copied folder, so confidential documents never leave the PC. I designed, built,
+tested and released it as a working student at S01; the demo shows version 1.3 with invented documents of a made-up
+company.
+"""
+lead.de = """
+Ein Windows-Programm, das aus PDF-, Word-, PowerPoint- und Excel-Dateien **alle kundenbezogenen Hinweise endgültig
+entfernt** und anschließend den Nachweis liefert: Jede gespeicherte Kopie wird neu geöffnet und erneut durchsucht. Ein
+Mensch prüft, was das Werkzeug gefunden hat, bevor etwas geschrieben wird, und alles läuft offline aus einem kopierten
+Ordner, sodass vertrauliche Dokumente den PC nie verlassen. Ich habe es als Werkstudent bei S01 entworfen, gebaut,
+getestet und ausgeliefert; die Demo zeigt Version 1.3 mit erfundenen Dokumenten einer fiktiven Firma.
+"""
+
+[[hero.stats]]
+value = "106"
+label.en = "automated tests"
+label.de = "automatisierte Tests"
+
+[[hero.stats]]
+value = "4"
+label.en = "file formats: PDF, Word, PowerPoint, Excel"
+label.de = "Dateiformate: PDF, Word, PowerPoint, Excel"
+
+[[hero.stats]]
+value = "4"
+label.en = "automatic checks on every output"
+label.de = "automatische Prüfungen für jedes Ergebnis"
+
+[[hero.stats]]
+value = "10"
+label.en = "detection categories"
+label.de = "Erkennungskategorien"
+
+[[hero.facts]]
+label.en = "Role"
+label.de = "Rolle"
+value.en = "development, as a working student at S01 Projektmanagement GmbH (design, tests and release)"
+value.de = "Entwicklung, als Werkstudent bei S01 Projektmanagement GmbH (Konzept, Tests und Release)"
+
+[[hero.facts]]
+label.en = "Made for"
+label.de = "Gedacht für"
+value.en = "non-technical staff, including the supervisor"
+value.de = "Mitarbeitende ohne technischen Hintergrund, auch die Führungskraft"
+
+[[hero.facts]]
+label.en = "Platform"
+label.de = "Plattform"
+value.en = "Windows 10 and 11, offline, no installation"
+value.de = "Windows 10 und 11, offline, ohne Installation"
+
+[[hero.facts]]
+label.en = "Delivered"
+label.de = "Geliefert"
+value.en = "version 1.3 on 20 October 2026: a portable folder (about 200 MB zipped) with a German quick guide"
+value.de = "Version 1.3 am 20. Oktober 2026: ein portabler Ordner (gezippt etwa 200 MB) mit deutscher Kurzanleitung"
+
+[why]
+heading.en = "Covering a name is not the same as removing it"
+heading.de = "Einen Namen abzudecken heißt nicht, ihn zu entfernen"
+
+[[why.paragraphs]]
+en = """
+Client documents have to be anonymized in bulk before they leave the company. A client does not appear only as a name:
+it hides in spellings and abbreviations, in people, signatures and logos, in running headers and revision tables, and in
+the metadata of the file.
+"""
+de = """
+Kundendokumente müssen gebündelt anonymisiert werden, bevor sie das Unternehmen verlassen. Der Kundenbezug steckt nicht
+nur im Namen: Er verbirgt sich in Schreibweisen und Abkürzungen, in Personen, Unterschriften und Logos, in Kopfzeilen und
+Änderungstabellen und in den Metadaten der Datei.
+"""
+
+[[why.paragraphs]]
+en = """
+**Covering is not removing.** A black box can be taken away again, the text under it can be copied, extracted or read by
+OCR, and the PDF objects still hold the original. The tool therefore deletes the content itself, so that none of these
+routes brings it back.
+"""
+de = """
+**Abdecken ist nicht Entfernen.** Ein schwarzer Balken lässt sich wieder wegnehmen, der Text darunter lässt sich kopieren, extrahieren oder per OCR erkennen, und die PDF-Objekte enthalten das Original weiterhin. Das Werkzeug löscht den
+Inhalt deshalb selbst, damit keiner dieser Wege ihn zurückbringt.
+"""
+
+[[why.paragraphs]]
+en = """
+A result also has to be checked, not trusted: every output is re-opened and searched again before it counts as
+finished. And because the documents are confidential, the whole tool works offline.
+"""
+de = """
+Ein Ergebnis muss außerdem geprüft statt vorausgesetzt werden: Jede Ausgabe wird neu geöffnet und erneut durchsucht,
+bevor sie als fertig gilt. Und weil die Dokumente vertraulich sind, arbeitet das gesamte Werkzeug offline.
+"""
+
+[[why.notes]]
+title.en = "Who it is for"
+title.de = "Für wen es gedacht ist"
+text.en = "Non-technical staff, including the supervisor. That is why it is a guided wizard that runs from a copied folder."
+text.de = "Mitarbeitende ohne technischen Hintergrund, auch die Führungskraft. Deshalb ist es ein geführter Wizard, der aus einem kopierten Ordner läuft."
+
+[[why.notes]]
+title.en = "What it costs to run"
+title.de = "Was der Betrieb kostet"
+text.en = "Nothing to host or install: it runs offline from a copied folder on Windows 10 or 11, without admin rights."
+text.de = "Nichts zu betreiben oder zu installieren: Es läuft offline aus einem kopierten Ordner unter Windows 10 oder 11, ohne Administratorrechte."
+
+[flow]
+heading.en = "How a document travels from the wizard to a checked copy"
+heading.de = "Wie ein Dokument vom Wizard zur geprüften Kopie wird"
+description.en = "The wizard hands the chosen files to the batch pipeline. Format handlers scan and redact a temporary copy, using detection and OCR. The quality check re-opens the saved copy, and the pipeline names it and writes the HTML report."
+description.de = "Der Wizard übergibt die gewählten Dateien an die Batch-Pipeline. Die Formatmodule durchsuchen und schwärzen eine temporäre Kopie und nutzen dafür Erkennung und OCR. Die Qualitätsprüfung öffnet die gespeicherte Kopie neu, die Pipeline benennt sie und schreibt den HTML-Bericht."
+
+[[flow.nodes]]
+id = "detect"
+tag = "SPACY · REGEX"
+title.en = "Detection"
+title.de = "Erkennung"
+role.en = "names, contact data"
+role.de = "Namen, Kontaktdaten"
+wide = [65, 40, 210]
+tall = [195, 20, 160]
+
+[[flow.nodes]]
+id = "handlers"
+tag = "PYMUPDF · LXML"
+title.en = "Format handlers"
+title.de = "Formatmodule"
+role.en = "one per file format"
+role.de = "eines je Dateiformat"
+wide = [395, 40, 210]
+tall = [195, 150, 160]
+
+[[flow.nodes]]
+id = "ocr"
+tag = "TESSERACT"
+title.en = "OCR"
+title.de = "OCR"
+role.en = "reads scans, images"
+role.de = "liest Scans, Bilder"
+wide = [725, 40, 210]
+tall = [195, 410, 160]
+
+[[flow.nodes]]
+id = "gui"
+tag = "PYSIDE6"
+title.en = "Wizard"
+title.de = "Wizard"
+role.en = "four guided steps"
+role.de = "4 geführte Schritte"
+wide = [65, 200, 210]
+tall = [10, 20, 150]
+
+[[flow.nodes]]
+id = "pipeline"
+tag = "PYTHON"
+title.en = "Batch pipeline"
+title.de = "Batch-Pipeline"
+role.en = "originals untouched"
+role.de = "Originale unberührt"
+wide = [395, 200, 210]
+tall = [10, 150, 150]
+
+[[flow.nodes]]
+id = "qc"
+tag = "PYMUPDF · TESSERACT"
+title.en = "Quality check"
+title.de = "Qualitätsprüfung"
+role.en = "re-opens the copy"
+role.de = "öffnet die Kopie neu"
+wide = [725, 200, 210]
+tall = [195, 280, 160]
+
+[[flow.nodes]]
+id = "report"
+tag = "HTML"
+title.en = "QC report"
+title.de = "Prüfbericht"
+role.en = "PASS or FAIL per file"
+role.de = "OK/NICHT OK je Datei"
+wide = [395, 360, 210]
+tall = [10, 280, 150]
+
+[[flow.edges]]
+id = "gui-detect"
+wide = ["gui.top", "detect.bottom"]
+tall = ["gui.right", "detect.left"]
+
+[[flow.edges]]
+id = "gui-pipeline"
+wide = ["gui.right@0.3", "pipeline.left@0.3"]
+tall = ["gui.bottom@0.12", "pipeline.top@0.12"]
+
+[[flow.edges]]
+id = "pipeline-gui"
+wide = ["pipeline.left@0.7", "gui.right@0.7"]
+tall = ["pipeline.top@0.32", "gui.bottom@0.32"]
+
+[[flow.edges]]
+id = "pipeline-handlers"
+wide = ["pipeline.top", "handlers.bottom"]
+tall = ["pipeline.right", "handlers.left"]
+
+[[flow.edges]]
+id = "handlers-detect"
+wide = ["handlers.left", "detect.right"]
+tall = ["handlers.top", "detect.bottom"]
+
+[[flow.edges]]
+id = "handlers-ocr"
+wide = ["handlers.right", "ocr.left"]
+tall = ["handlers.right", "ocr.right"]
+
+[[flow.edges]]
+id = "handlers-qc"
+wide = ["handlers.bottom@0.9", "qc.left@0.15"]
+tall = ["handlers.bottom@0.2", "qc.top@0.2"]
+
+[[flow.edges]]
+id = "qc-ocr"
+wide = ["qc.top@0.3", "ocr.bottom@0.3"]
+tall = ["qc.bottom", "ocr.top"]
+
+[[flow.edges]]
+id = "qc-pipeline"
+wide = ["qc.left", "pipeline.right"]
+tall = ["qc.left", "pipeline.right@0.85"]
+
+[[flow.edges]]
+id = "pipeline-report"
+wide = ["pipeline.bottom@0.3", "report.top@0.3"]
+tall = ["pipeline.bottom@0.3", "report.top@0.3"]
+
+[[flow.steps]]
+id = "name"
+title.en = "Name the client"
+title.de = "Kunden benennen"
+text.en = "The user types in the client's names, or lets the tool **detect the companies** in the chosen files. Several clients can be handled in one run."
+text.de = "Die Kundennamen werden eingetippt, oder das Programm **erkennt die Firmen** in den gewählten Dateien. Mehrere Kunden lassen sich in einem Durchgang bearbeiten."
+nodes = ["gui", "detect"]
+edges = ["gui-detect"]
+badge = { node = "detect", text = "OFFLINE" }
+
+[[flow.steps]]
+id = "scan"
+title.en = "Scan every file"
+title.de = "Jede Datei durchsuchen"
+text.en = "Each file is searched for **client spellings**, personal data (names, e-mail, phone, signature lines), abbreviations, document zones, logos and metadata. Scanned pages and images are read by OCR."
+text.de = "Jede Datei wird nach **Schreibweisen des Kundennamens**, personenbezogenen Daten (Namen, E-Mail, Telefon, Unterschriftszeilen), Abkürzungen, Dokumentbereichen, Logos und Metadaten durchsucht. Gescannte Seiten und Bilder liest die Texterkennung (OCR)."
+nodes = ["gui", "pipeline", "handlers", "detect", "ocr"]
+edges = ["gui-pipeline", "pipeline-handlers", "handlers-detect", "handlers-ocr"]
+
+[[flow.steps]]
+id = "review"
+title.en = "Review the findings"
+title.de = "Fundstellen prüfen"
+text.en = "Everything found is **pre-ticked** in a mandatory preview. The user unticks, keeps single spots, draws boxes, adds a missed term and ticks any image to remove; signature images are not found automatically."
+text.de = "Alles Gefundene ist in einer verpflichtenden Vorschau **vorab angehakt**. Wer prüft, nimmt Haken heraus, lässt einzelne Stellen stehen, zieht Rahmen auf, ergänzt einen übersehenen Begriff und hakt Bilder zum Entfernen an; Unterschriftsbilder werden nicht automatisch gefunden."
+nodes = ["pipeline", "gui"]
+edges = ["pipeline-gui"]
+badge = { node = "gui", text.en = "MANDATORY", text.de = "PFLICHT" }
+
+[[flow.steps]]
+id = "remove"
+title.en = "Remove for good"
+title.de = "Endgültig entfernen"
+text.en = "On a copy, text, covered pixels, logos, metadata, comments and hidden parts are **deleted**, not just covered. In Word, PowerPoint and Excel files every removed character is replaced by a solid block."
+text.de = "Auf einer Kopie werden Text, überdeckte Bildpunkte, Logos, Metadaten, Kommentare und versteckte Teile **gelöscht**, nicht nur abgedeckt. In Word-, PowerPoint- und Excel-Dateien wird jedes entfernte Zeichen durch einen ausgefüllten Block ersetzt."
+nodes = ["gui", "pipeline", "handlers"]
+edges = ["gui-pipeline", "pipeline-handlers"]
+badge = { node = "pipeline", text.en = "ON A COPY", text.de = "AUF KOPIE" }
+
+[[flow.steps]]
+id = "check"
+title.en = "Check the saved copy"
+title.de = "Gespeicherte Kopie prüfen"
+text.en = "The saved file is **re-opened** and searched four ways: text and internal objects, OCR of every page and image, hidden content, removed images. For Word, PowerPoint and Excel, OCR reads embedded images only."
+text.de = "Die gespeicherte Datei wird **neu geöffnet** und auf vier Wegen durchsucht: Text und interne Objekte, OCR jeder Seite und jedes Bildes, versteckte Inhalte, entfernte Bilder. Bei Word, PowerPoint und Excel liest die OCR nur eingebettete Bilder."
+nodes = ["handlers", "qc", "ocr"]
+edges = ["handlers-qc", "qc-ocr"]
+badge = { node = "qc", text.en = "4 CHECKS", text.de = "4 PRÜFUNGEN" }
+
+[[flow.steps]]
+id = "report"
+title.en = "Name it and report"
+title.de = "Benennen und berichten"
+text.en = "A **passing copy** gets the suffix _ANON, a failing one _ANON_QC-FAILED. An HTML report lists every file with PASS or FAIL and shows the client terms masked."
+text.de = "Eine **bestandene Kopie** erhält das Suffix _ANON, eine durchgefallene _ANON_QC-FAILED. Ein HTML-Bericht listet jede Datei mit OK oder NICHT OK und zeigt die gesuchten Begriffe maskiert."
+nodes = ["qc", "pipeline", "report", "gui"]
+edges = ["qc-pipeline", "pipeline-report", "pipeline-gui"]
+
+[model]
+heading.en = "The objects behind one run"
+heading.de = "Die Objekte hinter einem Durchgang"
+description.en = "One client profile applies to many documents. A document has many findings and many images, and findings and images point to redaction areas. A document has at most one file outcome, which has at most one QC result."
+description.de = "Ein Kundenprofil gilt für viele Dokumente. Ein Dokument hat viele Fundstellen und viele Bilder, und Fundstellen und Bilder verweisen auf Schwärzungsbereiche. Ein Dokument hat höchstens ein Dateiergebnis, und dieses höchstens ein Prüfergebnis."
+caption.en = "Simplified: 7 of 15 entities (13 classes in the code plus the redaction area and the HTML report). Left out: search terms (derived from the profile), raw matches, client suggestions, the app state and the report file."
+caption.de = "Vereinfacht: 7 von 15 Objekten (13 Klassen im Code plus Schwärzungsbereich und HTML-Bericht). Weggelassen: Suchbegriffe (aus dem Profil abgeleitet), Rohtreffer, Kundenvorschläge, der Programmzustand und die Berichtsdatei."
+
+[[model.entities]]
+id = "profile"
+kind = "object"
+name.en = "Client profile"
+name.de = "Kundenprofil"
+note.en = "one per run"
+note.de = "eines pro Durchgang"
+wide = [20, 30, 180]
+fields = [
+  { name.en = "Clients (one or more)", name.de = "Kunden (mind. einer)" },
+  { name.en = "Full company names", name.de = "Vollständige Namen" },
+  { name.en = "Extra terms", name.de = "Weitere Begriffe" },
+  { name.en = "Options", name.de = "Optionen" },
+]
+
+[[model.entities]]
+id = "document"
+kind = "object"
+name.en = "Document"
+name.de = "Dokument"
+note.en = "one per file"
+note.de = "eines pro Datei"
+wide = [250, 30, 270]
+fields = [
+  { key = "PK", name.en = "File path", name.de = "Dateipfad" },
+  { name.en = "Pages", name.de = "Seiten" },
+  { name.en = "Findings", name.de = "Fundstellen" },
+  { name.en = "Images", name.de = "Bilder" },
+  { name.en = "Error", name.de = "Fehler" },
+]
+
+[[model.entities]]
+id = "finding"
+kind = "object"
+name.en = "Finding"
+name.de = "Fundstelle"
+note.en = "a match, with its places"
+note.de = "ein Treffer mit Stellen"
+wide = [565, 30, 200]
+fields = [
+  { name.en = "Category", name.de = "Kategorie" },
+  { name.en = "Text", name.de = "Text" },
+  { name.en = "Location", name.de = "Position" },
+  { name.en = "Ticked", name.de = "Angehakt" },
+  { name.en = "Places", name.de = "Stellen" },
+]
+
+[[model.entities]]
+id = "area"
+kind = "object"
+name.en = "Redaction area"
+name.de = "Schwärzungsbereich"
+note.en = "one per place"
+note.de = "einer pro Stelle"
+wide = [810, 176, 170]
+fields = [
+  { name.en = "Page", name.de = "Seite" },
+  { name.en = "Rectangle", name.de = "Rechteck" },
+  { name.en = "Kept readable", name.de = "Lesbar belassen" },
+]
+
+[[model.entities]]
+id = "image"
+kind = "object"
+name.en = "Image"
+name.de = "Bild"
+note.en = "one per distinct picture"
+note.de = "eines pro Bildinhalt"
+wide = [565, 274, 200]
+fields = [
+  { key = "PK", name.en = "Image ID", name.de = "Bild-ID" },
+  { name.en = "Kind (image or vector)", name.de = "Art (Bild oder Vektor)" },
+  { name.en = "Pages", name.de = "Seiten" },
+  { name.en = "Likely logo", name.de = "Vermutlich Logo" },
+  { name.en = "Remove", name.de = "Entfernen" },
+]
+
+[[model.entities]]
+id = "outcome"
+kind = "object"
+name.en = "File outcome"
+name.de = "Dateiergebnis"
+note.en = "one per processed file"
+note.de = "eines pro bearbeitete Datei"
+wide = [250, 274, 270]
+fields = [
+  { key = "PK", name.en = "Original file", name.de = "Originaldatei" },
+  { name.en = "Status (PASS/FAIL/ERROR/SKIPPED)", name.de = "Status (PASS/FAIL/ERROR/SKIPPED)" },
+  { name.en = "Output name", name.de = "Name der Ausgabe" },
+  { name.en = "Number of redactions", name.de = "Anzahl Schwärzungen" },
+]
+
+[[model.entities]]
+id = "qcresult"
+kind = "object"
+name.en = "QC result"
+name.de = "Prüfergebnis"
+note.en = "one per outcome"
+note.de = "eines je Dateiergebnis"
+wide = [20, 274, 180]
+fields = [
+  { name.en = "Passed", name.de = "Bestanden" },
+  { name.en = "Four checks", name.de = "Vier Prüfungen" },
+  { name.en = "Problems", name.de = "Probleme" },
+]
+
+[[model.relations]]
+from = "profile"
+to = "document"
+cardinality = "one-to-many"
+wide = ["profile.right@0.58", "document.left"]
+text.en = "1 profile → many documents of a run"
+text.de = "1 Profil → viele Dokumente eines Durchgangs"
+
+[[model.relations]]
+from = "document"
+to = "finding"
+cardinality = "one-to-many"
+wide = ["document.right", "finding.left"]
+text.en = "1 document → many findings"
+text.de = "1 Dokument → viele Fundstellen"
+
+[[model.relations]]
+from = "document"
+to = "image"
+cardinality = "one-to-many"
+wide = ["document.right@0.82", "image.left@0.3"]
+text.en = "1 document → many images"
+text.de = "1 Dokument → viele Bilder"
+
+[[model.relations]]
+from = "finding"
+to = "area"
+cardinality = "one-to-many"
+wide = ["finding.right", "area.top"]
+text.en = "1 finding → many redaction areas"
+text.de = "1 Fundstelle → viele Schwärzungsbereiche"
+
+[[model.relations]]
+from = "image"
+to = "area"
+cardinality = "one-to-many"
+wide = ["image.right", "area.bottom"]
+text.en = "1 image → one or more redaction areas"
+text.de = "1 Bild → ein oder mehrere Schwärzungsbereiche"
+
+[[model.relations]]
+from = "document"
+to = "outcome"
+cardinality = "one-to-one"
+wide = ["document.bottom@0.3", "outcome.top@0.3"]
+text.en = "1 document → at most 1 file outcome"
+text.de = "1 Dokument → höchstens 1 Dateiergebnis"
+
+[[model.relations]]
+from = "outcome"
+to = "qcresult"
+cardinality = "one-to-one"
+wide = ["outcome.left@0.42", "qcresult.right"]
+text.en = "1 file outcome → at most 1 QC result"
+text.de = "1 Dateiergebnis → höchstens 1 Prüfergebnis"
+
+[[model.notes]]
+title.en = "One logo, one entry"
+title.de = "Ein Logo, ein Eintrag"
+text.en = "A logo that repeats on every page is a single entry, because images are grouped by their content."
+text.de = "Ein Logo, das auf jeder Seite wiederkehrt, ist ein einziger Eintrag, weil Bilder nach ihrem Inhalt gruppiert werden."
+
+[[model.notes]]
+title.en = "Spellings become patterns"
+title.de = "Schreibweisen werden zu Mustern"
+text.en = "Every client spelling becomes a pattern that survives case, spaces, hyphens, line breaks and legal-form suffixes."
+text.de = "Jede Schreibweise des Kundennamens wird zu einem Muster, das Groß- und Kleinschreibung, Leerzeichen, Bindestriche, Zeilenumbrüche und Rechtsform-Zusätze übersteht."
+
+[[model.notes]]
+title.en = "Masked in the report"
+title.de = "Im Bericht maskiert"
+text.en = "The report masks every term and keeps only its first and last letter."
+text.de = "Der Bericht maskiert jeden Begriff und lässt nur den ersten und den letzten Buchstaben stehen."
+
+[decisions]
+
+[[decisions.items]]
+title.en = "Remove the content, then prove it"
+title.de = "Erst entfernen, dann nachweisen"
+text.en = "The tool deletes text, covered pixels and hidden parts from a copy and writes a whole new file, instead of only drawing black boxes. A separate check then re-opens the saved copy and searches it four ways. The price is time: OCR reads every page at check time."
+text.de = "Das Werkzeug löscht Text, überdeckte Bildpunkte und versteckte Teile in einer Kopie und schreibt eine komplett neue Datei, statt nur schwarze Balken zu zeichnen. Eine eigene Prüfung öffnet die gespeicherte Kopie danach neu und durchsucht sie auf vier Wegen. Der Preis ist Zeit: Die OCR liest bei der Prüfung jede Seite."
+
+[[decisions.items]]
+title.en = "The tool suggests, a person decides"
+title.de = "Das Werkzeug schlägt vor, ein Mensch entscheidet"
+text.en = "Offline name recognition is imperfect, so every batch goes through a mandatory preview. Everything found is pre-ticked, and nothing is written before the user presses “Redact”. The price is a person's attention on every batch, and the page view exists for PDF only."
+text.de = "Namenserkennung ohne Internet ist nicht perfekt, deshalb läuft jeder Stapel durch eine verpflichtende Vorschau. Alles Gefundene ist vorab angehakt, und geschrieben wird erst nach Klick auf „Schwärzen“. Der Preis: Jeder Stapel braucht die Aufmerksamkeit eines Menschen, und die Seitenansicht gibt es nur für PDF."
+
+[[decisions.items]]
+title.en = "Office files are edited as XML"
+title.de = "Office-Dateien werden als XML bearbeitet"
+text.en = "Word, PowerPoint and Excel files are opened as packages and edited part by part, so format and layout stay as they were. The price is the largest module of the tool, which has to know every place text can hide."
+text.de = "Word-, PowerPoint- und Excel-Dateien werden als Pakete geöffnet und Teil für Teil bearbeitet, damit Format und Layout erhalten bleiben. Der Preis ist das größte Modul des Werkzeugs, das jeden Ort kennen muss, an dem sich Text verstecken kann."
+
+[[decisions.items]]
+title.en = "Offline and portable, models inside"
+title.de = "Offline und portabel, Modelle inklusive"
+text.en = "The tool is one folder with the language and OCR models inside: no installation and no internet. The price is size and platform: about 460 MB unpacked and Windows only."
+text.de = "Das Werkzeug ist ein einziger Ordner mit den Sprach- und OCR-Modellen darin: ohne Installation und ohne Internet. Der Preis sind Größe und Plattform: etwa 460 MB entpackt und nur Windows."
+
+[role]
+
+[[role.bullets]]
+en = "Designed the tool from the written brief and decided the trade-offs above."
+de = "Das Werkzeug nach dem schriftlichen Auftrag entworfen und die Abwägungen oben entschieden."
+
+[[role.bullets]]
+en = "Built the release process: a portable Windows folder, a self-test that must pass before the zip is made, and five releases from v1.0 to v1.3."
+de = "Den Release-Ablauf gebaut: ein portabler Windows-Ordner, ein Selbsttest, der bestanden sein muss, bevor die Zip-Datei entsteht, und fünf Releases von v1.0 bis v1.3."
+
+[[role.bullets]]
+en = "Tested the quality check on a set of real sample documents and tuned it; the false alarms and over-redaction it exposed were fixed in v1.2.1."
+de = "Die Qualitätsprüfung an einem Satz echter Beispieldokumente getestet und abgestimmt; die dabei sichtbar gewordenen Fehlalarme und das übermäßige Schwärzen wurden in v1.2.1 behoben."
+
+[[role.bullets]]
+en = "Designed the look in the S01 corporate style (colours, fonts, launch screen) and built the clickable demo, which shows a made-up company and invented documents."
+de = "Das Erscheinungsbild im Corporate Design von S01 gestaltet (Farben, Schriften, Startbildschirm) und die klickbare Demo gebaut, die eine fiktive Firma und erfundene Dokumente zeigt."
+
+[result]
+heading.en = "Version 1.3 delivered on 20 October 2026"
+heading.de = "Version 1.3 geliefert am 20. Oktober 2026"
+text.en = "**Delivered as a portable Windows folder** (about 200 MB zipped) with a German quick guide; version 1.3 is the fifth release. The code base has 106 automated tests, and the build stops if its built-in self-test fails."
+text.de = "**Geliefert als portabler Windows-Ordner** (gezippt etwa 200 MB) mit deutscher Kurzanleitung; Version 1.3 ist das fünfte Release. Die Codebasis hat 106 automatisierte Tests, und der Build bricht ab, wenn sein eingebauter Selbsttest fehlschlägt."

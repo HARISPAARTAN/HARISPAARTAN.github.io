@@ -1,0 +1,570 @@
+# Case study 05 of 05: the standards assistant, a Copilot Studio prototype.
+# Format reference: content/case-studies/SCHEMA.md
+# Public page. Example page numbers are invented; no names, codes, addresses or text from the standards appear.
+
+[meta]
+slug = "standards-assistant"
+order = 5
+status.en = "prototype"
+status.de = "Prototyp"
+tech = ["Copilot Studio", "RAG", "SharePoint", "Dataverse", "Power Fx", "Python", "PowerShell"]
+facts_as_of = 2026-10-26
+notice.en = "Simplified description of an internal prototype. No client data, internal addresses, document text or source code are shown."
+notice.de = "Vereinfachte Beschreibung eines internen Prototyps. Es werden keine Kundendaten, internen Adressen, Dokumenttexte oder Quellcode gezeigt."
+
+[hero]
+eyebrow.en = "copilot studio"
+eyebrow.de = "copilot studio"
+title.en = "Standards assistant"
+title.de = "Normenassistent"
+subtitle.en = "Grounded answers from technical standards, with chapter and page"
+subtitle.de = "Quellengestützte Antworten aus technischen Normen, mit Kapitel und Seite"
+lead.en = """
+A prototype assistant that answers German-speaking site inspectors' questions from four technical guidelines and names
+document, chapter and printed page for every source. No product delivers chapter and page on its own, so I built a
+chapter index from the guidelines' own tables of contents and a citation topic that uses it.
+"""
+lead.de = """
+Ein Prototyp, der Prüfenden auf der Baustelle Fragen auf Deutsch aus vier technischen Richtlinien beantwortet und bei
+jeder Quelle Dokument, Kapitel und gedruckte Seite nennt. Kein Produkt liefert Kapitel und Seite von sich aus; deshalb
+habe ich aus den Inhaltsverzeichnissen der Richtlinien ein Kapitelregister gebaut und ein Zitat-Thema, das es nutzt.
+"""
+
+[[hero.stats]]
+value = "356"
+label.en = "PDF pages in 4 technical guidelines"
+label.de = "PDF-Seiten in 4 technischen Richtlinien"
+
+[[hero.stats]]
+value = "448"
+label.en = "rows in the self-built chapter index"
+label.de = "Zeilen im selbst gebauten Kapitelregister"
+
+[[hero.stats]]
+value.en = "421 of 421"
+value.de = "421 von 421"
+label.en = "table-of-contents entries found in the text"
+label.de = "Inhaltsverzeichnis-Einträge im Text gefunden"
+
+[[hero.stats]]
+value = "5"
+label.en = "solution routes compared"
+label.de = "Lösungswege verglichen"
+
+[[hero.facts]]
+label.en = "Role"
+label.de = "Rolle"
+value.en = "development, as a working student at S01 Projektmanagement GmbH: options paper, index builder, agent build and tests"
+value.de = "Entwicklung, als Werkstudent bei S01 Projektmanagement GmbH: Optionspapier, Register-Generator, Agent-Aufbau und Tests"
+
+[[hero.facts]]
+label.en = "Users"
+label.de = "Zielgruppe"
+value.en = "German-speaking site inspectors (planned)"
+value.de = "deutschsprachige Prüfende auf der Baustelle (geplant)"
+
+[[hero.facts]]
+label.en = "Platform"
+label.de = "Plattform"
+value.en = "a Copilot Studio agent in the company's Microsoft 365, with Teams planned as the channel"
+value.de = "ein Copilot-Studio-Agent im Microsoft 365 des Unternehmens, Teams als Kanal geplant"
+
+[[hero.facts]]
+label.en = "Status"
+label.de = "Status"
+value.en = "prototype, tested in the Copilot Studio test pane, not published"
+value.de = "Prototyp, im Testbereich von Copilot Studio geprüft, nicht veröffentlicht"
+
+[why]
+heading.en = "Inspectors had four PDFs and no way to question them"
+heading.de = "Vier PDFs und keine Möglichkeit, sie zu befragen"
+
+[[why.paragraphs]]
+en = """
+On site, inspectors meet questions that have to be checked against technical guidelines: four PDFs with 356 pages in
+all, and no way to ask them anything. The task came from the supervisor, with one hard rule: every answer must name the
+document, the chapter and the page, and must not invent anything.
+"""
+de = """
+Auf der Baustelle tauchen Fragen auf, die gegen technische Richtlinien geprüft werden müssen: vier PDFs mit zusammen
+356 Seiten und keine Möglichkeit, ihnen eine Frage zu stellen. Die Aufgabe kam von der Führungskraft, mit einer harten
+Regel: Jede Antwort muss Dokument, Kapitel und Seite nennen und darf nichts erfinden.
+"""
+
+[[why.paragraphs]]
+en = """
+**No product does that out of the box.** Copilot Studio links to a page only on one upload path, and not on every
+citation. Microsoft 365 Copilot cites whole documents. Azure OpenAI “On Your Data” has no page field and was due to
+retire on 14 October 2026. The chapter and page layer therefore had to be built separately.
+"""
+de = """
+**Kein Produkt leistet das von Haus aus.** Copilot Studio verlinkt nur auf einem Upload-Weg eine Seite, und nicht bei
+jeder Quellenangabe. Microsoft 365 Copilot zitiert ganze Dokumente. Azure OpenAI „On Your Data“ hat kein Seitenfeld und
+sollte am 14. Oktober 2026 eingestellt werden. Die Ebene für Kapitel und Seite musste deshalb eigens gebaut werden.
+"""
+
+[[why.paragraphs]]
+en = """
+Two more things make it hard. “Page” is ambiguous: the printed page number, the PDF page and the page that Copilot's
+link counts can all differ. And the guidelines refer to many external standards that they do not contain, so “not
+contained in the documents” has to be a proper answer.
+"""
+de = """
+Zwei weitere Dinge erschweren es. „Seite“ ist mehrdeutig: Die gedruckte Seitenzahl, die PDF-Seite und die Seite, die der
+Link von Copilot zählt, können alle voneinander abweichen. Und die Richtlinien verweisen auf viele externe Normen, die
+sie nicht enthalten; deshalb muss „nicht in den Dokumenten enthalten“ eine vollwertige Antwort sein.
+"""
+
+[[why.notes]]
+title.en = "Who uses it"
+title.de = "Wer ihn nutzt"
+text.en = "Planned: the German-speaking site inspectors. Today: only the developer, in the Copilot Studio test pane."
+text.de = "Geplant: die deutschsprachigen Prüfenden auf der Baustelle. Heute: nur Testläufe in der Entwicklung, im Testbereich von Copilot Studio."
+
+[[why.notes]]
+title.en = "What it costs to run"
+title.de = "Was der Betrieb kostet"
+text.en = "An estimate, not an invoice: about 30 EUR a month pay-as-you-go, and nothing beyond licences if the inspectors already hold Microsoft 365 Copilot."
+text.de = "Eine Schätzung, keine Rechnung: etwa 30 EUR im Monat bei nutzungsabhängiger Abrechnung und nichts über die Lizenzen hinaus, wenn die Prüfenden ohnehin Microsoft 365 Copilot haben."
+
+[flow]
+heading.en = "How a question turns into an answer with chapter and page"
+heading.de = "Wie aus einer Frage eine Antwort mit Kapitel und Seite wird"
+description.en = """
+An inspector asks a question in the chat. The assistant agent searches the standards library and drafts an answer. The
+citation topic catches the draft and asks the chapter lookup, which queries the chapter index, for the chapter of every
+cited page. The answer goes back to the chat with a list of sources. The index builder fills the chapter index once per
+document.
+"""
+description.de = """
+Wer prüft, stellt im Chat eine Frage. Der Normen-Agent durchsucht die Normenbibliothek und entwirft eine Antwort. Das
+Zitat-Thema fängt den Entwurf ab und fragt über die Kapitel-Abfrage im Kapitelregister nach dem Kapitel jeder zitierten
+Seite. Die Antwort geht mit einer Quellenliste zurück in den Chat. Der Register-Generator füllt das Kapitelregister
+einmal pro Dokument.
+"""
+
+[[flow.nodes]]
+id = "chat"
+tag = "TEAMS"
+title.en = "Inspector chat"
+title.de = "Baustellen-Chat"
+role.en = "planned channel; test pane today"
+role.de = "geplanter Kanal; heute Testbereich"
+wide = [20, 40, 280]
+tall = [50, 20, 300]
+
+[[flow.nodes]]
+id = "agent"
+tag = "COPILOT STUDIO"
+title.en = "Assistant agent"
+title.de = "Normen-Agent"
+role.en = "answers only from its documents"
+role.de = "antwortet nur aus seinen Dokumenten"
+wide = [360, 40, 280]
+tall = [50, 140, 300]
+
+[[flow.nodes]]
+id = "library"
+tag = "SHAREPOINT · DATAVERSE"
+title.en = "Standards library"
+title.de = "Normenbibliothek"
+role.en = "four PDFs, indexed for search"
+role.de = "vier PDFs, für die Suche indiziert"
+wide = [700, 40, 280]
+tall = [50, 260, 300]
+
+[[flow.nodes]]
+id = "topic"
+tag = "POWER FX"
+title.en = "Citation topic"
+title.de = "Zitat-Thema"
+role.en = "catches the draft, rebuilds the sources"
+role.de = "fängt den Entwurf ab, baut Quellen neu"
+wide = [360, 190, 280]
+tall = [50, 380, 300]
+
+[[flow.nodes]]
+id = "lookup"
+tag = "SHAREPOINT CONNECTOR"
+title.en = "Chapter lookup"
+title.de = "Kapitel-Abfrage"
+role.en = "one query, one row back"
+role.de = "eine Abfrage, eine Zeile zurück"
+wide = [700, 190, 280]
+tall = [50, 500, 300]
+
+[[flow.nodes]]
+id = "index"
+tag.en = "SHAREPOINT LIST"
+tag.de = "SHAREPOINT-LISTE"
+title.en = "Chapter index"
+title.de = "Kapitelregister"
+role.en = "448 rows, locations only, no text"
+role.de = "448 Zeilen, nur Fundstellen, kein Text"
+wide = [360, 340, 280]
+tall = [50, 620, 300]
+
+[[flow.nodes]]
+id = "builder"
+tag = "PYTHON · POWERSHELL"
+title.en = "Index builder"
+title.de = "Register-Generator"
+role.en = "reads each table of contents and footer"
+role.de = "liest Inhaltsverzeichnis und Fußzeilen"
+wide = [20, 340, 280]
+tall = [50, 740, 300]
+
+[[flow.edges]]
+id = "e_ask"
+wide = ["chat.right", "agent.left"]
+tall = ["chat.bottom", "agent.top"]
+
+[[flow.edges]]
+id = "e_search"
+wide = ["agent.right", "library.left"]
+tall = ["agent.bottom", "library.top"]
+
+[[flow.edges]]
+id = "e_catch"
+wide = ["agent.bottom", "topic.top"]
+tall = ["agent.right", "topic.right"]
+
+[[flow.edges]]
+id = "e_lookup"
+wide = ["topic.right", "lookup.left"]
+tall = ["topic.bottom", "lookup.top"]
+
+[[flow.edges]]
+id = "e_query"
+wide = ["lookup.bottom", "index.right"]
+tall = ["lookup.bottom", "index.top"]
+
+[[flow.edges]]
+id = "e_build"
+wide = ["builder.right", "index.left"]
+tall = ["builder.top@0.85", "index.bottom@0.85"]
+
+[[flow.edges]]
+id = "e_send"
+wide = ["topic.left", "chat.bottom"]
+tall = ["topic.left", "chat.left"]
+
+[[flow.steps]]
+id = "build"
+title.en = "Build the index"
+title.de = "Register bauen"
+text.en = "The builder takes the chapters from each document's table of contents and the printed page numbers from the footers, then writes the index rows."
+text.de = "Der Generator entnimmt die Kapitel dem Inhaltsverzeichnis jedes Dokuments und die gedruckten Seitenzahlen den Fußzeilen und schreibt dann die Registerzeilen."
+nodes = ["builder", "index"]
+edges = ["e_build"]
+badge = { node = "builder", text.en = "ONCE PER DOCUMENT", text.de = "EINMAL PRO DOKUMENT", pos = "left" }
+
+[[flow.steps]]
+id = "ask"
+title.en = "Ask"
+title.de = "Fragen"
+text.en = "The inspector asks a question in German, in the chat."
+text.de = "Wer prüft, stellt im Chat eine Frage auf Deutsch."
+nodes = ["chat", "agent"]
+edges = ["e_ask"]
+badge = { node = "chat", text.en = "TEST PANE", text.de = "TESTBEREICH" }
+
+[[flow.steps]]
+id = "search"
+title.en = "Search the standards"
+title.de = "Normen durchsuchen"
+text.en = "The agent drafts an answer **only from the passages it finds**. If nothing fits, it says that the content is not in the documents."
+text.de = "Der Agent entwirft eine Antwort **nur aus den gefundenen Textstellen**. Passt nichts, sagt er, dass der Inhalt nicht in den Dokumenten steht."
+nodes = ["agent", "library"]
+edges = ["e_search"]
+
+[[flow.steps]]
+id = "catch"
+title.en = "Catch the draft"
+title.de = "Entwurf abfangen"
+text.en = "Before the answer goes out, the citation topic reads the file name and the page of every cited source."
+text.de = "Bevor die Antwort hinausgeht, liest das Zitat-Thema bei jeder zitierten Quelle den Dateinamen und die Seite."
+nodes = ["agent", "topic"]
+edges = ["e_catch"]
+
+[[flow.steps]]
+id = "find"
+title.en = "Find the chapter"
+title.de = "Kapitel finden"
+text.en = "The lookup asks the index for the **deepest chapter with body text** on that page, and one row comes back."
+text.de = "Die Abfrage fragt das Register nach dem **tiefsten Kapitel mit Text** auf dieser Seite; eine Zeile kommt zurück."
+nodes = ["topic", "lookup", "index"]
+edges = ["e_lookup", "e_query"]
+
+[[flow.steps]]
+id = "send"
+title.en = "Send the cited answer"
+title.de = "Antwort mit Quellen senden"
+text.en = "The answer goes out with a “Sources” footer: document, chapter, printed page and a link that opens the PDF."
+text.de = "Die Antwort geht mit einer Fußzeile „Quellen“ hinaus: Dokument, Kapitel, gedruckte Seite und ein Link, der das PDF öffnet."
+nodes = ["topic", "chat"]
+edges = ["e_send"]
+
+[model]
+heading.en = "Six objects that link a PDF page to its chapter"
+heading.de = "Sechs Objekte, die eine PDF-Seite mit ihrem Kapitel verbinden"
+description.en = """
+A guideline document has many PDF pages and many chapters. A chapter has one or more index rows, and an index row covers
+a range of pages. At run time an answer has zero or more citations; each citation names one document and is matched to
+one index row.
+"""
+description.de = """
+Ein Richtliniendokument hat viele PDF-Seiten und viele Kapitel. Ein Kapitel hat eine oder mehrere Registerzeilen, und
+eine Registerzeile deckt einen Seitenbereich ab. Zur Laufzeit hat eine Antwort null oder mehr Zitate; jedes Zitat nennt
+ein Dokument und wird einer Registerzeile zugeordnet.
+"""
+caption.en = """
+Simplified: 6 of 8 entities. Left out: the test questions and an earlier design's section files. Pages and chapters are
+derived from the PDFs; citations and answers exist only at run time. A citation is matched to its document and its index
+row when the answer is made, so no key is stored for that link.
+"""
+caption.de = """
+Vereinfacht: 6 von 8 Objekten. Weggelassen: die Testfragen und die Abschnittsdateien eines früheren Entwurfs. Seiten und
+Kapitel werden aus den PDFs abgeleitet; Zitate und Antworten gibt es nur zur Laufzeit. Ein Zitat wird erst beim Antworten
+seinem Dokument und seiner Registerzeile zugeordnet, für diese Verbindung wird kein Schlüssel gespeichert.
+"""
+
+[[model.entities]]
+id = "doc"
+kind = "library"
+name.en = "Guideline document"
+name.de = "Richtliniendokument"
+note.en = "four PDF files"
+note.de = "vier PDF-Dateien"
+wide = [20, 50, 200]
+fields = [
+  { key = "PK", name.en = "Document code", name.de = "Dokumentcode" },
+  { name.en = "Title", name.de = "Titel" },
+  { name.en = "Version", name.de = "Version" },
+  { name.en = "File name", name.de = "Dateiname" },
+]
+
+[[model.entities]]
+id = "page"
+kind = "object"
+name.en = "PDF page"
+name.de = "PDF-Seite"
+note.en = "derived, one per page"
+note.de = "abgeleitet, eine pro Seite"
+wide = [20, 274, 200]
+fields = [
+  { key = "PK", name.en = "PDF page number", name.de = "PDF-Seitenzahl" },
+  { key = "FK", name.en = "Document", name.de = "Dokument" },
+  { name.en = "Printed page number", name.de = "Gedruckte Seitenzahl" },
+  { name.en = "Current chapter", name.de = "Aktuelles Kapitel" },
+]
+
+[[model.entities]]
+id = "chapter"
+kind = "object"
+name.en = "Chapter"
+name.de = "Kapitel"
+note.en = "from the table of contents"
+note.de = "aus dem Inhaltsverzeichnis"
+wide = [275, 50, 200]
+fields = [
+  { key = "PK", name.en = "Chapter number", name.de = "Kapitelnummer" },
+  { key = "FK", name.en = "Document", name.de = "Dokument" },
+  { name.en = "Title", name.de = "Titel" },
+  { name.en = "Level, 1 to 4", name.de = "Ebene, 1 bis 4" },
+  { name.en = "Heading only", name.de = "Nur Überschrift" },
+]
+
+[[model.entities]]
+id = "indexrow"
+kind = "list"
+name.en = "Index row"
+name.de = "Registerzeile"
+note.en = "448 rows, no text"
+note.de = "448 Zeilen, ohne Text"
+wide = [275, 274, 200]
+fields = [
+  { key = "PK", name.en = "Citation text", name.de = "Zitattext" },
+  { key = "FK", name.en = "File name", name.de = "Dateiname" },
+  { key = "FK", name.en = "Chapter and part", name.de = "Kapitel und Teil" },
+  { name.en = "Printed pages", name.de = "Gedruckte Seiten" },
+  { name.en = "Link pages", name.de = "Link-Seiten" },
+]
+
+[[model.entities]]
+id = "citation"
+kind = "object"
+name.en = "Citation"
+name.de = "Zitat"
+note.en = "at run time only"
+note.de = "nur zur Laufzeit"
+wide = [530, 50, 200]
+fields = [
+  { key = "FK", name.en = "File name", name.de = "Dateiname" },
+  { name.en = "Link with page", name.de = "Link mit Seite" },
+  { name.en = "Snippet", name.de = "Textauszug" },
+]
+
+[[model.entities]]
+id = "answer"
+kind = "object"
+name.en = "Answer"
+name.de = "Antwort"
+note.en = "at run time only"
+note.de = "nur zur Laufzeit"
+wide = [785, 50, 200]
+fields = [
+  { name.en = "Answer text", name.de = "Antworttext" },
+  { name.en = "Sources footer", name.de = "Quellen-Fußzeile" },
+  { name.en = "Number of citations", name.de = "Anzahl Zitate" },
+]
+
+[[model.relations]]
+from = "doc"
+to = "page"
+cardinality = "one-to-many"
+wide = ["doc.bottom", "page.top"]
+text.en = "1 document → many PDF pages"
+text.de = "1 Dokument → viele PDF-Seiten"
+
+[[model.relations]]
+from = "doc"
+to = "chapter"
+cardinality = "one-to-many"
+wide = ["doc.right@0.4", "chapter.left@0.345"]
+text.en = "1 document → many chapters"
+text.de = "1 Dokument → viele Kapitel"
+
+[[model.relations]]
+from = "chapter"
+to = "indexrow"
+cardinality = "one-to-many"
+wide = ["chapter.bottom", "indexrow.top"]
+text.en = "1 chapter → one or more index rows (long chapters are split at table or figure captions)"
+text.de = "1 Kapitel → eine oder mehrere Registerzeilen (lange Kapitel werden an Tabellen- oder Abbildungsunterschriften geteilt)"
+
+[[model.relations]]
+from = "indexrow"
+to = "page"
+cardinality = "many-to-many"
+wide = ["indexrow.left@0.431", "page.right"]
+text.en = "1 index row → a range of pages, stored as range columns instead of a join table"
+text.de = "1 Registerzeile → ein Seitenbereich, gespeichert als Bereichsspalten statt in einer Verknüpfungstabelle"
+
+[[model.relations]]
+from = "answer"
+to = "citation"
+cardinality = "one-to-many"
+wide = ["answer.left", "citation.right"]
+text.en = "1 answer → zero or more citations"
+text.de = "1 Antwort → null oder mehr Zitate"
+
+[[model.relations]]
+from = "doc"
+to = "citation"
+cardinality = "one-to-many"
+wide = ["doc.top", "citation.top"]
+text.en = "1 document → many citations, matched by file name"
+text.de = "1 Dokument → viele Zitate, zugeordnet über den Dateinamen"
+
+[[model.relations]]
+from = "indexrow"
+to = "citation"
+cardinality = "one-to-many"
+wide = ["indexrow.right", "citation.bottom"]
+text.en = "1 index row → many citations, matched when the answer is made (no stored key)"
+text.de = "1 Registerzeile → viele Zitate, zugeordnet beim Antworten (kein gespeicherter Schlüssel)"
+
+[[model.notes]]
+title.en = "Three page numbers per row"
+title.de = "Drei Seitenzahlen pro Zeile"
+text.en = "Each index row carries the printed page (what the inspector reads), the PDF page and the link page (how Copilot counts). They can all differ: in an invented example, printed page 41 is PDF page 43 and link page 40."
+text.de = "Jede Registerzeile trägt die gedruckte Seite (was man auf der Seite liest), die PDF-Seite und die Link-Seite (so zählt Copilot). Alle drei können abweichen: In einem erfundenen Beispiel ist die gedruckte Seite 41 die PDF-Seite 43 und die Link-Seite 40."
+
+[[model.notes]]
+title.en = "Heading-only chapters are skipped"
+title.de = "Reine Überschriften werden übersprungen"
+text.en = "188 chapters consist of a heading with no body text. The lookup skips them, and they become the “not contained” test questions."
+text.de = "188 Kapitel bestehen nur aus einer Überschrift ohne Text. Die Abfrage überspringt sie, und sie werden zu den Testfragen für „nicht enthalten“."
+
+[[model.notes]]
+title.en = "Locations, never the standards' text"
+title.de = "Fundstellen, nie der Text der Normen"
+text.en = "The index stores where something is, never what it says. The text stays in the PDFs, so nothing from the standards is copied into the list."
+text.de = "Das Register speichert, wo etwas steht, nie, was dort steht. Der Text bleibt in den PDFs; aus den Normen wird nichts in die Liste kopiert."
+
+
+[decisions]
+[[decisions.items]]
+title.en = "Pilot on Copilot Studio"
+title.de = "Pilot auf Copilot Studio"
+text.en = "It is the fastest Microsoft route, it links to pages and it keeps the data in Germany. Azure AI Foundry stays an optional stage 2, and the Claude API an alternative only if processing in the USA is cleared. **Trade-off:** page markers are not guaranteed on every citation, and the agent is planned to live in Teams, not inside the QS Baustelle app."
+text.de = "Es ist der schnellste Microsoft-Weg, verlinkt auf Seiten und hält die Daten in Deutschland. Azure AI Foundry bleibt eine optionale Stufe 2, die Claude-API nur dann eine Alternative, wenn die Verarbeitung in den USA freigegeben wird. **Abwägung:** Seitenmarken sind nicht bei jeder Quellenangabe garantiert, und der Agent soll in Teams laufen, nicht in der App QS Baustelle."
+
+[[decisions.items]]
+title.en = "A chapter index from each document's own table of contents"
+title.de = "Kapitelregister aus dem Inhaltsverzeichnis jedes Dokuments"
+text.en = "Chapters and printed page numbers come from the table of contents, and every entry that is not found in the text is reported (0 of 421). **Trade-off:** one build step per new document, and the documents need a table of contents."
+text.de = "Kapitel und gedruckte Seitenzahlen stammen aus dem Inhaltsverzeichnis, und jeder Eintrag, der im Text nicht zu finden ist, wird gemeldet (0 von 421). **Abwägung:** ein Bauschritt pro neuem Dokument, und die Dokumente brauchen ein Inhaltsverzeichnis."
+
+[[decisions.items]]
+title.en = "The PDFs as the only knowledge source, locations in a lean list"
+title.de = "Die PDFs als einzige Wissensquelle, Fundstellen in einer schlanken Liste"
+text.en = "Chapter and printed page are looked up in a lean list that holds locations only. The PDFs stay the single source of text, and the page link stays the native one. **Trade-off:** a separate link-page range is needed, and every inspector needs read access to the list."
+text.de = "Kapitel und gedruckte Seite werden in einer schlanken Liste nachgeschlagen, die nur Fundstellen enthält. Die PDFs bleiben die einzige Textquelle, und der Seitenlink kommt weiter direkt von Copilot Studio. **Abwägung:** Es braucht einen eigenen Bereich für die Link-Seiten, und alle Prüfenden brauchen Lesezugriff auf die Liste."
+
+[[decisions.items]]
+title.en = "Answer only from the documents"
+title.de = "Nur aus den Dokumenten antworten"
+text.en = "Ungrounded answers, general knowledge and the web are switched off, a custom fallback says “not contained in the documents”, and “not contained” test questions check it. **Trade-off:** clarifying questions are suppressed, and only one negative test has a recorded result."
+text.de = "Antworten ohne Beleg, Allgemeinwissen und Websuche sind abgeschaltet, eine eigene Fallback-Antwort sagt „nicht in den Dokumenten enthalten“, und Testfragen zu „nicht enthalten“ prüfen das. **Abwägung:** Rückfragen werden unterdrückt, und nur ein Negativtest hat ein festgehaltenes Ergebnis."
+
+[[decisions.items]]
+title.en = "Side topic: an invoice-archiving flow repaired"
+title.de = "Nebenthema: ein Rechnungsarchiv-Flow repariert"
+text.en = "Separate from the assistant, documented in August 2026. An existing Power Automate flow renamed receipts from their metadata and moved them to an archive, and kept failing after about 25 minutes. **The cause was a single supplier value that contains a slash**, which SharePoint reads as a folder separator. The fix cleans every name part, skips folders, reports skipped files and keeps the runs sequential. Tested on real documents; notes for the move to production are written, and a proposed audit log is still an open request."
+text.de = "Getrennt vom Assistenten, dokumentiert im August 2026. Ein bestehender Power-Automate-Flow benannte Belege nach ihren Metadaten um und verschob sie in ein Archiv, scheiterte aber immer wieder nach etwa 25 Minuten. **Ursache war ein einziger Lieferantenwert mit einem Schrägstrich**, den SharePoint als Ordnertrenner liest. Die Korrektur bereinigt jeden Namensteil, überspringt Ordner, meldet übersprungene Dateien und hält die Läufe nacheinander. An echten Dokumenten getestet; Hinweise für den Umzug in die Produktion sind geschrieben, ein vorgeschlagenes Prüfprotokoll ist noch eine offene Anfrage."
+
+[role]
+[[role.bullets]]
+en = "Wrote the options paper after a structured research pass: five routes (Copilot Studio, Microsoft 365 Copilot with a SharePoint agent, Azure AI Foundry, the Claude API and AI Builder) rated against the supervisor's requirements, licences, cost, effort and risk, plus a staged plan, eight decisions for the company and an acceptance test."
+de = "Das Optionspapier geschrieben, nach einer strukturierten Recherche: fünf Wege (Copilot Studio, Microsoft 365 Copilot mit SharePoint-Agent, Azure AI Foundry, die Claude-API und AI Builder), bewertet nach den Anforderungen der Führungskraft, Lizenzen, Kosten, Aufwand und Risiko, dazu ein Stufenplan, acht Entscheidungen für das Unternehmen und ein Abnahmetest."
+
+[[role.bullets]]
+en = "Built the index builder in Python and the import in PowerShell, fixed the import when 48 links exceeded SharePoint's 255-character limit, and had a sample of 32 rows of the first build checked against the rendered PDF pages."
+de = "Den Register-Generator in Python und den Import in PowerShell gebaut, den Import repariert, als 48 Links die 255-Zeichen-Grenze von SharePoint überschritten, und eine Stichprobe von 32 Zeilen der ersten Fassung gegen die gerenderten PDF-Seiten prüfen lassen."
+
+[[role.bullets]]
+en = "Built and configured the agent: grounded-only settings, fallback message, starter prompts, knowledge folder, lookup tool and citation topic."
+de = "Den Agenten gebaut und eingerichtet: Einstellungen, die nur belegte Antworten zulassen, Fallback-Meldung, Startvorschläge, Wissensordner, Abfrage-Werkzeug und Zitat-Thema."
+
+[[role.bullets]]
+en = "Found that Copilot's page links skip near-empty pages, and added link-page ranges to the index."
+de = "Herausgefunden, dass die Seitenlinks von Copilot fast leere Seiten überspringen, und Link-Seiten-Bereiche ins Register aufgenommen."
+
+[[role.bullets]]
+en = "Wrote the build guide, the instructions and the acceptance set (4 positive, 10 negative and 3 photo questions)."
+de = "Die Aufbauanleitung, die Anweisungen und die Abnahmefragen geschrieben (4 positive, 10 negative und 3 Fotofragen)."
+
+[[role.bullets]]
+en = "Tested the agent with the four case questions the supervisor set, against the chapters the supervisor expected."
+de = "Den Agenten mit den vier Fallfragen der Führungskraft getestet, gegen die dazu erwarteten Kapitel."
+
+[result]
+heading.en = "A prototype, built in September 2026"
+heading.de = "Ein Prototyp, im September 2026 gebaut"
+text.en = """
+**Tested only in the Copilot Studio test pane; not published and not shared with inspectors.** The options
+paper is dated 16 September 2026 and the agent was built between 17 and 21 September. On 21 September the supervisor's
+four case questions were answered with the expected chapter and printed page (4 of 4). The source footer appeared in 7
+of 9 runs; the two misses went through a system topic that bypasses the citation topic, and that fix is open. Also open:
+publishing, a Teams and phone test, the photo questions and the remaining acceptance questions.
+"""
+text.de = """
+**Nur im Testbereich von Copilot Studio geprüft; nicht veröffentlicht und nicht mit den Prüfenden geteilt.** Das
+Optionspapier ist auf den 16. September 2026 datiert, der Agent entstand zwischen dem 17. und 21. September. Am 21.
+September wurden die vier Fallfragen der Führungskraft mit dem erwarteten Kapitel und der gedruckten Seite beantwortet (4
+von 4). Die Quellen-Fußzeile erschien in 7 von 9 Durchläufen; die beiden Ausfälle liefen über ein Systemthema, das das
+Zitat-Thema umgeht, und diese Korrektur steht noch aus. Offen sind außerdem die Veröffentlichung, ein Test in Teams und
+auf dem Handy, die Fotofragen und die übrigen Abnahmefragen.
+"""

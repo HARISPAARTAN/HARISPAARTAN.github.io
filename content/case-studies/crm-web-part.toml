@@ -1,0 +1,690 @@
+# Case study 03: CRM web part. Format reference: content/case-studies/SCHEMA.md
+
+[meta]
+slug = "crm-web-part"
+order = 3
+status.en = "version 1 live since September 2026"
+status.de = "Version 1 live seit September 2026"
+tech = ["SPFx", "TypeScript", "SharePoint REST", "PnP PowerShell", "esbuild", "Vitest"]
+demo_url = "/demos/crm/"
+facts_as_of = 2026-10-26
+
+[hero]
+eyebrow.en = "spfx"
+eyebrow.de = "spfx"
+title.en = "CRM web part"
+title.de = "CRM-Webpart"
+subtitle.en = "A CRM that lives inside SharePoint: leads, contacts and follow-ups in Microsoft 365"
+subtitle.de = "Ein CRM, das in SharePoint lebt: Leads, Kontakte und Wiedervorlagen in Microsoft 365"
+lead.en = """
+A CRM for a small consultancy, built as a SharePoint Framework web part: leads, companies, contacts, tasks and reports are
+stored in SharePoint lists, and the whole app is one numbered file that a small loader picks up from a library. The
+product design, screens and business rules come from the supervisor's HTML prototype; I decided the route, built the
+SharePoint layer, the loader and the setup scripts, and delivered it. **Version 1 has been live since September 2026;
+version 2 is built and packaged.**
+"""
+lead.de = """
+Ein CRM für eine kleine Beratung, gebaut als SharePoint-Framework-Webpart: Leads, Firmen, Kontakte, Aufgaben und Berichte
+liegen in SharePoint-Listen, und die ganze App ist eine nummerierte Datei, die ein kleiner Loader aus einer Bibliothek
+holt. Produktentwurf, Ansichten und Geschäftsregeln stammen aus dem HTML-Prototyp der Führungskraft; ich habe den
+Lösungsweg entschieden, die SharePoint-Schicht, den Loader und die Einrichtungsskripte gebaut und das CRM ausgeliefert.
+**Version 1 ist seit September 2026 live; Version 2 ist gebaut und paketiert.**
+"""
+
+[[hero.stats]]
+value = "15 + 2"
+label.en = "SharePoint lists, plus 2 libraries"
+label.de = "SharePoint-Listen, dazu 2 Bibliotheken"
+
+[[hero.stats]]
+value = "8"
+label.en = "screens"
+label.de = "Ansichten"
+
+[[hero.stats]]
+value = "6"
+label.en = "pipeline stages in version 2"
+label.de = "Pipeline-Phasen in Version 2"
+
+[[hero.stats]]
+value = "89"
+label.en = "automated tests in the code base"
+label.de = "automatisierte Tests im Code"
+
+[[hero.facts]]
+label.en = "Role"
+label.de = "Rolle"
+value.en = "development, as a working student at S01 Projektmanagement GmbH: route, SharePoint layer, release, setup"
+value.de = "Entwicklung, als Werkstudent bei S01 Projektmanagement GmbH: Lösungsweg, SharePoint-Schicht, Release, Einrichtung"
+
+[[hero.facts]]
+label.en = "Product design"
+label.de = "Produktentwurf"
+value.en = "the supervisor's HTML prototype: screens, business rules and look"
+value.de = "HTML-Prototyp der Führungskraft: Ansichten, Geschäftsregeln und Aussehen"
+
+[[hero.facts]]
+label.en = "Users"
+label.de = "Nutzende"
+value.en = "the practice owner, day to day; the supervisor approves and uploads releases"
+value.de = "die Inhaberin oder der Inhaber der Beratung im Tagesgeschäft; die Führungskraft gibt Releases frei und lädt sie hoch"
+
+[[hero.facts]]
+label.en = "Platform"
+label.de = "Plattform"
+value.en = "SharePoint Online in Microsoft 365, in the browser; on phones and tablets from version 2"
+value.de = "SharePoint Online in Microsoft 365, im Browser; ab Version 2 auch auf Smartphones und Tablets"
+
+[[hero.facts]]
+label.en = "Status"
+label.de = "Status"
+value.en = "version 1 live since 29 September 2026; version 2 (described here) built, packaged and waiting for release"
+value.de = "Version 1 live seit dem 29. September 2026; Version 2 (hier beschrieben) ist gebaut, paketiert und wartet auf die Freigabe"
+
+# ---------------------------------------------------------------------------------------------------------------------
+[why]
+heading.en = "A prototype that kept its data in one browser"
+heading.de = "Ein Prototyp, dessen Daten in einem einzigen Browser lagen"
+
+[[why.paragraphs]]
+en = """
+The CRM began as the supervisor's single-file HTML prototype: leads, contacts and follow-ups on one page, with the data in
+the local storage of one browser. There was no shared store, and a backup meant a manual export.
+"""
+de = """
+Das CRM begann als HTML-Prototyp der Führungskraft in einer einzigen Datei: Leads, Kontakte und Wiedervorlagen auf einer
+Seite, die Daten im lokalen Speicher eines einzelnen Browsers. Einen gemeinsamen Datenspeicher gab es nicht, und eine
+Sicherung bedeutete manuellen Export.
+"""
+
+[[why.paragraphs]]
+en = """
+There was no sanctioned way to run it inside the company's Microsoft 365. SharePoint switches custom scripts off again
+within 24 hours, the company has no premium licence for Power Apps, and a canvas app could not reproduce the approved
+design. A **SharePoint Framework web part** is the supported route, so I compared the options and decided on it.
+"""
+de = """
+Es gab keinen zulässigen Weg, ihn im Microsoft 365 des Unternehmens zu betreiben. SharePoint schaltet benutzerdefinierte
+Skripte innerhalb von 24 Stunden wieder ab, das Unternehmen hat keine Premium-Lizenz für Power Apps, und eine Canvas-App
+konnte das freigegebene Design nicht abbilden. Der unterstützte Weg ist ein **SharePoint-Framework-Webpart**; ich habe die
+Optionen verglichen und mich dafür entschieden.
+"""
+
+[[why.paragraphs]]
+en = """
+Enquiries arrive as e-mails and agency job ads, and typing them in again is slow, so the app reads a pasted e-mail and
+proposes company, contact and lead. Follow-ups used to depend on memory; now **a lead without an open next step is
+flagged**.
+"""
+de = """
+Anfragen kommen als E-Mails und als Projektanzeigen von Personalagenturen, und sie neu abzutippen dauert; deshalb liest die
+App eine eingefügte E-Mail und schlägt Firma, Kontakt und Lead vor. Das Nachfassen hing früher am Gedächtnis; jetzt wird
+**ein Lead ohne offenen nächsten Schritt markiert**.
+"""
+
+[[why.notes]]
+title.en = "Who uses it"
+title.de = "Wer es nutzt"
+text.en = """
+Built for one day-to-day user, the practice owner; the app has no user roles. The supervisor approves each release and is
+the only person who uploads one.
+"""
+text.de = """
+Gebaut für eine Person im Tagesgeschäft: die Inhaberin oder den Inhaber der Beratung. Die App unterscheidet keine Rollen.
+Die Führungskraft gibt jedes Release frei; nur sie lädt es hoch.
+"""
+
+[[why.notes]]
+title.en = "What it costs to run"
+title.de = "Was der Betrieb kostet"
+text.en = "Nothing beyond Microsoft 365: no server, no extra licence, and nothing leaves the tenant."
+text.de = "Nichts über Microsoft 365 hinaus: kein Server, keine zusätzliche Lizenz, und nichts verlässt den Tenant."
+
+# ---------------------------------------------------------------------------------------------------------------------
+[flow]
+heading.en = "How the web part loads, runs and saves"
+heading.de = "Wie das Webpart lädt, läuft und speichert"
+description.en = """
+A loader web part on the CRM page asks the app library for the newest app file and starts it. The app keeps its records in
+a store in memory and saves changes in order through a REST adapter into the lists and the files library. Provisioning
+scripts set up the lists, libraries and page.
+"""
+description.de = """
+Ein Loader-Webpart auf der CRM-Seite fragt die App-Bibliothek nach der neuesten App-Datei und startet sie. Die App hält ihre
+Datensätze in einem Store im Arbeitsspeicher und speichert Änderungen der Reihe nach über einen REST-Adapter in die Listen
+und die Dateiablage. Einrichtungsskripte legen Listen, Bibliotheken und Seite an.
+"""
+
+[[flow.nodes]]
+id = "loader"
+tag = "SPFX"
+title.en = "Loader web part"
+title.de = "Loader-Webpart"
+role.en = "picks the newest app file"
+role.de = "wählt die neueste App-Datei"
+wide = [20, 40, 200]
+tall = [50, 150, 300]
+
+[[flow.nodes]]
+id = "library"
+tag = "SHAREPOINT"
+title.en = "App library"
+title.de = "App-Bibliothek"
+role.en = "one numbered file per release"
+role.de = "nummerierte Datei je Release"
+wide = [278, 40, 210]
+tall = [50, 20, 300]
+
+[[flow.nodes]]
+id = "app"
+tag = "TYPESCRIPT · SHADOW DOM"
+title.en = "CRM application"
+title.de = "CRM-Anwendung"
+role.en = "8 screens, two languages"
+role.de = "8 Ansichten, zwei Sprachen"
+wide = [20, 190, 200]
+tall = [50, 280, 300]
+
+[[flow.nodes]]
+id = "store"
+tag = "TYPESCRIPT"
+title.en = "Store and persister"
+title.de = "Store und Persister"
+role.en = "rules and ordered saves"
+role.de = "Regeln, geordnetes Speichern"
+wide = [278, 190, 210]
+tall = [50, 410, 300]
+
+[[flow.nodes]]
+id = "adapter"
+tag = "SHAREPOINT REST"
+title.en = "REST adapter"
+title.de = "REST-Adapter"
+role.en = "writes only changed columns"
+role.de = "schreibt nur geänderte Spalten"
+wide = [278, 340, 210]
+tall = [50, 540, 300]
+
+[[flow.nodes]]
+id = "lists"
+tag = "SHAREPOINT"
+title.en = "15 CRM lists"
+title.de = "15 CRM-Listen"
+role.en = "the database"
+role.de = "die Datenbank"
+wide = [546, 190, 180]
+tall = [50, 670, 146]
+
+[[flow.nodes]]
+id = "files"
+tag = "SHAREPOINT"
+title.en = "Files library"
+title.de = "Dateiablage"
+role.en = "a folder per record"
+role.de = "Ordner je Datensatz"
+wide = [546, 340, 180]
+tall = [204, 670, 146]
+
+[[flow.nodes]]
+id = "prov"
+tag = "PNP POWERSHELL"
+title.en = "Provisioning scripts"
+title.de = "Einrichtungsskripte"
+role.en = "sets up the site"
+role.de = "richtet die Site ein"
+wide = [780, 190, 200]
+tall = [50, 800, 300]
+
+[[flow.edges]]
+id = "setup_lib"
+wide = ["prov.top", "library.right"]
+tall = ["prov.left", "library.left"]
+
+[[flow.edges]]
+id = "setup_lists"
+wide = ["prov.left", "lists.right"]
+tall = ["prov.top@0.2433", "lists.bottom"]
+
+[[flow.edges]]
+id = "setup_files"
+wide = ["prov.bottom", "files.right"]
+tall = ["prov.top@0.7567", "files.bottom"]
+
+[[flow.edges]]
+id = "ask"
+wide = ["loader.right@0.3", "library.left@0.3"]
+tall = ["loader.top@0.25", "library.bottom@0.25"]
+
+[[flow.edges]]
+id = "answer"
+wide = ["library.left@0.7", "loader.right@0.7"]
+tall = ["library.bottom@0.75", "loader.top@0.75"]
+
+[[flow.edges]]
+id = "start"
+wide = ["loader.bottom", "app.top"]
+tall = ["loader.bottom", "app.top"]
+
+[[flow.edges]]
+id = "read"
+wide = ["app.bottom", "adapter.left"]
+tall = ["app.right", "adapter.right"]
+
+[[flow.edges]]
+id = "edit"
+wide = ["app.right@0.3", "store.left@0.3"]
+tall = ["app.bottom@0.25", "store.top@0.25"]
+
+[[flow.edges]]
+id = "redraw"
+wide = ["store.left@0.7", "app.right@0.7"]
+tall = ["store.top@0.75", "app.bottom@0.75"]
+
+[[flow.edges]]
+id = "save"
+wide = ["store.bottom", "adapter.top"]
+tall = ["store.bottom", "adapter.top"]
+
+[[flow.edges]]
+id = "to_lists"
+wide = ["adapter.right@0.1", "lists.left@0.9"]
+tall = ["adapter.bottom@0.2433", "lists.top"]
+
+[[flow.edges]]
+id = "to_files"
+wide = ["adapter.right@0.6", "files.left@0.6"]
+tall = ["adapter.bottom@0.7567", "files.top"]
+
+[[flow.steps]]
+id = "setup"
+title.en = "Set up the site"
+title.de = "Site einrichten"
+text.en = "The PnP PowerShell scripts create the lists, libraries, navigation and page. A verify script then checks the site against the schema."
+text.de = "Die PnP-PowerShell-Skripte legen Listen, Bibliotheken, Navigation und Seite an. Ein Prüfskript vergleicht die Site anschließend mit dem Schema."
+nodes = ["prov", "lists", "files", "library"]
+edges = ["setup_lists", "setup_files", "setup_lib"]
+
+[[flow.steps]]
+id = "open"
+title.en = "Open the CRM page"
+title.de = "CRM-Seite öffnen"
+text.en = "The loader asks the app library for its files and picks the **highest-numbered** app file."
+text.de = "Der Loader fragt die App-Bibliothek nach ihren Dateien und wählt die App-Datei mit der **höchsten Nummer**."
+nodes = ["loader", "library"]
+edges = ["ask", "answer"]
+
+[[flow.steps]]
+id = "start"
+title.en = "Start the app"
+title.de = "App starten"
+text.en = "The loader runs that file inside a **Shadow DOM**, and the app reads every list in parallel through the REST adapter."
+text.de = "Der Loader führt diese Datei in einem **Shadow DOM** aus, und die App liest alle Listen parallel über den REST-Adapter."
+nodes = ["loader", "app", "adapter", "lists", "files"]
+edges = ["start", "read", "to_lists", "to_files"]
+
+[[flow.steps]]
+id = "work"
+title.en = "Work in the CRM"
+title.de = "Im CRM arbeiten"
+text.en = "Edits go to the in-memory **store**, which checks the rules and redraws the screen at once."
+text.de = "Änderungen gehen in den **Store** im Arbeitsspeicher, der die Regeln prüft und den Bildschirm sofort neu zeichnet."
+nodes = ["app", "store"]
+edges = ["edit", "redraw"]
+
+[[flow.steps]]
+id = "save"
+title.en = "Save in the background"
+title.de = "Im Hintergrund speichern"
+text.en = "The persister sends changes to SharePoint **in order**, with up to three tries. If SharePoint refuses a record, it is rolled back and SharePoint's message is shown."
+text.de = "Der Persister sendet Änderungen **der Reihe nach** an SharePoint, mit bis zu drei Versuchen. Lehnt SharePoint einen Datensatz ab, wird er zurückgesetzt und die Meldung von SharePoint angezeigt."
+nodes = ["store", "adapter", "lists", "files"]
+edges = ["save", "to_lists", "to_files"]
+badge = { node = "store", text.en = "MAX 3 TRIES", text.de = "MAX. 3 VERSUCHE", pos = "center" }
+
+[[flow.steps]]
+id = "ship"
+title.en = "Ship a new version"
+title.de = "Neue Version ausliefern"
+text.en = "The supervisor drops the next numbered file into the library. The next page open runs it, and **deleting it is the rollback**."
+text.de = "Die Führungskraft legt die nächste nummerierte Datei in der Bibliothek ab. Beim nächsten Öffnen der Seite läuft sie, und **Löschen ist der Rollback**."
+nodes = ["library", "loader", "app"]
+edges = ["answer", "start"]
+badge = { node = "library", text.en = "UPLOAD = RELEASE", text.de = "HOCHLADEN = RELEASE" }
+
+# ---------------------------------------------------------------------------------------------------------------------
+[model]
+heading.en = "How the records relate in SharePoint"
+heading.de = "Wie die Datensätze in SharePoint zusammenhängen"
+description.en = """
+A company has many contacts and many leads, as end client or as intermediary. A contact is the main contact of many leads
+and can also be a further contact on many leads. A lead has many history entries, tasks, files and links. Quarter results
+are counted from the records and kept as rows of their own.
+"""
+description.de = """
+Eine Firma hat viele Kontakte und viele Leads, als Endkundenfirma oder als Vermittlungsfirma. Ein Kontakt ist Hauptkontakt vieler Leads
+und kann bei vielen Leads zusätzlich als weiterer Kontakt geführt werden. Ein Lead hat viele Verlaufseinträge, Aufgaben,
+Dateien und Links. Quartalsergebnisse werden aus den Datensätzen gezählt und als eigene Zeilen abgelegt.
+"""
+caption.en = """
+Simplified: seven boxes stand for eight of the 17 SharePoint objects (Files and links combine a library and a list). Not
+drawn: events, market research and rate benchmarks (same pattern), the OKR list, four provisioned lists that no screen
+uses, and the app library (code, not data). This is version 2; version 1 had 14 lists.
+"""
+caption.de = """
+Vereinfacht: Sieben Kästen stehen für acht der 17 SharePoint-Objekte (Dateien und Links vereinen eine Bibliothek und eine
+Liste). Nicht gezeichnet: Veranstaltungen, Marktbeobachtung und Tagessatz-Vergleichswerte (gleiches Muster), die OKR-Liste,
+vier angelegte Listen, die keine Ansicht nutzt, und die App-Bibliothek (Code, keine Daten). Das ist Version 2; Version 1
+hatte 14 Listen.
+"""
+
+[[model.entities]]
+id = "companies"
+kind = "list"
+name.en = "Companies"
+name.de = "Firmen"
+note.en = "one per company"
+note.de = "eine pro Firma"
+wide = [20, 62, 240]
+fields = [
+  { key = "PK", name.en = "App key", name.de = "App-Schlüssel" },
+  { name.en = "Name (unique)", name.de = "Name (eindeutig)" },
+  { name.en = "Company type", name.de = "Firmentyp" },
+  { name.en = "City", name.de = "Stadt" },
+  { name.en = "Country", name.de = "Land" },
+]
+
+[[model.entities]]
+id = "contacts"
+kind = "list"
+name.en = "Contacts"
+name.de = "Kontakte"
+note.en = "one per person"
+note.de = "eine pro Person"
+wide = [20, 284, 240]
+fields = [
+  { key = "PK", name.en = "App key", name.de = "App-Schlüssel" },
+  { key = "FK", name.en = "Company", name.de = "Firma" },
+  { name.en = "Name", name.de = "Name" },
+  { name.en = "Contact type", name.de = "Kontaktart" },
+  { name.en = "Rating 0–5", name.de = "Bewertung 0–5" },
+]
+
+[[model.entities]]
+id = "leads"
+kind = "list"
+name.en = "Leads"
+name.de = "Leads"
+note.en = "one per enquiry"
+note.de = "eine pro Anfrage"
+wide = [380, 190, 240]
+fields = [
+  { key = "PK", name.en = "App key", name.de = "App-Schlüssel" },
+  { name.en = "Stage, priority, amount", name.de = "Phase, Priorität, Betrag" },
+  { key = "FK", name.en = "End client (company)", name.de = "Endkundenfirma" },
+  { key = "FK", name.en = "Intermediary (company)", name.de = "Vermittlungsfirma" },
+  { key = "FK", name.en = "Main contact", name.de = "Hauptkontakt" },
+]
+
+[[model.entities]]
+id = "history"
+kind = "list"
+name.en = "History"
+name.de = "Verlauf"
+note.en = "one per activity"
+note.de = "eine pro Aktivität"
+wide = [740, 30, 240]
+fields = [
+  { key = "PK", name.en = "App key", name.de = "App-Schlüssel" },
+  { name.en = "Type", name.de = "Art" },
+  { name.en = "Text", name.de = "Text" },
+  { name.en = "Date", name.de = "Datum" },
+  { key = "FK", name.en = "Lead", name.de = "Lead" },
+]
+
+[[model.entities]]
+id = "tasks"
+kind = "list"
+name.en = "Tasks"
+name.de = "Aufgaben"
+note.en = "one per task"
+note.de = "eine pro Aufgabe"
+wide = [740, 238, 240]
+fields = [
+  { key = "PK", name.en = "App key", name.de = "App-Schlüssel" },
+  { name.en = "Title", name.de = "Titel" },
+  { name.en = "Due date, done, priority", name.de = "Fällig, erledigt, Priorität" },
+  { key = "FK", name.en = "Record (kind + app key)", name.de = "Datensatz (Art + Schlüssel)" },
+]
+
+[[model.entities]]
+id = "files"
+kind = "library"
+name.en = "Files and links"
+name.de = "Dateien und Links"
+note.en = "one per file or link"
+note.de = "eine pro Datei oder Link"
+wide = [740, 422, 240]
+fields = [
+  { key = "PK", name.en = "App key", name.de = "App-Schlüssel" },
+  { key = "FK", name.en = "Owner (kind + app key)", name.de = "Gehört zu (Art + Schlüssel)" },
+  { name.en = "Description", name.de = "Beschreibung" },
+  { name.en = "File or URL", name.de = "Datei oder URL" },
+]
+
+[[model.entities]]
+id = "results"
+kind = "list"
+name.en = "Quarter results"
+name.de = "Quartalsergebnisse"
+note.en = "one per closed quarter"
+note.de = "eine pro Quartalsabschluss"
+wide = [380, 410, 240]
+fields = [
+  { key = "PK", name.en = "Quarter", name.de = "Quartal" },
+  { name.en = "Closed at", name.de = "Abgeschlossen am" },
+  { name.en = "OKR score", name.de = "OKR-Wert" },
+  { name.en = "Frozen figures", name.de = "Eingefrorene Kennzahlen" },
+  { name.en = "Review notes", name.de = "Rückblick" },
+]
+
+[[model.relations]]
+from = "companies"
+to = "contacts"
+cardinality = "one-to-many"
+wide = ["companies.bottom", "contacts.top"]
+text.en = "1 company → many contacts"
+text.de = "1 Firma → viele Kontakte"
+
+[[model.relations]]
+from = "companies"
+to = "leads"
+cardinality = "one-to-many"
+wide = ["companies.right@0.35", "leads.left@0.15"]
+text.en = "1 company → many leads (end client)"
+text.de = "1 Firma → viele Leads (als Endkundenfirma)"
+
+[[model.relations]]
+from = "companies"
+to = "leads"
+cardinality = "one-to-many"
+wide = ["companies.right@0.75", "leads.left@0.35"]
+text.en = "1 company → many leads (intermediary)"
+text.de = "1 Firma → viele Leads (als Vermittlungsfirma)"
+
+[[model.relations]]
+from = "contacts"
+to = "leads"
+cardinality = "one-to-many"
+wide = ["contacts.right@0.25", "leads.left@0.65"]
+text.en = "1 contact → many leads (main contact)"
+text.de = "1 Kontakt → viele Leads (Hauptkontakt)"
+
+[[model.relations]]
+from = "contacts"
+to = "leads"
+cardinality = "many-to-many"
+wide = ["contacts.right@0.65", "leads.left@0.85"]
+text.en = "many contacts ↔ many leads (further contacts)"
+text.de = "viele Kontakte ↔ viele Leads (weitere Kontakte)"
+
+[[model.relations]]
+from = "leads"
+to = "history"
+cardinality = "one-to-many"
+wide = ["leads.right@0.15", "history.left@0.6"]
+text.en = "1 lead → many History entries"
+text.de = "1 Lead → viele Verlaufseinträge"
+
+[[model.relations]]
+from = "leads"
+to = "tasks"
+cardinality = "one-to-many"
+wide = ["leads.right@0.5", "tasks.left@0.26"]
+text.en = "1 lead → many tasks"
+text.de = "1 Lead → viele Aufgaben"
+
+[[model.relations]]
+from = "leads"
+to = "files"
+cardinality = "one-to-many"
+wide = ["leads.right@0.85", "files.left@0.4"]
+text.en = "1 lead → many files and links"
+text.de = "1 Lead → viele Dateien und Links"
+
+[[model.notes]]
+title.en = "One app key per record"
+title.de = "Ein App-Schlüssel pro Datensatz"
+text.en = """
+Every record has its own app key, so SharePoint IDs stay internal and links survive renames. History, tasks, files and
+links point at any record by its kind plus app key.
+"""
+text.de = """
+Jeder Datensatz hat einen eigenen App-Schlüssel. So bleiben die SharePoint-IDs intern, und Verknüpfungen überstehen
+Umbenennungen. Verlauf, Aufgaben, Dateien und Links zeigen über Art und App-Schlüssel auf jeden beliebigen Datensatz.
+"""
+
+[[model.notes]]
+title.en = "Stable names, German labels"
+title.de = "Feste Namen, deutsche Bezeichnungen"
+text.en = """
+Technical names never change; German display names sit on top, so lists and columns can be renamed without breaking the
+app.
+"""
+text.de = """
+Technische Namen ändern sich nie; deutsche Anzeigenamen liegen darüber, sodass sich Listen und Spalten umbenennen lassen,
+ohne die App zu stören.
+"""
+
+[[model.notes]]
+title.en = "Figures are counted, then frozen"
+title.de = "Kennzahlen: gezählt, dann eingefroren"
+text.en = """
+The hit ratio is the share of won leads among the won and lost leads of the period; withdrawn leads are left out. Closing
+a quarter freezes the figures into one row of quarter results.
+"""
+text.de = """
+Die Trefferquote ist der Anteil gewonnener Leads an allen gewonnenen und verlorenen Leads des Zeitraums; zurückgezogene
+Leads bleiben außen vor. Beim Abschluss eines Quartals werden die Zahlen in einer Zeile der Quartalsergebnisse eingefroren.
+"""
+
+# ---------------------------------------------------------------------------------------------------------------------
+[decisions]
+
+[[decisions.items]]
+title.en = "A tiny loader and one versioned app file"
+title.de = "Ein kleiner Loader und eine versionierte App-Datei"
+text.en = """
+Only a 17 KB loader web part goes through the tenant's app catalog, installed once by an administrator. The CRM itself is
+one numbered file in a site library: uploading it is the release, deleting it is the rollback, and schema changes only
+ever add. **Trade-off:** that library's write permission has to be locked down.
+"""
+text.de = """
+Nur ein Loader-Webpart von 17 KB läuft über den App-Katalog des Tenants und wird einmalig von der Administration
+installiert. Das CRM selbst ist eine nummerierte Datei in einer Bibliothek der Site: Hochladen ist das Release, Löschen
+der Rollback, und Schemaänderungen fügen immer nur hinzu. **Abwägung:** Die Schreibrechte auf diese Bibliothek müssen
+streng eingeschränkt werden.
+"""
+
+[[decisions.items]]
+title.en = "SharePoint lists as the database"
+title.de = "SharePoint-Listen als Datenbank"
+text.en = """
+Lists with stable technical names, German display names on top and an app-generated key per record: no external hosting,
+no server, no extra licence. **Trade-off:** the app has to enforce integrity itself, it assumes one writer at a time, and
+the last write wins.
+"""
+text.de = """
+Listen mit festen technischen Namen, deutschen Anzeigenamen darüber und einem von der App erzeugten Schlüssel pro
+Datensatz: kein externes Hosting, kein Server, keine zusätzliche Lizenz. **Abwägung:** Die App muss die Integrität selbst
+sichern, sie geht von einer schreibenden Person zur Zeit aus, und der letzte Schreibvorgang gewinnt.
+"""
+
+[[decisions.items]]
+title.en = "Optimistic saving with a diff-based persister"
+title.de = "Optimistisch speichern, nur Änderungen senden"
+text.en = """
+Every change lands in the in-memory store first and the screen redraws at once; a persister then compares before and after
+and sends only the changed columns, in order, in the background. **Trade-off:** a failed save is noticed late, as a
+message and a rollback of that one record.
+"""
+text.de = """
+Jede Änderung landet zuerst im Store im Arbeitsspeicher, und der Bildschirm zeichnet sofort neu; ein Persister vergleicht
+dann Vorher und Nachher und sendet nur die geänderten Spalten, der Reihe nach im Hintergrund. **Abwägung:** Ein
+fehlgeschlagenes Speichern fällt erst spät auf, als Meldung und mit dem Zurücksetzen dieses einen Datensatzes.
+"""
+
+[[decisions.items]]
+title.en = "Port the prototype, don't rewrite it"
+title.de = "Prototyp übernehmen statt neu schreiben"
+text.en = """
+No framework, a Shadow DOM and translation by dictionary, so the approved design appears exactly and later revisions of the
+prototype stay mergeable. **Trade-off:** most of the code is the ported prototype and is not type-checked.
+"""
+text.de = """
+Kein Framework, ein Shadow DOM und Übersetzung per Wörterbuch: So erscheint das freigegebene Design exakt, und spätere
+Überarbeitungen des Prototyps lassen sich weiter einspielen. **Abwägung:** Der größte Teil des Codes ist der übernommene
+Prototyp und nicht typgeprüft.
+"""
+
+# ---------------------------------------------------------------------------------------------------------------------
+[role]
+
+[[role.bullets]]
+en = "Compared the routes (Power Apps code apps, hosted HTML, a canvas app, an external site), decided on SPFx on SharePoint lists and wrote down why."
+de = "Die Lösungswege verglichen (Power-Apps-Code-Apps, gehostetes HTML, Canvas-App, externe Website), mich für SPFx auf SharePoint-Listen entschieden und die Gründe festgehalten."
+
+[[role.bullets]]
+en = "Built the SharePoint layer in strict TypeScript, with the REST adapter, the persister with retries and rollback, and the file store, and tested it with 39 unit tests."
+de = "Die SharePoint-Schicht in striktem TypeScript gebaut, mit REST-Adapter, Persister samt Wiederholungen und Rollback sowie Dateiablage, und mit 39 Unit-Tests getestet."
+
+[[role.bullets]]
+en = "Built the loader web part and the release mechanism, and wrote the PnP PowerShell scripts that set up the site and verify it against the schema."
+de = "Das Loader-Webpart und den Release-Mechanismus gebaut und die PnP-PowerShell-Skripte geschrieben, die die Site einrichten und gegen das Schema prüfen."
+
+[[role.bullets]]
+en = "Ported the supervisor's prototype, which supplies the product design, screens and business rules, and kept it current from revision 18 to revision 48 and through the feedback of 14 October 2026; added SharePoint storage, German and English, the phone layout and a sandbox."
+de = "Den Prototyp der Führungskraft übernommen, der Produktentwurf, Ansichten und Geschäftsregeln liefert, und ihn von Revision 18 bis Revision 48 sowie durch die Rückmeldungen vom 14. Oktober 2026 aktuell gehalten; SharePoint-Speicherung, Deutsch und Englisch, das Smartphone-Layout und eine Sandbox ergänzt."
+
+[[role.bullets]]
+en = "Extended the e-mail reader so that it also understands agency job ads."
+de = "Die E-Mail-Erkennung erweitert, sodass sie auch Projektanzeigen von Personalagenturen versteht."
+
+[[role.bullets]]
+en = "Wrote the documentation (concept, handover, data model in German and English, release procedure, go-live checklist, test plan, release notes) and acted as interim site owner for the go-live."
+de = "Die Dokumentation geschrieben (Konzept, Übergabe, Datenmodell auf Deutsch und Englisch, Release-Ablauf, Go-live-Checkliste, Testplan, Release Notes) und für den Go-live vorübergehend die Site-Eigentümerrolle übernommen."
+
+# ---------------------------------------------------------------------------------------------------------------------
+[result]
+heading.en = "Version 1 live since September 2026, version 2 packaged"
+heading.de = "Version 1 live seit September 2026, Version 2 paketiert"
+text.en = """
+**Version 1 has been live since 29 September 2026**, 13 days after the first commit on 16 September. Version 2 was built on
+14 October and packaged on 15 October 2026, and it waits for the supervisor's release. The live demo runs the version 2
+code with invented data of the fictional Nordstern Projektmanagement GmbH, saved in the browser instead of SharePoint.
+"""
+text.de = """
+**Version 1 ist seit dem 29. September 2026 live**, 13 Tage nach dem ersten Commit am 16. September. Version 2 wurde am
+14. Oktober gebaut und am 15. Oktober 2026 paketiert; sie wartet auf die Freigabe durch die Führungskraft. Die Live-Demo
+läuft mit dem Code von Version 2 und erfundenen Daten der fiktiven Nordstern Projektmanagement GmbH, gespeichert im
+Browser statt in SharePoint.
+"""
