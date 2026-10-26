@@ -721,57 +721,57 @@ bekannte Grenze, die noch offen ist.
 [role]
 [[role.bullets]]
 en = """
-**Gathered the requirements** with the supervisor and ran the feedback rounds from 24 August 2026, each answered by a
+Gathered the requirements with the supervisor and ran the feedback rounds from 24 August 2026, each answered by a
 written plan and a build.
 """
 de = """
-**Anforderungen erhoben**, gemeinsam mit der Führungskraft, und ab dem 24. August 2026 die Feedbackrunden geführt; jede Runde wurde mit einem schriftlichen Plan und einem Build beantwortet.
+Gemeinsam mit der Führungskraft die Anforderungen erhoben und ab dem 24. August 2026 die Feedbackrunden geführt; jede Runde wurde mit einem schriftlichen Plan und einem Build beantwortet.
 """
 
 [[role.bullets]]
 en = """
-**Planned the project**, put the open questions to the supervisor and decided the technical design (the trade-offs above).
+Planned the project, put the open questions to the supervisor and decided the technical design (the trade-offs above).
 """
 de = """
-**Das Projekt geplant**, offene Fragen der Führungskraft vorgelegt und das technische Design entschieden (die
+Das Projekt geplant, offene Fragen der Führungskraft vorgelegt und das technische Design entschieden (die
 Abwägungen oben).
 """
 
 [[role.bullets]]
 en = """
-**Designed the data model** on top of the supervisor's concept (two modules, folder tree, naming scheme), then built and migrated it in SharePoint.
+Designed the data model on top of the supervisor's concept (two modules, folder tree, naming scheme), then built and migrated it in SharePoint.
 """
 de = """
-**Das Datenmodell entworfen**, aufbauend auf dem Konzept der Führungskraft (zwei Module, Ordnerbaum, Namensschema), und es anschließend in SharePoint aufgebaut und migriert.
+Das Datenmodell entworfen, aufbauend auf dem Konzept der Führungskraft (zwei Module, Ordnerbaum, Namensschema), und es anschließend in SharePoint aufgebaut und migriert.
 """
 
 [[role.bullets]]
 en = """
-**Built the app, the flows and the backend** and released the revisions as versioned builds (numbered app revisions built
+Built the app, the flows and the backend and released the revisions as versioned builds (numbered app revisions built
 with the Power Platform CLI, numbered flow packages), each app build error-checked.
 """
 de = """
-**Die App, die Flows und das Backend gebaut** und die Revisionen als versionierte Builds veröffentlicht (nummerierte
+Die App, die Flows und das Backend gebaut und die Revisionen als versionierte Builds veröffentlicht (nummerierte
 App-Revisionen, gebaut mit der Power Platform CLI, nummerierte Flow-Pakete), jeden App-Build auf Fehler geprüft.
 """
 
 [[role.bullets]]
 en = """
-**Tested and fixed** faults found in flow runs and field tests, for example an import that reported success while loading
+Tested and fixed faults found in flow runs and field tests, for example an import that reported success while loading
 no rows, and reports that lost their photos from the second review on.
 """
 de = """
-**Fehler aus Flow-Läufen und Feldtests untersucht und behoben**, zum Beispiel einen Import, der Erfolg meldete, ohne
+Fehler aus Flow-Läufen und Feldtests untersucht und behoben, zum Beispiel einen Import, der Erfolg meldete, ohne
 Zeilen zu laden, und Berichte, die ab dem zweiten Abgleich ihre Fotos verloren.
 """
 
 [[role.bullets]]
 en = """
-**Wrote and delivered the user guides** in German and English (version 1.1 of 18 August 2026, for the first build) and a
+Wrote and delivered the user guides in German and English (version 1.1 of 18 August 2026, for the first build) and a
 bilingual handbook (2 September 2026).
 """
 de = """
-**Die Anleitungen geschrieben und übergeben**, auf Deutsch und Englisch (Version 1.1 vom 18. August 2026, für den ersten
+Die Anleitungen geschrieben und übergeben, auf Deutsch und Englisch (Version 1.1 vom 18. August 2026, für den ersten
 Build), dazu ein zweisprachiges Handbuch (2. September 2026).
 """
 
