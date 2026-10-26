@@ -1,0 +1,346 @@
+# Invented fixture for tools/test_build_case_studies.py and for previewing the page generator.
+# It describes a made-up weather-reading pipeline. No real company, person, product or system is meant.
+# Format reference: content/case-studies/SCHEMA.md
+
+[meta]
+slug = "example-pipeline"
+order = 1
+status = "prototype"
+tech = ["scripting", "relational store", "static pages"]
+demo_url = "https://example.org/demo/"
+facts_as_of = 2026-10-26
+
+[hero]
+eyebrow.en = "data pipeline"
+eyebrow.de = "Datenpipeline"
+title.en = "Example pipeline"
+title.de = "Beispiel-Pipeline"
+subtitle.en = "Hourly readings from field sensors, checked, stored and summarised"
+subtitle.de = "Stündliche Messwerte von Feldsensoren, geprüft, gespeichert und zusammengefasst"
+lead.en = """
+Field sensors write one file per hour. A small script checks every reading against its allowed range, stores it in a
+relational table and builds a daily summary for the analyst. **This pipeline is invented**: it exists to test the page
+generator, not to describe a real system. See the [format reference](https://example.org/format) for the details.
+"""
+lead.de = """
+Feldsensoren schreiben stündlich eine Datei. Ein kleines Skript prüft jeden Messwert gegen seinen zulässigen Bereich,
+speichert ihn in einer relationalen Tabelle und erstellt für den Analysten eine Tagesübersicht. **Diese Pipeline ist
+erfunden**: Sie dient dem Test des Seitengenerators und beschreibt kein echtes System. Details stehen in der
+[Formatbeschreibung](https://example.org/format).
+"""
+
+[[hero.stats]]
+value.en = "99.5 %"
+value.de = "99,5 %"
+label.en = "of readings pass the range check"
+label.de = "der Messwerte bestehen die Bereichsprüfung"
+
+[[hero.stats]]
+value = "24"
+label.en = "readings per station and day"
+label.de = "Messwerte pro Station und Tag"
+
+[[hero.stats]]
+value = "3 + 1"
+label.en = "tables and one file store"
+label.de = "Tabellen und eine Dateiablage"
+
+[[hero.stats]]
+value = "4"
+label.en = "steps from file to report"
+label.de = "Schritte von der Datei zum Bericht"
+
+[[hero.facts]]
+label.en = "Role"
+label.de = "Rolle"
+value.en = "design and build"
+value.de = "Konzeption und Umsetzung"
+
+[[hero.facts]]
+label.en = "Users"
+label.de = "Nutzer"
+value.en = "one analyst, two engineers"
+value.de = "ein Analyst, zwei Ingenieure"
+
+[[hero.facts]]
+label.en = "Platform"
+label.de = "Plattform"
+value.en = "a single server, nightly jobs"
+value.de = "ein einzelner Server, nächtliche Jobs"
+
+[why]
+heading.en = "Readings arrived as loose files, one report took an afternoon"
+heading.de = "Messwerte lagen als lose Dateien vor, ein Bericht kostete einen Nachmittag"
+
+[[why.paragraphs]]
+en = """
+Every hour each sensor wrote a text file into a shared folder. Nobody checked the numbers on arrival, so a broken
+sensor showed up days later, when the weekly report looked strange.
+"""
+de = """
+Jeder Sensor schrieb stündlich eine Textdatei in einen gemeinsamen Ordner. Niemand prüfte die Zahlen beim Eingang;
+ein defekter Sensor fiel erst Tage später auf, wenn der Wochenbericht merkwürdig aussah.
+"""
+
+[[why.paragraphs]]
+en = "**The pipeline checks first and stores second.** A reading outside its range is kept apart and reported, never mixed into the summary."
+de = "**Die Pipeline prüft zuerst und speichert danach.** Ein Messwert außerhalb seines Bereichs wird getrennt aufbewahrt und gemeldet, nie in die Übersicht gemischt."
+
+[[why.notes]]
+title.en = "Who uses it"
+title.de = "Wer sie nutzt"
+text.en = "One analyst reads the daily summary; two engineers look at the rejected readings."
+text.de = "Ein Analyst liest die Tagesübersicht; zwei Ingenieure sehen sich die abgewiesenen Messwerte an."
+
+[[why.notes]]
+title.en = "What it costs to run"
+title.de = "Was der Betrieb kostet"
+text.en = "One small server and no licences: the script and the table engine are free to use."
+text.de = "Ein kleiner Server und keine Lizenzen: Skript und Tabellen-Engine sind frei nutzbar."
+
+[flow]
+heading.en = "How a reading travels from the sensor to the report"
+heading.de = "Wie ein Messwert vom Sensor in den Bericht gelangt"
+description.en = "Field sensors send files to the ingest script, which stores readings in the reading store. A nightly job builds the daily summary that the analyst reads."
+description.de = "Feldsensoren liefern Dateien an das Einlese-Skript, das die Messwerte im Messwertspeicher ablegt. Ein nächtlicher Job erstellt die Tagesübersicht, die der Analyst liest."
+
+[[flow.nodes]]
+id = "sensors"
+tag = "SOURCE"
+title.en = "Field sensors"
+title.de = "Feldsensoren"
+role.en = "one file per hour"
+role.de = "eine Datei pro Stunde"
+wide = [20, 40, 200]
+tall = [30, 20, 340]
+
+[[flow.nodes]]
+id = "ingest"
+tag = "SCRIPT"
+title.en = "Ingest script"
+title.de = "Einlese-Skript"
+role.en = "checks ranges, loads rows"
+role.de = "prüft Bereiche, lädt Zeilen"
+wide = [290, 40, 200]
+tall = [30, 140, 340]
+
+[[flow.nodes]]
+id = "store"
+tag = "DATABASE"
+title.en = "Reading store"
+title.de = "Messwertspeicher"
+role.en = "one row per reading"
+role.de = "eine Zeile pro Messwert"
+wide = [560, 40, 200]
+tall = [30, 260, 340]
+
+[[flow.nodes]]
+id = "summary"
+tag = "JOB"
+title.en = "Daily summary"
+title.de = "Tagesübersicht"
+role.en = "averages and limit checks"
+role.de = "Mittelwerte und Grenzwerte"
+wide = [560, 220, 200]
+tall = [30, 380, 340]
+
+[[flow.nodes]]
+id = "analyst"
+tag.en = "PEOPLE"
+tag.de = "MENSCHEN"
+title.en = "Analyst"
+title.de = "Analyst"
+role.en = "reads the report"
+role.de = "liest den Bericht"
+wide = [820, 250, 160]
+tall = [70, 500, 300]
+
+[[flow.edges]]
+id = "e1"
+wide = ["sensors.right", "ingest.left"]
+tall = ["sensors.bottom", "ingest.top"]
+
+[[flow.edges]]
+id = "e2"
+wide = ["ingest.right", "store.left"]
+tall = ["ingest.bottom", "store.top"]
+
+[[flow.edges]]
+id = "e3"
+wide = ["store.bottom", "summary.top"]
+tall = ["store.bottom", "summary.top"]
+
+[[flow.edges]]
+id = "e4"
+wide = ["summary.right", "analyst.left"]
+tall = ["summary.bottom", "analyst.top"]
+
+[[flow.steps]]
+id = "collect"
+title.en = "Collect"
+title.de = "Einsammeln"
+text.en = "Each sensor drops its hourly file into a shared folder. The **ingest script** picks the files up."
+text.de = "Jeder Sensor legt seine Stundendatei in einem gemeinsamen Ordner ab. Das **Einlese-Skript** holt die Dateien ab."
+nodes = ["sensors", "ingest"]
+edges = ["e1"]
+
+[[flow.steps]]
+id = "validate"
+title.en = "Check and store"
+title.de = "Prüfen und speichern"
+text.en = "Every reading is compared with its allowed range and stored. Readings outside the range are **kept apart**."
+text.de = "Jeder Messwert wird mit seinem zulässigen Bereich verglichen und gespeichert. Werte außerhalb des Bereichs werden **getrennt aufbewahrt**."
+nodes = ["ingest", "store"]
+edges = ["e2"]
+
+[[flow.steps]]
+id = "summarise"
+title.en = "Summarise"
+title.de = "Zusammenfassen"
+text.en = "Every night a job reads the day's rows and writes one summary per station."
+text.de = "Jede Nacht liest ein Job die Zeilen des Tages und schreibt eine Übersicht pro Station."
+nodes = ["store", "summary"]
+edges = ["e3"]
+badge = { node = "summary", text.en = "NIGHTLY", text.de = "NÄCHTLICH" }
+
+[[flow.steps]]
+id = "report"
+title.en = "Report"
+title.de = "Berichten"
+text.en = "The analyst opens the summary in the morning and sees the stations that need attention."
+text.de = "Der Analyst öffnet die Übersicht am Morgen und sieht die Stationen, die Aufmerksamkeit brauchen."
+nodes = ["summary", "analyst"]
+edges = ["e4"]
+
+[model]
+heading.en = "Three tables and a file store"
+heading.de = "Drei Tabellen und eine Dateiablage"
+description.en = "Stations have many readings. A source file holds many readings and comes from one station."
+description.de = "Stationen haben viele Messwerte. Eine Quelldatei enthält viele Messwerte und stammt von einer Station."
+caption.en = "Simplified: three of the seven tables and the file store. Relations are lookup columns."
+caption.de = "Vereinfacht: drei der sieben Tabellen und die Dateiablage. Beziehungen sind Nachschlagespalten."
+
+[[model.entities]]
+id = "stations"
+kind = "list"
+name.en = "Stations"
+name.de = "Messstationen"
+note.en = "one per sensor site"
+note.de = "eine pro Standort"
+wide = [20, 30, 230]
+fields = [
+  { key = "PK", name.en = "Station code", name.de = "Stationscode" },
+  { name.en = "Region", name.de = "Region" },
+  { name.en = "Installed on", name.de = "Eingebaut am" },
+]
+
+[[model.entities]]
+id = "readings"
+kind = "list"
+name.en = "Readings"
+name.de = "Messwerte"
+note.en = "one per hour and station"
+note.de = "einer pro Stunde und Station"
+wide = [340, 30, 250]
+fields = [
+  { key = "PK", name.en = "Reading ID", name.de = "Messwert-ID" },
+  { key = "FK", name.en = "Station", name.de = "Station" },
+  { name.en = "Measured at", name.de = "Gemessen um" },
+  { name.en = "Value", name.de = "Wert" },
+  { name.en = "Unit", name.de = "Einheit" },
+]
+
+[[model.entities]]
+id = "files"
+kind = "library"
+name.en = "Source files"
+name.de = "Quelldateien"
+note.en = "raw files as received"
+note.de = "Rohdateien wie geliefert"
+wide = [340, 270, 250]
+fields = [
+  { key = "FK", name.en = "Station", name.de = "Station" },
+  { name.en = "File name", name.de = "Dateiname" },
+  { name.en = "Received at", name.de = "Eingegangen um" },
+]
+
+[[model.relations]]
+from = "stations"
+to = "readings"
+cardinality = "one-to-many"
+wide = ["stations.right@0.35", "readings.left@0.35"]
+text.en = "1 station → many readings"
+text.de = "1 Station → viele Messwerte"
+
+[[model.relations]]
+from = "files"
+to = "readings"
+cardinality = "one-to-many"
+wide = ["files.top", "readings.bottom"]
+text.en = "1 source file → many readings"
+text.de = "1 Quelldatei → viele Messwerte"
+
+[[model.relations]]
+from = "stations"
+to = "files"
+cardinality = "one-to-many"
+wide = ["stations.bottom", "files.left"]
+text.en = "1 station → many source files"
+text.de = "1 Station → viele Quelldateien"
+
+[[model.notes]]
+title.en = "Loads can be repeated"
+title.de = "Laden ist wiederholbar"
+text.en = "A reading is identified by station and time, so loading the same file twice changes nothing."
+text.de = "Ein Messwert ist durch Station und Zeit eindeutig; dieselbe Datei zweimal zu laden ändert nichts."
+
+[[model.notes]]
+title.en = "Rejected readings stay visible"
+title.de = "Abgewiesene Messwerte bleiben sichtbar"
+text.en = "They are stored with a reason in a separate table, which is not shown here."
+text.de = "Sie werden mit einem Grund in einer eigenen Tabelle abgelegt, die hier nicht gezeigt wird."
+
+[decisions]
+heading.en = "Trade-offs that shaped the build"
+heading.de = "Abwägungen, die den Aufbau bestimmt haben"
+
+[[decisions.items]]
+title.en = "Check before storing"
+title.de = "Erst prüfen, dann speichern"
+text.en = "A wrong number in the table would spread into every summary, so the range check runs before any row is written."
+text.de = "Eine falsche Zahl in der Tabelle würde sich in jede Übersicht ausbreiten; deshalb läuft die Bereichsprüfung, bevor eine Zeile geschrieben wird."
+
+[[decisions.items]]
+title.en = "Files stay as received"
+title.de = "Dateien bleiben unverändert"
+text.en = "The raw files are kept in a file store, so any summary can be rebuilt from the source."
+text.de = "Die Rohdateien bleiben in einer Dateiablage erhalten, damit sich jede Übersicht aus der Quelle neu erstellen lässt."
+
+[[decisions.items]]
+title.en = "One server, nightly jobs"
+title.de = "Ein Server, nächtliche Jobs"
+text.en = "Hourly data does not need a streaming system. A nightly job is simple to run and simple to repair."
+text.de = "Stündliche Daten brauchen kein Streaming-System. Ein nächtlicher Job ist einfach zu betreiben und einfach zu reparieren."
+
+[role]
+[[role.bullets]]
+en = "Designed the table layout and the range rules together with the analyst."
+de = "Tabellenaufbau und Bereichsregeln gemeinsam mit dem Analysten entworfen."
+
+[[role.bullets]]
+en = "Wrote the ingest script and the nightly summary job."
+de = "Das Einlese-Skript und den nächtlichen Übersichts-Job geschrieben."
+
+[[role.bullets]]
+en = "Added tests for the range check with invented readings."
+de = "Tests für die Bereichsprüfung mit erfundenen Messwerten ergänzt."
+
+[[role.bullets]]
+en = "Wrote the short operating notes in English and German."
+de = "Die kurzen Betriebshinweise auf Englisch und Deutsch geschrieben."
+
+[result]
+heading.en = "A prototype that the page generator can test against"
+heading.de = "Ein Prototyp, an dem sich der Seitengenerator testen lässt"
+text.en = "**Four steps from file to report**, with invented numbers. The [live demo](https://example.org/demo/) is a placeholder address."
+text.de = "**Vier Schritte von der Datei zum Bericht**, mit erfundenen Zahlen. Die [Live-Demo](https://example.org/demo/) ist eine Platzhalter-Adresse."
