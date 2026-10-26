@@ -88,7 +88,6 @@ button.step:focus-visible { outline-offset: 2px; border-radius: 10px; }
 .step .num { grid-row: span 2; width: 26px; height: 26px; border-radius: 50%; display: grid; place-items: center; font: 600 0.78rem var(--font-mono); border: 1px solid var(--border); }
 .step b { font: 600 0.95rem var(--font-display); color: var(--text); overflow-wrap: anywhere; }
 .step .t { font-size: 0.86rem; line-height: 1.45; overflow-wrap: anywhere; }
-.step .t a { color: var(--text); text-decoration: underline; text-decoration-color: var(--accent); }
 .step[aria-current="step"] { border-color: var(--accent); background: var(--accent-soft); }
 .step[aria-current="step"] .num { background: var(--accent); border-color: var(--accent); color: var(--accent-fg); }
 .chip { display: inline-block; margin-left: 6px; padding: 0 7px; border: 1px solid var(--accent); border-radius: 999px; color: var(--text); font: 600 0.62rem / 1.7 var(--font-mono); letter-spacing: 0.08em; vertical-align: 0.12em; white-space: nowrap; }
