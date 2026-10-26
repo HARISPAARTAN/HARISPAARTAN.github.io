@@ -56,7 +56,7 @@ Errors are printed as `file: toml.path: problem` and all of them at once, so you
 | `title` | pair | required | The H1. Also used in the browser title, the pager of the other pages and the list page. |
 | `subtitle` | pair | required | One line under the title. |
 | `lead` | pair, rich | required | Two to four sentences. The first sentences (up to about 300 characters) also become the meta description. |
-| `[[hero.stats]]` | tables | required | **Exactly four** stat tiles. `value`: a plain string (same in both languages) or a pair, for example `"45+"`; keep it short (a warning above 12 characters). `label`: pair. |
+| `[[hero.stats]]` | tables | required | **Exactly four** stat tiles. `value`: a plain string (same in both languages) or a pair, for example `"20+"`; keep it short (a warning above 12 characters). `label`: pair. |
 | `[[hero.facts]]` | tables | required | 1 to 6 lines of the small facts list (role, users, devices or platform): `label` (pair), `value` (pair). |
 
 ### `[why]` (section 01)
