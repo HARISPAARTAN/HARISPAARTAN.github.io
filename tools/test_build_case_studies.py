@@ -10,6 +10,7 @@ from __future__ import annotations
 import contextlib
 import io
 import json
+import os
 import re
 import shutil
 import subprocess
@@ -985,12 +986,22 @@ class Cli(unittest.TestCase):
         self.assertIn("meta.status", bad.stderr)
         self.assertEqual(self.run_cli(ws, "--bogus").returncode, 2)
 
-    def test_unicode_in_messages_survives_a_cp1252_console(self):
+    def test_unicode_in_paths_and_messages_survives_a_cp1252_console(self):
+        # stdout of a legacy Windows console cannot show an arrow in a folder name; the script must not crash on it
         ws = Workspace(self)
-        ws.write(SLUG, mutate(fixture_text(), 'role.de = "liest den Bericht"\n', ""))
-        done = subprocess.run([sys.executable, "-I", str(SCRIPT), "--content-dir", str(ws.content), "--ui", str(UI), "--out-dir", str(ws.out)],
-                              capture_output=True, env={"PYTHONIOENCODING": "cp1252", "SYSTEMROOT": "C:\\Windows"}, cwd=ws.root)
-        self.assertEqual(done.returncode, 1)
+        ws.out = ws.root / "site-→" / "work"
+        key = '"untertitel→"'
+        env = dict(os.environ, PYTHONIOENCODING="cp1252")
+        args = [sys.executable, "-I", str(SCRIPT), "--content-dir", str(ws.content), "--ui", str(UI), "--out-dir", str(ws.out)]
+        ws.write(SLUG, fixture_text())
+        done = subprocess.run(args, capture_output=True, env=env, cwd=ws.root)
+        self.assertEqual(done.returncode, 0, done.stderr)
+        self.assertIn(b"wrote", done.stdout)
+        ws.write(SLUG, mutate(fixture_text(), "[result]\n", f"[result]\n{key} = 'x'\n"))
+        done = subprocess.run(args, capture_output=True, env=env, cwd=ws.root)
+        self.assertEqual(done.returncode, 1, done.stderr)
+        self.assertIn(b"unknown key", done.stderr)
+        self.assertNotIn(b"Traceback", done.stderr)
 
     def test_runs_from_any_working_directory(self):
         ws = Workspace(self)

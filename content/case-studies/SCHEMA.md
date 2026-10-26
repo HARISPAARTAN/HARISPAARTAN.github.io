@@ -16,6 +16,8 @@ python tools/build_case_studies.py --only <slug>    # check ONE file and write o
 python tools/build_case_studies.py --check          # build in memory; exit 1 if content is invalid or work/ is out of date
 ```
 
+To look at a page, serve the repository folder with any static server, for example `python -m http.server 8000` in the repository root, and open `http://127.0.0.1:8000/work/<slug>/` (English) or `.../work/<slug>/de/` (German). The pages load the shared stylesheet, script and fonts by relative paths, so they work from a local server as they are.
+
 `--only` never fails because of another project's file: that file may be missing, half written or broken. Only `meta.order`, `meta.slug` and `hero.title` of the neighbours are read, for the "previous / next" links at the end of the page. If a neighbour cannot be read, its link goes to the work section of the home page and the build prints a warning.
 
 Errors are printed as `file: toml.path: problem` and all of them at once, so you can fix them in one pass. In a path, `flow.nodes[app]` is the `[[flow.nodes]]` table with `id = "app"`; a table without an id is counted from 1: `flow.nodes[#3]`; `fields[2]` is the second field. A build with errors writes nothing. Warnings are advice (for example "four to six steps"); they never stop a build.
