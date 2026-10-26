@@ -1037,6 +1037,11 @@ class Cli(unittest.TestCase):
 # ---------------------------------------------------------------- geometry and helpers
 
 class Geometry(unittest.TestCase):
+    def test_clean_keeps_a_number_next_to_its_unit(self):
+        self.assertEqual(bcs.clean("about 460\n   MB unpacked"), "about 460\u00a0MB unpacked")
+        self.assertEqual(bcs.clean("17 KB, 30 EUR"), "17\u00a0KB, 30\u00a0EUR")
+        self.assertEqual(bcs.clean("8 pages, 6 MBit"), "8 pages, 6 MBit")
+
     def test_fmt(self):
         self.assertEqual([bcs.fmt(v) for v in (1, 1.0, 1.5, 0.125, 100.004, -0.0, -0.001, 1000)], ["1", "1", "1.5", "0.12", "100", "0", "0", "1000"])
 

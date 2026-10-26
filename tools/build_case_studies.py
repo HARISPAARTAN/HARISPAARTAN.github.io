@@ -155,8 +155,12 @@ def fmt(value: float) -> str:
     return "0" if text in ("", "-0") else text
 
 
+# a number and its unit stay on one line
+UNIT_GAP = re.compile(r"(?<=\d) (?=(?:KB|MB|GB|EUR|px|ms)\b)")
+
+
 def clean(text: str) -> str:
-    return " ".join(text.split())
+    return UNIT_GAP.sub("\u00a0", " ".join(text.split()))
 
 
 def esc(text: str) -> str:
