@@ -4,6 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <style>:root{color-scheme:light dark}body{margin:0}img{max-width:100%}[hidden]{display:none!important}</style>
+<!-- portfolio theme --><script src="../_theme/demo-theme.js" data-demo="qs-baustelle"></script><link rel="stylesheet" href="../_theme/qs-baustelle.css"><!-- /portfolio theme -->
 </head>
 <body>
 <title>QS Baustelle · Demo der aktuellen App-Version</title>
@@ -1656,9 +1657,9 @@ body[data-comment="1"] #stage .pa-input { pointer-events: none; }
 
   Renderer.prototype.color = function (ctl, name, rowStack, fallback) {
     var v = this.prop(ctl, name, rowStack, fallback);
-    if (typeof v === "string" && /^rgba?\(/.test(v)) return v;
-    if (typeof v === "string" && /^#/.test(v)) return v;
-    return fallback || "rgba(0,0,0,0)";
+    var c = (typeof v === "string" && (/^rgba?\(/.test(v) || /^#/.test(v))) ? v : (fallback || "rgba(0,0,0,0)");
+    // Portfolio-Theme: jede Farbe laeuft durch die Farbtabelle aus demos/_theme/demo-theme.js, falls geladen.
+    return window.__pfMap ? window.__pfMap(c, ctl, name, this, rowStack) : c;
   };
 
   Renderer.prototype.radius = function (ctl, rowStack) {
@@ -1700,7 +1701,7 @@ body[data-comment="1"] #stage .pa-input { pointer-events: none; }
     var disabled = mode === "Disabled";
     if (disabled) {
       var df = this.prop(ctl, "DisabledFill", rowStack, null);
-      if (typeof df === "string" && /^rgba?\(/.test(df)) fill = df;
+      if (typeof df === "string" && /^rgba?\(/.test(df)) fill = window.__pfMap ? window.__pfMap(df, ctl, "DisabledFill", this, rowStack) : df;
     }
     if (fill && fill !== "rgba(0,0,0,0)") el.style.background = fill;
 
@@ -1958,7 +1959,8 @@ body[data-comment="1"] #stage .pa-input { pointer-events: none; }
     stage.className = "pa-screen";
     stage.dataset.screen = screenName;
     var bg = s.props.Fill;
-    stage.style.background = (typeof bg === "string" && /^rgba?\(/.test(bg)) ? bg : "#ffffff";
+    bg = (typeof bg === "string" && /^rgba?\(/.test(bg)) ? bg : "#ffffff";
+    stage.style.background = window.__pfMap ? window.__pfMap(bg, null, "ScreenFill", null, null) : bg;
 
     var roots = toTree(s.controls);
     for (var i = 0; i < roots.length; i++) {

@@ -1,0 +1,50 @@
+/* Portfolio theme for the CRM demo, adopted by the app's shadow root (see demo-theme.js). Dark by default, light via :host([data-theme="light"]). */
+:host, :host([data-theme="dark"]) {
+  color-scheme: dark;
+  --bg:#0B0F14; --surface:#121820; --surface-2:#182130; --surface-3:#1F2A36;
+  --ink:#E6EDF3; --ink-2:#C3CDD8; --ink-3:#93A1B0; --line:#1F2A36; --line-2:#2A3646;
+  --accent:#F2A93B; --accent-ink:#1A1200; --accent-soft:#2E2819; --pf-accent-text:#F2A93B; --accent-hover:#F6BC62; --logo:#F2A93B;
+  --c1:#F2A93B; --c2:#3DDC97; --c3:#6CB6FF; --c4:#C297FF; --c5:#FF8B8B; --c6:#93A1B0;
+  --o1:#5C4319; --o2:#A8731F; --o3:#F2A93B; --h1:#2A2214; --h2:#5C4319; --h3:#A8731F; --h4:#F2A93B;
+  --new:#93A1B0; --offer:#F2A93B; --won:#3DDC97; --lost:#FF7B72;
+  --crit:#FF7B72; --crit-soft:#3A1F1F; --warn:#F2A93B; --warn-soft:#33270F; --good:#3DDC97; --good-soft:#10291F;
+  --violet:#C297FF; --violet-soft:#241F38; --teal:#5CC3CF; --teal-soft:#112F33; --amber:#F2A93B;
+  --progress:#F2A93B; --cancelled:#6B7785;
+  --shadow:0 1px 0 rgba(255,255,255,.03) inset, 0 1px 2px rgba(0,0,0,.4);
+  --shadow-hover:0 2px 6px rgba(0,0,0,.4), 0 12px 32px rgba(0,0,0,.35);
+  --shadow-lg:0 24px 60px rgba(0,0,0,.6);
+}
+:host([data-theme="light"]) {
+  color-scheme: light;
+  --bg:#F7F7F4; --surface:#FFFFFF; --surface-2:#F0EFEA; --surface-3:#E6E3DB;
+  --ink:#14181D; --ink-2:#343B45; --ink-3:#5B6472; --line:#DDD9D0; --line-2:#CFCAC0;
+  --accent:#B45309; --accent-ink:#FFFFFF; --accent-soft:#FBEEDB; --pf-accent-text:#92400E; --accent-hover:#92400E; --logo:#B45309;
+  --c1:#B45309; --c2:#15803D; --c3:#1D6FD1; --c4:#7C4DCC; --c5:#C2410C; --c6:#5B6472;
+  --o1:#FBEEDB; --o2:#E2A35A; --o3:#B45309; --h1:#FBEEDB; --h2:#F3CE95; --h3:#E2A35A; --h4:#B45309;
+  --new:#5B6472; --offer:#B45309; --won:#15803D; --lost:#B42318;
+  --crit:#B42318; --crit-soft:#FDECEA; --warn:#92400E; --warn-soft:#FEF3DB; --good:#15803D; --good-soft:#E7F4EC;
+  --violet:#6D4FC2; --violet-soft:#F0ECFA; --teal:#0D6F7C; --teal-soft:#E4F3F4; --amber:#B45309;
+  --progress:#B45309; --cancelled:#9AA3AE;
+  --shadow:0 1px 2px rgba(20,24,29,.06); --shadow-hover:0 2px 6px rgba(20,24,29,.06), 0 10px 28px rgba(20,24,29,.08);
+  --shadow-lg:0 24px 60px rgba(20,24,29,.2);
+}
+.side{background:var(--surface);border-right:1px solid var(--line);color:var(--ink)}
+.side .logo,.side .logo .crm,.side .logo .sol{color:var(--ink)}
+.side .logo .mark{color:var(--accent)}
+.side .logo .brand{border-left-color:var(--line-2)}
+.side .nav a{color:var(--ink-3)}
+.side .nav a svg{color:var(--ink-3)}
+.side .nav a:hover{background:var(--surface-2);color:var(--ink)}
+.side .nav a.on{background:var(--accent-soft);color:var(--pf-accent-text);box-shadow:inset 2px 0 0 var(--accent)}
+.side .nav a.on svg{color:var(--accent)}
+.side .btn{background:var(--surface-2);border-color:var(--line-2);color:var(--ink)}
+.side .btn:hover{background:var(--surface-3)}
+.side .b-pri{background:var(--accent);border-color:var(--accent);color:var(--accent-ink)}
+.side .b-pri:hover{background:var(--accent-hover);border-color:var(--accent-hover)}
+.side .dim,.side .muted,.side .sm,.side .side-meta{color:var(--ink-3)}
+.side .side-meta .demo{color:var(--accent)}
+.side .wip{background:var(--accent-soft);color:var(--pf-accent-text)}
+.b-pri:hover{background:var(--accent-hover);border-color:var(--accent-hover);color:var(--accent-ink)}
+.chip.info{background:var(--accent-soft);color:var(--pf-accent-text)}
+:focus-visible{outline-color:var(--accent)}
+.side .logo .sol b{color:var(--accent)}

@@ -1,0 +1,39 @@
+/* Portfolio theme for the QS Baustelle demo chrome. The phone screens are remapped by the colour map in demo-theme.js. */
+html:root[data-pf] {
+  color-scheme: dark;
+  --petrol:#F2A93B; --petrol-soft:#F6BC62; --lime:#F2A93B; --sand:#182130;
+  --ink:#E6EDF3; --ink-soft:#93A1B0; --ink-faint:#7D8A99;
+  --ground:#0B0F14; --surface:#121820; --line:#1F2A36; --line-soft:#182130;
+  --fehler:#FF7B72; --aenderung:#6CB6FF; --frage:#E3B341; --idee:#3DDC97;
+  --shadow-lift:0 1px 2px rgba(0,0,0,.4), 0 8px 24px rgba(0,0,0,.45);
+  --shadow-phone:0 2px 6px rgba(0,0,0,.5), 0 24px 64px rgba(0,0,0,.6);
+  --pf-on-accent:#1A1200;
+}
+html:root[data-pf="light"] {
+  color-scheme: light;
+  --petrol:#B45309; --petrol-soft:#92400E; --lime:#B45309; --sand:#F0EFEA;
+  --ink:#14181D; --ink-soft:#5B6472; --ink-faint:#646C78;
+  --ground:#F7F7F4; --surface:#FFFFFF; --line:#DDD9D0; --line-soft:#F0EFEA;
+  --fehler:#B42318; --aenderung:#1D6FD1; --frage:#A16207; --idee:#15803D;
+  --shadow-lift:0 1px 2px rgba(20,24,29,.06), 0 8px 24px rgba(20,24,29,.08);
+  --shadow-phone:0 2px 6px rgba(20,24,26,.18), 0 24px 64px rgba(20,24,26,.24);
+  --pf-on-accent:#FFFFFF;
+}
+html[data-pf] .hbtn.primary, html[data-pf] .hbtn.on, html[data-pf] .ix-count { color:var(--pf-on-accent); }
+html[data-pf] .hint { background:color-mix(in srgb, var(--lime) 14%, var(--surface)); border-color:color-mix(in srgb, var(--lime) 45%, var(--line)); }
+html[data-pf] .phone { background:#05070A; box-shadow:var(--shadow-phone), 0 0 0 1px #1F2A36; }
+html[data-pf] .phone .glass { background:#0B0F14; }
+html[data-pf] .pa-img-empty { background:repeating-linear-gradient(45deg,#141B24,#141B24 6px,#1A2230 6px,#1A2230 12px); }
+html[data-pf] .pa select.pa-input { color:#E6EDF3; }
+html[data-pf] .pa select.pa-input option { background:#121820; color:#E6EDF3; }
+html[data-pf] .pa-banner.info { background:#1F2A36; }
+html[data-pf] .pin { color:#0B0F14; border-color:#0B0F14; }
+html[data-pf="light"] .phone { background:#1B1F22; box-shadow:var(--shadow-phone); }
+html[data-pf="light"] .phone .glass { background:#F7F7F4; }
+html[data-pf="light"] .pa-img-empty { background:repeating-linear-gradient(45deg,#EDEAE5,#EDEAE5 6px,#E3DFD8 6px,#E3DFD8 12px); }
+html[data-pf="light"] .pa select.pa-input { color:#14181D; }
+html[data-pf="light"] .pa select.pa-input option { background:#FFFFFF; color:#14181D; }
+html[data-pf="light"] .pa-banner.info { background:#B45309; }
+html[data-pf="light"] .pin { color:#FFFFFF; border-color:#FFFFFF; }
+html[data-pf] .ov-box { background:#0B0F14; }
+html[data-pf="light"] .ov-box { background:#F7F7F4; }

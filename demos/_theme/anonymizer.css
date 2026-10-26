@@ -1,0 +1,60 @@
+/* Portfolio theme for the anonymizer demo. Dark default, light via html[data-pf="light"]. */
+html[data-pf] {
+  color-scheme: dark;
+  --p-accent:#F2A93B; --p-accent-fg:#1A1200; --p-soft:#2E2819;
+  --sand:#0B0F14; --white:#121820; --off:#182130; --ink:#E6EDF3; --muted:#93A1B0;
+  --line:#1F2A36; --urban:#2A3646; --sky:#2E2819; --sandstone:#2A3646;
+  --teal:#F2A93B; --teal2:#F6BC62; --teal3:#1F2A36; --lime:#F2A93B;
+  --okbg:#10291F; --okfg:#3DDC97; --badbg:#3A1F1F; --badfg:#FF7B72;
+  --r-bg:#0F141B; --r-text:#E6EDF3; --r-dim:#93A1B0; --r-line:#2A3646; --r-hover:#182130; --r-cur:#182130;
+  --p-edge:#2A3646; --p-viewer:#0E131A;
+}
+html[data-pf="light"] {
+  color-scheme: light;
+  --p-accent:#B45309; --p-accent-fg:#FFFFFF; --p-soft:#FBEEDB;
+  --sand:#F7F7F4; --white:#FFFFFF; --off:#F0EFEA; --ink:#14181D; --muted:#5B6472;
+  --line:#DDD9D0; --urban:#CFCAC0; --sky:#FBEEDB; --sandstone:#CFCAC0;
+  --teal:#B45309; --teal2:#92400E; --teal3:#E6E3DB; --lime:#B45309;
+  --okbg:#E7F4EC; --okfg:#15803D; --badbg:#FDECEA; --badfg:#B42318;
+  --r-bg:#FFFFFF; --r-text:#14181D; --r-dim:#5B6472; --r-line:#CFCAC0; --r-hover:#F0EFEA; --r-cur:#F0EFEA;
+  --p-edge:#CFCAC0; --p-viewer:#E6E3DB;
+}
+/* rail */
+html[data-pf] .rail{background:var(--r-bg);color:var(--r-text);border-right:1px solid var(--line)}
+html[data-pf] .ver,html[data-pf] .railtitle,html[data-pf] .lang .lbl,html[data-pf] .railfoot{color:var(--r-dim)}
+html[data-pf] .step{color:var(--r-dim)}
+html[data-pf] .step.can:hover{background:var(--r-hover)}
+html[data-pf] .dot{border-color:var(--r-line)}
+html[data-pf] .step.cur{color:var(--r-text);background:var(--r-cur);box-shadow:inset 2px 0 0 var(--p-accent)}
+html[data-pf] .step.cur .dot{background:var(--p-accent);border-color:var(--p-accent);color:var(--p-accent-fg)}
+html[data-pf] .step.done .dot{border-color:var(--p-accent);color:var(--p-accent)}
+html[data-pf] .lang button{border-color:var(--r-line);color:var(--r-text)}
+html[data-pf] .lang button[aria-pressed="true"]{background:var(--p-accent);border-color:var(--p-accent);color:var(--p-accent-fg)}
+html[data-pf] .sq,html[data-pf] .ico{background:var(--p-accent);color:var(--p-accent-fg)}
+/* main */
+html[data-pf] h1,html[data-pf] h2{color:var(--ink)}
+html[data-pf] .tip{background:var(--p-soft);color:var(--ink);box-shadow:inset 2px 0 0 var(--p-accent)}
+html[data-pf] .btn,html[data-pf] input[type="text"],html[data-pf] textarea,html[data-pf] .clist,html[data-pf] .sqb{border-color:var(--p-edge)}
+html[data-pf] .btn.pri,html[data-pf] .tog[aria-pressed="true"],html[data-pf] .ftab[aria-selected="true"]{background:var(--p-accent);border-color:var(--p-accent);color:var(--p-accent-fg)}
+html[data-pf] .btn.pri:hover{background:var(--teal2);border-color:var(--teal2)}
+html[data-pf] .btn.lime{background:var(--p-soft);border-color:var(--p-accent);color:var(--p-accent)}
+html[data-pf] .ftab[aria-selected="true"] .type{background:rgba(0,0,0,.14);color:var(--p-accent-fg)}
+html[data-pf] .ftab .n,html[data-pf] .likely{background:var(--p-accent);color:var(--p-accent-fg)}
+html[data-pf] .lg.on{background:var(--p-soft);box-shadow:0 0 0 1.5px var(--p-accent)}
+html[data-pf] .win{border-color:var(--line)}
+html[data-pf] .varea{background:var(--p-viewer)}
+html[data-pf] input[type="text"]:focus,html[data-pf] textarea:focus{box-shadow:0 0 0 3px color-mix(in srgb,var(--p-accent) 28%,transparent)}
+html[data-pf] .scrim{background:rgba(0,0,0,.55)}
+html[data-pf] .toast{background:var(--p-accent);color:var(--p-accent-fg)}
+/* marks on the white sample page stay readable on paper */
+html[data-pf] .hl [data-f].mk.on{background:rgba(242,169,59,.5);box-shadow:0 0 0 .4cqw #B45309}
+html[data-pf] .hl .iw.mk.on::after{background:rgba(242,169,59,.45);box-shadow:0 0 0 .4cqw #B45309}
+@keyframes flash{50%{box-shadow:0 0 0 1.3cqw rgba(242,169,59,.5)}}
+/* splash stays a dark boot screen in both modes */
+html[data-pf] .splash{background:#0B0F14;color:#E6EDF3}
+html[data-pf] .splash .gridline path{stroke:#F2A93B} html[data-pf] .splash .gridline circle{fill:#F2A93B}
+html[data-pf] .sp-mid .mono,html[data-pf] .tag{color:#F2A93B}
+html[data-pf] .sp-bar{background:#1F2A36} html[data-pf] .sp-bar i{background:#F2A93B}
+html[data-pf] .splash .sq{background:#F2A93B;color:#1A1200}
+html[data-pf] .sp-skip{color:#E6EDF3;border-color:#2A3646} html[data-pf] .sp-skip:hover{background:#182130}
+html[data-pf] .wordmark{color:var(--ink)}

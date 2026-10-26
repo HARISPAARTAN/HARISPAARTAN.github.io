@@ -1,0 +1,3 @@
+/* Portfolio theme for the CRM demo page around the app; the app itself is themed by crm-shadow.css. */
+html[data-pf="dark"], html[data-pf="dark"] body { background:#0B0F14; }
+html[data-pf="light"], html[data-pf="light"] body { background:#F7F7F4; }

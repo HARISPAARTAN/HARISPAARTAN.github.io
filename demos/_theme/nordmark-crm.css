@@ -1,0 +1,36 @@
+/* Portfolio theme for the Nordmark CRM demo. html:root[...] outranks the page's :root[data-theme] rules. */
+html:root[data-pf] {
+  color-scheme: dark;
+  --bg:#0B0F14; --surface:#121820; --surface-2:#182130; --surface-3:#1F2A36;
+  --ink:#E6EDF3; --ink-2:#B4C0CC; --ink-3:#93A1B0; --line:#1F2A36; --line-2:#2A3646;
+  --accent:#F2A93B; --accent-ink:#1A1200; --accent-soft:#2E2819; --accent-hover:#F6BC62;
+  --stage-lead:#F8D7A0; --stage-offer:#F2A93B; --stage-negotiation:#C47F1E; --stage-won:#3DDC97; --stage-lost:#FF7B72; --stage-cancelled:#6B7785;
+  --critical:#FF7B72; --critical-soft:#3A1F1F; --warning:#E8C547; --warning-soft:#332B10; --good:#3DDC97; --good-soft:#10291F;
+  --rep-1:#F2A93B; --rep-2:#6CB6FF; --rep-3:#3DDC97; --rep-4:#C297FF; --manager:#93A1B0;
+  --chart-1:#F2A93B; --chart-1-soft:#5C4319; --chart-grid:#1F2A36; --chart-axis:#2A3646;
+  --outlook:#6CB4F5; --outlook-soft:#17304A; --sharepoint:#4FC3C7; --sharepoint-soft:#123637;
+  --shadow:0 1px 2px rgba(0,0,0,.4), 0 8px 24px rgba(0,0,0,.35);
+  --shadow-lg:0 16px 48px rgba(0,0,0,.6);
+  --pf-on-fill:#14100A;
+}
+html:root[data-pf="light"] {
+  color-scheme: light;
+  --bg:#F7F7F4; --surface:#FFFFFF; --surface-2:#F0EFEA; --surface-3:#E6E3DB;
+  --ink:#14181D; --ink-2:#4A5462; --ink-3:#646C78; --line:#DDD9D0; --line-2:#CFCAC0;
+  --accent:#B45309; --accent-ink:#FFFFFF; --accent-soft:#FBEEDB; --accent-hover:#92400E;
+  --stage-lead:#F6D7A7; --stage-offer:#B45309; --stage-negotiation:#7C2D12; --stage-won:#15803D; --stage-lost:#B42318; --stage-cancelled:#7A828D;
+  --critical:#B42318; --critical-soft:#FDECEA; --warning:#A16207; --warning-soft:#FEF6D8; --good:#15803D; --good-soft:#E7F4EC;
+  --rep-1:#B45309; --rep-2:#1D6FD1; --rep-3:#15803D; --rep-4:#7C4DCC; --manager:#5B6472;
+  --chart-1:#B45309; --chart-1-soft:#F3CE95; --chart-grid:#E6E3DB; --chart-axis:#CFCAC0;
+  --outlook:#0F6CBD; --outlook-soft:#E6F0FA; --sharepoint:#036C70; --sharepoint-soft:#E2F1F1;
+  --shadow:0 1px 2px rgba(20,24,29,.06), 0 6px 20px rgba(20,24,29,.07);
+  --shadow-lg:0 12px 40px rgba(20,24,29,.18);
+  --pf-on-fill:#FFFFFF;
+}
+/* text on coloured fills: dark ink on the bright dark-mode fills, white on the deep light-mode fills */
+html[data-pf] .badge-stage, html[data-pf] .avatar, html[data-pf] .step.done .n,
+html[data-pf] .step.closed.current .n { color:var(--pf-on-fill); }
+html[data-pf] .badge-stage[data-stage="lead"] { color:#3B2A0C; }
+html[data-pf] .backdrop { background:rgba(5,8,12,.6); }
+/* amber text on the soft amber active row: the deeper shade keeps 4.5:1 in light */
+html[data-pf="light"] .nav a.active { color:var(--accent-hover); }

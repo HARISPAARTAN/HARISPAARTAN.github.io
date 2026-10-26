@@ -1,0 +1,107 @@
+/* Portfolio theme for the solution portfolio demo. The page keeps its layout; only colours change. */
+html:root[data-pf] {
+  --bg:#0B0F14; --bg2:#0F141B; --surf:#121820; --surf2:#182130; --line:#1F2A36;
+  --ink:#E6EDF3; --sub:#93A1B0; --dim:#7D8A99;
+  --amber:#F2A93B; --amber-d:#C6841E; --blue:#6CB6FF; --teal:#5CC3CF; --red:#FF7B72; --green:#3DDC97;
+}
+html[data-pf] .glow.b { display:none; }
+html[data-pf] #prog { background:var(--amber); }
+html[data-pf] .figure, html[data-pf] .browser { background:#0F141B; }
+html[data-pf] .bbar { background:#121820; }
+html[data-pf] .bbar i { background:#2A3646; }
+html[data-pf] .bbar .url, html[data-pf] .code, html[data-pf] .fx { background:#0B0F14; }
+html[data-pf] .ent .col { border-bottom-color:var(--line); }
+/* embedded CRM mock */
+html[data-pf] .crmapp { --c-ink:#E6EDF3; --c-mut:#93A1B0; --c-line:#1F2A36; --c-bg:#0F141B; --c-navy:#121820; --c-teal:#F2A93B; }
+html[data-pf] .crmapp .side { border-right:1px solid #1F2A36; }
+html[data-pf] .crmapp .brand { color:#E6EDF3; }
+html[data-pf] .crmapp .nav button { color:#93A1B0; }
+html[data-pf] .crmapp .nav button[aria-current="true"] { color:#E6EDF3; box-shadow:inset 3px 0 0 #F2A93B; background:rgba(242,169,59,.08); }
+html[data-pf] .crmapp .panel, html[data-pf] .crmapp .fcell { background:#121820; }
+html[data-pf] .crmapp .row { border-bottom-color:#1A2330; }
+html[data-pf] .crmapp .row.click:hover { background:#182130; }
+html[data-pf] .crmapp .act:hover { background:#2E2819; }
+/* embedded inspection phone mock */
+html[data-pf] .qaapp { --q-navy:#121820; --q-bg:#0B0F14; --q-ink:#E6EDF3; --q-mut:#93A1B0; --q-line:#1F2A36; --q-red:#FF7B72; --q-green:#3DDC97; }
+html[data-pf] .qaapp .top { color:#E6EDF3; border-bottom:1px solid #1F2A36; }
+html[data-pf] .qaapp .top .ts { color:#93A1B0; }
+html[data-pf] .qaapp .chip { background:#182130; }
+html[data-pf] .qaapp .icard, html[data-pf] .qaapp .nav { background:#121820; }
+html[data-pf] .qaapp .nav button[aria-current="true"] { color:#F2A93B; }
+html[data-pf] .qaapp input[type=text], html[data-pf] .qaapp select, html[data-pf] .qaapp textarea { background:#0F141B; }
+html[data-pf] .qaapp .save { background:#F2A93B; color:#1A1200; }
+html[data-pf] .qaapp .ph { background:#182130; border-color:#2A3646; }
+html[data-pf] .qaapp .seg button.on-y { color:#2A0B08; }
+html[data-pf] .qaapp .seg button.on-n { color:#06281A; }
+/* the mocks colour pills, bars, badges and chips inline; remap each colour to the portfolio set */
+html[data-pf] :is(.pill,.bar,.badge,.chip)[style*="#334155"] { background:#3A4757 !important; color:#E6EDF3; }
+html[data-pf] :is(.pill,.bar,.badge,.chip)[style*="#3B82F6"] { background:#6CB6FF !important; color:#0B0F14; }
+html[data-pf] :is(.pill,.bar,.badge,.chip)[style*="#F97316"] { background:#F2A93B !important; color:#1A1200; }
+html[data-pf] :is(.pill,.bar,.badge,.chip)[style*="#22C55E"] { background:#3DDC97 !important; color:#06281A; }
+html[data-pf] :is(.pill,.bar,.badge,.chip)[style*="#F43F5E"] { background:#FF7B72 !important; color:#2A0B08; }
+html[data-pf] :is(.pill,.bar,.badge,.chip)[style*="#94A3B8"] { background:#6B7785 !important; color:#FFFFFF; }
+html[data-pf] :is(.pill,.bar,.badge,.chip)[style*="#1B7A8C"] { background:#F2A93B !important; color:#1A1200; }
+/* KPI tiles become portfolio cards with a coloured top edge */
+html[data-pf] :is(.crmapp .kpi,.qaapp .qc) { background:#182130 !important; color:#E6EDF3; border:1px solid #1F2A36; border-top:3px solid var(--edge,#F2A93B); }
+html[data-pf] :is(.crmapp .kpi,.qaapp .qc) .l { color:#93A1B0; opacity:1; }
+html[data-pf] :is(.kpi,.qc)[style*="#3B82F6"] { --edge:#6CB6FF; }
+html[data-pf] :is(.kpi,.qc)[style*="#F97316"] { --edge:#F2A93B; }
+html[data-pf] :is(.kpi,.qc)[style*="#22C55E"] { --edge:#3DDC97; }
+html[data-pf] :is(.kpi,.qc)[style*="#F43F5E"] { --edge:#FF7B72; }
+html[data-pf] :is(.kpi,.qc)[style*="#F59E0B"] { --edge:#E8C547; }
+html[data-pf] .fcell .b[style*="#F97316"] { color:#F2A93B !important; }
+html[data-pf] .fcell .b[style*="#22C55E"] { color:#3DDC97 !important; }
+/* ---------- light ---------- */
+html:root[data-pf="light"] {
+  --bg:#F7F7F4; --bg2:#F0EFEA; --surf:#FFFFFF; --surf2:#F0EFEA; --line:#DDD9D0;
+  --ink:#14181D; --sub:#5B6472; --dim:#646C78;
+  --amber:#B45309; --amber-d:#92400E; --blue:#1D6FD1; --teal:#0D6F7C; --red:#B42318; --green:#15803D;
+}
+html[data-pf="light"] .glow.a { background:#F6D7A7; opacity:.35; }
+html[data-pf="light"] .figure, html[data-pf="light"] .browser { background:#FFFFFF; box-shadow:0 30px 60px -36px rgba(20,24,29,.25); }
+html[data-pf="light"] .bbar { background:#F0EFEA; }
+html[data-pf="light"] .bbar i { background:#CFCAC0; }
+html[data-pf="light"] .bbar .url { background:#FFFFFF; }
+html[data-pf="light"] .code, html[data-pf="light"] .fx { background:#F0EFEA; color:#0D5C52; }
+html[data-pf="light"] .mark { background:#FFFFFF; }
+html[data-pf="light"] .step .n { background:rgba(180,83,9,.08); border-color:rgba(180,83,9,.3); }
+html[data-pf="light"] .tag { color:#166534; background:rgba(21,128,61,.08); border-color:rgba(21,128,61,.25); }
+html[data-pf="light"] .tag.blue { color:#1D5FB8; background:rgba(29,111,209,.08); border-color:rgba(29,111,209,.25); }
+html[data-pf="light"] .tag.amber { color:#92400E; background:rgba(180,83,9,.08); border-color:rgba(180,83,9,.3); }
+html[data-pf="light"] .try::before { box-shadow:0 0 0 4px rgba(180,83,9,.18); }
+html[data-pf="light"] .crmapp { --c-ink:#14181D; --c-mut:#5B6472; --c-line:#DDD9D0; --c-bg:#F7F7F4; --c-navy:#FFFFFF; --c-teal:#B45309; }
+html[data-pf="light"] .crmapp .side { border-right-color:#DDD9D0; }
+html[data-pf="light"] .crmapp .brand { color:#14181D; }
+html[data-pf="light"] .crmapp .nav button { color:#5B6472; }
+html[data-pf="light"] .crmapp .nav button[aria-current="true"] { color:#14181D; box-shadow:inset 3px 0 0 #B45309; background:#FBEEDB; }
+html[data-pf="light"] .crmapp .panel, html[data-pf="light"] .crmapp .fcell { background:#FFFFFF; }
+html[data-pf="light"] .crmapp .row { border-bottom-color:#EEEBE4; }
+html[data-pf="light"] .crmapp .row.click:hover { background:#F7F5F0; }
+html[data-pf="light"] .crmapp .act:hover { background:#FBEEDB; }
+html[data-pf="light"] .qaapp { --q-navy:#FFFFFF; --q-bg:#F7F7F4; --q-ink:#14181D; --q-mut:#5B6472; --q-line:#DDD9D0; --q-red:#B42318; --q-green:#15803D; }
+html[data-pf="light"] .qaapp .top { color:#14181D; border-bottom-color:#DDD9D0; }
+html[data-pf="light"] .qaapp .top .ts { color:#5B6472; }
+html[data-pf="light"] .qaapp .chip { background:#F0EFEA; }
+html[data-pf="light"] .qaapp .icard, html[data-pf="light"] .qaapp .nav { background:#FFFFFF; }
+html[data-pf="light"] .qaapp .nav button[aria-current="true"] { color:#B45309; }
+html[data-pf="light"] .qaapp input[type=text], html[data-pf="light"] .qaapp select, html[data-pf="light"] .qaapp textarea { background:#FFFFFF; }
+html[data-pf="light"] .qaapp .save { background:#B45309; color:#FFFFFF; }
+html[data-pf="light"] .qaapp .ph { background:#F0EFEA; border-color:#CFCAC0; }
+html[data-pf="light"] .qaapp .seg button.on-y, html[data-pf="light"] .qaapp .seg button.on-n { color:#FFFFFF; }
+html[data-pf="light"] :is(.pill,.bar,.badge,.chip)[style*="#334155"] { background:#5B6472 !important; color:#FFFFFF; }
+html[data-pf="light"] :is(.pill,.bar,.badge,.chip)[style*="#3B82F6"] { background:#1D6FD1 !important; color:#FFFFFF; }
+html[data-pf="light"] :is(.pill,.bar,.badge,.chip)[style*="#F97316"] { background:#B45309 !important; color:#FFFFFF; }
+html[data-pf="light"] :is(.pill,.bar,.badge,.chip)[style*="#22C55E"] { background:#15803D !important; color:#FFFFFF; }
+html[data-pf="light"] :is(.pill,.bar,.badge,.chip)[style*="#F43F5E"] { background:#B42318 !important; color:#FFFFFF; }
+html[data-pf="light"] :is(.pill,.bar,.badge,.chip)[style*="#94A3B8"] { background:#6B7480 !important; color:#FFFFFF; }
+html[data-pf="light"] :is(.pill,.bar,.badge,.chip)[style*="#1B7A8C"] { background:#B45309 !important; color:#FFFFFF; }
+html[data-pf="light"] :is(.crmapp .kpi,.qaapp .qc) { background:#FFFFFF !important; color:#14181D; border-color:#DDD9D0; border-top-color:var(--edge,#B45309); }
+html[data-pf="light"] :is(.crmapp .kpi,.qaapp .qc) .l { color:#5B6472; }
+html[data-pf="light"] :is(.kpi,.qc)[style*="#3B82F6"] { --edge:#1D6FD1; }
+html[data-pf="light"] :is(.kpi,.qc)[style*="#F97316"] { --edge:#B45309; }
+html[data-pf="light"] :is(.kpi,.qc)[style*="#22C55E"] { --edge:#15803D; }
+html[data-pf="light"] :is(.kpi,.qc)[style*="#F43F5E"] { --edge:#B42318; }
+html[data-pf="light"] :is(.kpi,.qc)[style*="#F59E0B"] { --edge:#A16207; }
+html[data-pf="light"] .fcell .b[style*="#F97316"] { color:#B45309 !important; }
+html[data-pf="light"] .fcell .b[style*="#22C55E"] { color:#15803D !important; }
+html[data-pf="light"] .fcell .b[style*="#94A3B8"] { color:#646C78 !important; }
