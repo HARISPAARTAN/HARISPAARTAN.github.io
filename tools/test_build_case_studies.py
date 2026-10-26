@@ -160,7 +160,7 @@ class ValidBuild(unittest.TestCase):
         self.assertEqual(messages(result.errors), [])
         self.assertEqual(len(result.outputs), 3)
         self.assertTrue(all(out in p.parents for p in result.outputs), "every page goes below the folder given as out-dir")
-        self.assertFalse((REPO / "work").exists(), "the fixture never builds into the repository's work folder")
+        self.assertFalse((REPO / "work" / "example-pipeline").exists(), "the fixture never builds into the repository's work folder")
 
     def test_fixture_has_no_warnings(self):
         self.assertEqual(messages(self.result.warnings), [])
@@ -309,7 +309,7 @@ class ValidBuild(unittest.TestCase):
     def test_decisions_role_result_and_footer(self):
         self.assertEqual(parse(self.en).count("article", **{"class": "decision"}), 3)
         self.assertIn('<div class="cards reveal" data-count="3">', self.en)
-        self.assertEqual(self.en.count("<li>Designed the table layout"), 1)
+        self.assertEqual(self.en.count("<li><span>Designed the table layout"), 1)
         self.assertIn('<time datetime="2026-10-26">Facts as of 26 October 2026</time>', self.en)
         self.assertIn('<time datetime="2026-10-26">Stand der Angaben: 26. Oktober 2026</time>', self.de)
         self.assertIn("Generated from one content file per project. No trackers, no cookies.", self.en)

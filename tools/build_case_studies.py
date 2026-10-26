@@ -1569,7 +1569,8 @@ def render_role(p: Project, ctx: PageContext) -> list[str]:
     lines = ['<section class="section" id="role">', '  <div class="wrap">']
     lines += section_head(ctx, 5, "role", p.role["heading"], "default.role_heading")
     lines.append('    <ul class="role reveal">')
-    lines += [f"      <li>{inline(b[lang])}</li>" for b in p.role["bullets"]]
+    # the span keeps a bullet with **bold** in one grid cell next to its marker
+    lines += [f"      <li><span>{inline(b[lang])}</span></li>" for b in p.role["bullets"]]
     lines += ["    </ul>", "  </div>", "</section>"]
     return lines
 
