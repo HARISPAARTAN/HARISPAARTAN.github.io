@@ -12,7 +12,7 @@
   function words(el, attr) { var v = el.getAttribute(attr); return v ? v.split(' ') : []; }
   function mark(g, on) { g.classList.toggle('on', on); g.classList.toggle('off', !on); }
 
-  var wide = media('(min-width: 700px)');
+  var wide = media('(min-width: 1000px)');
   var reduce = media('(prefers-reduced-motion: reduce)');
 
   function player(box) {

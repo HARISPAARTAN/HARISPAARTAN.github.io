@@ -29,7 +29,7 @@ Errors are printed as `file: toml.path: problem` and all of them at once, so you
 3. **Line breaks inside a text are folded into single spaces.** Use `"""..."""` to wrap long prose in the file. Separate paragraphs by separate entries, never by blank lines inside one text.
 4. **Unknown keys are errors** (with a "did you mean" hint), so a typo is never silently ignored.
 5. **Ids** (`id`) start with a lower-case letter and contain lower-case letters, digits, `-` and `_`. They are unique inside their list (nodes, edges, steps, entities) and are never shown on the page.
-6. **No numbers or names the facts do not support.** The page shows what you write; the content rules of the design spec (no client names, people, e-mail addresses, internal URLs, tenant or site names, project codes or source code; numbers only with a source; exact status words) are yours to keep.
+6. **No numbers or names the facts do not support.** The page shows what you write; the content rules of the design spec (no client names, people, e-mail addresses, internal URLs, tenant or site names, project codes or source code; numbers only with a source; the status exactly as the facts support it) are yours to keep.
 
 ## Keys
 
@@ -41,7 +41,7 @@ Errors are printed as `file: toml.path: problem` and all of them at once, so you
 |---|---|---|---|
 | `slug` | string | required | Lower-case letters, digits, single hyphens. Must equal the file name without `.toml`. Becomes the address `/work/<slug>/`. |
 | `order` | integer ≥ 1 | required | Position in the card order. A full build needs the orders of all files to be exactly 1..N without gaps or duplicates. Shown as "case study 02 / 05" (N is the number of files). |
-| `status` | string | required | Exactly `"in production"`, `"pilot"` or `"prototype"`. Shown at the end of the eyebrow line in the page language (German: im Einsatz, Pilot, Prototyp). |
+| `status` | pair | required | The status in a few words, exactly as the facts support it (design spec, section 16.3), for example `status.en = "in use since September 2026"` and `status.de = "im Einsatz seit September 2026"`. Shown at the end of the eyebrow line. A warning above 40 characters: put the long form in the facts list or the result. |
 | `tech` | list of strings | required | 1 to 8 technology tags, shown as written in both languages. |
 | `demo_url` | string | optional | `https://...` or a site path starting with `/`. Without it the page has no demo buttons at all. |
 | `og_image` | string | optional | Social preview image, a path inside the site without a leading slash (`assets/img/og-example.png`). Default: `assets/img/og.png`. A warning appears when the file does not exist. |
@@ -52,7 +52,7 @@ Errors are printed as `file: toml.path: problem` and all of them at once, so you
 
 | Key | Type | | Notes |
 |---|---|---|---|
-| `eyebrow` | pair | required | The short category in the middle of the eyebrow line: `case study 02 / 05 · <eyebrow> · in production`. Example: `power apps`. |
+| `eyebrow` | pair | required | The short category in the middle of the eyebrow line: `case study 02 / 05 · <eyebrow> · <status>`. Example: `power apps`. |
 | `title` | pair | required | The H1. Also used in the browser title, the pager of the other pages and the list page. |
 | `subtitle` | pair | required | One line under the title. |
 | `lead` | pair, rich | required | Two to four sentences. The first sentences (up to about 300 characters) also become the meta description. |
@@ -149,7 +149,7 @@ Each relation:
 | `role.heading` | pair | optional | Default from `ui.toml` ("What I did"). |
 | `[[role.bullets]]` | pairs, rich | required | 1 to 8 bullets, four to six recommended. |
 | `result.heading` | pair | required | The H2 of the section. |
-| `result.text` | pair, rich | required | One paragraph with the measured effect and the status. Shown with the demo button when `meta.demo_url` is set, then the "facts as of" line and the pager. |
+| `result.text` | pair, rich | required | One paragraph with what was delivered and when, and the status. No usage, time-saving or benefit figures unless the facts measure them. Shown with the demo button when `meta.demo_url` is set, then the "facts as of" line and the pager. |
 
 ## What the build checks
 
@@ -168,7 +168,7 @@ The other options of the script are for tests and previews: `--content-dir DIR`,
 
 ## Coordinates: how to place boxes
 
-* The diagram is drawn on a canvas of **user units**. Origin top left, x to the right, y downward. The canvas is **1000 units wide in the `wide` layout** (screens from 700 px) and **400 units wide in the `tall` layout** (phones). The page scales the canvas to the width of the column: 1000 units become about 1060 px on screens of 1280 px and wider, 840 px at 900 px, 710 px at 768 px and 640 px at 700 px; 400 units become 300 to 330 px on a phone (360 to 390 px). Keep this in mind for the smallest sizes: a role line of 11.5 units is drawn about 8 px high on a 768 px tablet.
+* The diagram is drawn on a canvas of **user units**. Origin top left, x to the right, y downward. The canvas is **1000 units wide in the `wide` layout** (screens from 1000 px) and **400 units wide in the `tall` layout** (phones and tablets, under 1000 px). The page scales the canvas to the width of the column: 1000 units become about 1060 px on screens of 1280 px and wider and about 920 px at 1000 px; 400 units become 300 to 330 px on a phone (360 to 390 px) and at most 460 px on a tablet. A role line of 11.5 units is therefore drawn at least about 8.5 px high on a phone and 10.5 px on a 1000 px screen.
 * A box is `[x, y, width]` for its top left corner and its width. **Every flow box is 88 units high.** An entity box is `46 + 24 × (number of fields) + 8` units high (five fields: 174).
 * **The viewBox height is computed, never written.** It is the lowest point of any box or arrow plus 20 units, rounded up. The wide example below ends at 40 + 88 = 128, so its height is 148.
 * A box must lie inside the canvas (`x ≥ 0`, `y ≥ 0`, `x + width ≤ 1000` or `400`), and two boxes must stay **at least 4 units apart**. Aim for 40 to 70 units of space between boxes, or the arrows have no room to show.
@@ -218,7 +218,7 @@ app.left@0         the top end of the left side (use 0 to 1)
 
 ## Reading order, phones and no JavaScript
 
-* **Phones** (under 700 px) get the tall layout of the architecture diagram, top to bottom, and the data model as a list of entity cards (name, note, fields with PK/FK marks and the relation sentences). There is no sideways scrolling.
+* **Phones and tablets** (under 1000 px) get the tall layout of the architecture diagram, top to bottom, and the data model as a list of entity cards (name, note, fields with PK/FK marks and the relation sentences). There is no sideways scrolling.
 * **Without JavaScript** the diagram is a complete still picture (nothing dimmed) and the steps are a numbered list; every step text, the badge text and the data-model cards are in the page as text.
 * **With "reduce motion"** there is no autoplay and nothing moves; the dots rest at fixed points on the active arrows, and steps still change on click.
 
@@ -230,7 +230,8 @@ This file builds without errors or warnings (the tests build it). Save it as `co
 [meta]
 slug = "sample-tool"
 order = 1
-status = "pilot"
+status.en = "pilot"
+status.de = "Pilot"
 tech = ["scripting", "database"]
 demo_url = "https://example.org/demo/"
 facts_as_of = 2026-10-26

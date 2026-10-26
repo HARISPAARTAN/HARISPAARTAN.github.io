@@ -5,7 +5,8 @@
 [meta]
 slug = "example-pipeline"
 order = 1
-status = "prototype"
+status.en = "prototype"
+status.de = "Prototyp"
 tech = ["scripting", "relational store", "static pages"]
 demo_url = "https://example.org/demo/"
 facts_as_of = 2026-10-26

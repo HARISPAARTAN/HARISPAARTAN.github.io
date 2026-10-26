@@ -42,7 +42,7 @@ DEFAULT_OUT_DIR = REPO / "work"
 
 LANGS = ("en", "de")
 LANG_NAME = {"en": "English", "de": "German"}
-STATUSES = {"in production": "in_production", "pilot": "pilot", "prototype": "prototype"}
+STATUS_MAX = 40  # characters: the status ends the eyebrow line
 KINDS = ("list", "library", "object")
 CARDINALITIES = ("one-to-many", "one-to-one", "many-to-many")
 SIDES = {"top": (0, -1), "right": (1, 0), "bottom": (0, 1), "left": (-1, 0)}
@@ -99,7 +99,6 @@ UI_KEYS = {
     "section.role": "pair", "section.result": "pair",
     "default.decisions_heading": "pair", "default.role_heading": "pair",
     "hero.case_study": "pair", "hero.glance": "pair", "hero.demo": "pair", "hero.how": "pair",
-    "status.in_production": "pair", "status.pilot": "pair", "status.prototype": "pair",
     "flow.title": "pair", "flow.steps_label": "pair", "flow.caption": "pair", "flow.play": "pair", "flow.pause": "pair",
     "model.title": "pair", "model.cards_label": "pair", "model.legend_dashed": "pair",
     "model.key_pk": "pair", "model.key_fk": "pair",
@@ -493,7 +492,7 @@ class Project:
     path: Path
     slug: str
     order: int
-    status: str
+    status: dict
     tech: list
     demo_url: str | None
     og_image: str | None
@@ -854,7 +853,10 @@ def validate_project(data: dict, stem: str, label: str, path: Path) -> tuple[Pro
     if slug and slug != stem:
         r.error("meta.slug", f'must equal the file name: expected "{stem}", found "{slug}"')
     order = get_int(r, meta, "order", "meta.order")
-    status = get_str(r, meta, "status", "meta.status", choices=list(STATUSES))
+    status = get_pair(r, meta, "status", "meta.status")
+    for lang in LANGS if status else ():
+        if len(status[lang]) > STATUS_MAX:
+            r.warn(f"meta.status.{lang}", f"{len(status[lang])} characters; the status ends the eyebrow line, keep it to {STATUS_MAX} or fewer")
     tech: list[str] = []
     for i, item in enumerate(get_list(r, meta, "tech", "meta.tech", minimum=1, maximum=8, what="technology tags")):
         if isinstance(item, str) and clean(item):
@@ -1345,7 +1347,7 @@ def section_head(ctx: PageContext, number: int, key: str, heading: Pair | None, 
 
 def render_hero(p: Project, ctx: PageContext) -> list[str]:
     ui, lang = ctx.ui, ctx.lang
-    status = tr(ui, "status." + STATUSES[p.status], lang)
+    status = p.status[lang]
     eyebrow = f'{tr(ui, "hero.case_study", lang)} {p.order:02d} / {ctx.total:02d} · {p.hero["eyebrow"][lang]} · {status}'
     lines = [
         '<section class="wrap cs-hero">',
@@ -1667,7 +1669,7 @@ def render_list_page(projects: list[Project], ui: dict) -> str:
         '  <ol class="cs-list">',
     ]
     for p in projects:
-        status = tr(ui, "status." + STATUSES[p.status], lang)
+        status = p.status["en"]
         out += [
             "    <li>",
             f'      <span class="num">{p.order:02d}</span>',

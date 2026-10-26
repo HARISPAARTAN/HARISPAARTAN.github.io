@@ -41,12 +41,6 @@ glance = { en = "At a glance", de = "Auf einen Blick" }
 demo = { en = "Open the live demo", de = "Live-Demo öffnen" }
 how = { en = "How it works", de = "So funktioniert es" }
 
-# The exact status words (meta.status): shown at the end of the eyebrow line.
-[status]
-in_production = { en = "in production", de = "im Einsatz" }
-pilot = { en = "pilot", de = "Pilot" }
-prototype = { en = "prototype", de = "Prototyp" }
-
 # Architecture diagram -------------------------------------------------------------------------------------------------
 [flow]
 title = { en = "Architecture diagram: {title}", de = "Architekturdiagramm: {title}" }

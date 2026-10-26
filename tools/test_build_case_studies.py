@@ -495,7 +495,8 @@ class Validation(unittest.TestCase):
         self.assertError(self.errors_for('slug = "example-pipeline"', 'slug = "Example_Pipeline"'), "meta.slug", "invalid value")
 
     def test_meta_values(self):
-        self.assertError(self.errors_for('status = "prototype"', 'status = "live"'), "meta.status", "allowed: in production, pilot, prototype")
+        self.assertError(self.errors_for('status.en = "prototype"\nstatus.de = "Prototyp"', 'status = "live"'), "meta.status", "must be a pair of texts")
+        self.assertError(self.errors_for('status.de = "Prototyp"', 'status.de = ""'), "meta.status.de", "German text is empty")
         self.assertError(self.errors_for("order = 1", "order = 0"), "meta.order", "at least 1")
         self.assertError(self.errors_for("order = 1", 'order = "1"'), "meta.order", "whole number")
         self.assertError(self.errors_for('tech = ["scripting", "relational store", "static pages"]', "tech = []"), "meta.tech", "at least 1")
@@ -548,6 +549,11 @@ class Validation(unittest.TestCase):
                          ('nodes = ["sensors", "ingest"]', "nodes = 3"), ("wide = [20, 40, 200]", 'wide = "20,40,200"')):
             ws, result = built(self, mutate(fixture_text(), old, new))
             self.assertTrue(result.errors, old)
+
+    def test_a_long_status_is_a_warning(self):
+        ws, result = built(self, mutate(fixture_text(), 'status.en = "prototype"', 'status.en = "prototype, tested in the test pane and not yet published"'))
+        self.assertFalse(result.errors, messages(result.errors))
+        self.assertTrue(any("meta.status.en" in str(w) and "eyebrow" in str(w) for w in result.warnings), messages(result.warnings))
 
     def test_soft_limits_are_warnings_not_errors(self):
         text = fixture_text()
@@ -988,7 +994,7 @@ class Cli(unittest.TestCase):
         self.assertEqual(done.returncode, 0, done.stderr)
         self.assertIn("Built 3 page(s): 3 written, 0 unchanged.", done.stdout)
         self.assertEqual(self.run_cli(ws, "--check").returncode, 0)
-        ws.write(SLUG, mutate(fixture_text(), 'status = "prototype"', 'status = "live"'))
+        ws.write(SLUG, mutate(fixture_text(), 'status.de = "Prototyp"', 'status.de = ""'))
         bad = self.run_cli(ws, "--check")
         self.assertEqual(bad.returncode, 1)
         self.assertIn("error: ", bad.stderr)
@@ -1225,9 +1231,9 @@ class Stylesheet(unittest.TestCase):
 
     def test_breakpoints_match_the_player(self):
         js = (REPO / "assets" / "js" / "case-study.js").read_text(encoding="utf-8")
-        self.assertIn("(min-width: 700px)", js)
-        self.assertIn("(min-width: 700px)", self.css)
-        self.assertIn("(max-width: 699.98px)", self.css)
+        self.assertIn("(min-width: 1000px)", js)
+        self.assertIn("(min-width: 1000px)", self.css)
+        self.assertIn("(max-width: 999.98px)", self.css)
 
     def test_script_has_no_network_use_or_dependencies(self):
         js = (REPO / "assets" / "js" / "case-study.js").read_text(encoding="utf-8")
