@@ -2273,6 +2273,11 @@ body[data-comment="1"] #stage .pa-input { pointer-events: none; }
     var host = document.getElementById("overview");
     if (host.dataset.built === "1") return;
     host.innerHTML = "";
+    // Jedes Vorschaubild auf die Breite seiner Karte skalieren. Ohne das gilt der CSS-Standard .32,
+    // und auf breiten Bildschirmen bleibt rechts und unten ein leerer Rand in der Karte.
+    var ovFit = new ResizeObserver(function (entries) {
+      entries.forEach(function (e) { e.target.style.setProperty("--ov-scale", (e.contentRect.width / 640).toFixed(4)); });
+    });
     GROUPS.forEach(function (g) {
       var sec = document.createElement("section");
       sec.className = "ov-group";
@@ -2295,6 +2300,7 @@ body[data-comment="1"] #stage .pa-input { pointer-events: none; }
         var el = renderer.renderScreen(name, null);
         state.screen = save;
         if (el) box.appendChild(el);
+        ovFit.observe(box);
         var cap = document.createElement("figcaption");
         cap.innerHTML = "<b>" + (TITLES[name] || name) + "</b><span>" + name + "</span>";
         card.appendChild(box);
