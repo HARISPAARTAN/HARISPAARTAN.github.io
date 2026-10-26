@@ -562,7 +562,7 @@ class Validation(unittest.TestCase):
         c = text.index("[[decisions.items]]", b + 10)
         ws, result = built(self, text[:c] + text[text.index("[role]"):])
         self.assertEqual(messages(result.errors), [])
-        self.assertTrue(any("three or four decision cards" in str(w) for w in result.warnings), messages(result.warnings))
+        self.assertTrue(any("three to five decision cards" in str(w) for w in result.warnings), messages(result.warnings))
 
     def test_unused_nodes_and_arrows_are_warned_about(self):
         ws, result = built(self, mutate(fixture_text(), 'edges = ["e4"]', "edges = []"))

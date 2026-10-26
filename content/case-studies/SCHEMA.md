@@ -145,7 +145,7 @@ Each relation:
 | Key | Type | | Notes |
 |---|---|---|---|
 | `decisions.heading` | pair | optional | Default from `ui.toml` ("Trade-offs that shaped the build"). |
-| `[[decisions.items]]` | tables | required | 1 to 6 cards, three or four recommended: `title` (pair), `text` (pair, rich). |
+| `[[decisions.items]]` | tables | required | 1 to 6 cards, three to five recommended (an odd last card spans the row): `title` (pair), `text` (pair, rich). |
 | `role.heading` | pair | optional | Default from `ui.toml` ("What I did"). |
 | `[[role.bullets]]` | pairs, rich | required | 1 to 8 bullets, four to six recommended. |
 | `result.heading` | pair | required | The H2 of the section. |

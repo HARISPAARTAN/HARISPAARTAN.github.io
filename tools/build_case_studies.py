@@ -972,8 +972,8 @@ def validate_project(data: dict, stem: str, label: str, path: Path) -> tuple[Pro
     check_unknown(r, dec_in, "decisions", {"heading", "items"})
     decisions: dict = {"heading": get_pair(r, dec_in, "heading", "decisions.heading", required=False), "items": []}
     items = get_list(r, dec_in, "items", "decisions.items", minimum=1, maximum=6, what="decision cards")
-    if items and not 3 <= len(items) <= 4:
-        r.warn("decisions.items", f"the page design shows three or four decision cards, found {len(items)}")
+    if items and not 3 <= len(items) <= 5:
+        r.warn("decisions.items", f"the page design shows three to five decision cards, found {len(items)}")
     for i, item in enumerate(items):
         p = item_path("decisions.items", i)
         if not isinstance(item, dict):
