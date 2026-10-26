@@ -136,6 +136,7 @@
       inView = true;
     }
     show(0);
+    box.classList.add('is-ready');   // the toolbar stays hidden until the player works
     kick();
   }
 
