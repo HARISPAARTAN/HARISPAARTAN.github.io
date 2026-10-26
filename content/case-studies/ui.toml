@@ -1,0 +1,95 @@
+# Interface strings of the case-study pages (everything that is not project content).
+# Read by tools/build_case_studies.py. Every text is a pair: en and de, both required.
+# Placeholders in curly braces are replaced by the build or by assets/js/case-study.js: {n} {total} {title} {date} {d} {month} {y}.
+# Keep the German as German, not word for word: it is read by German readers.
+
+[site]
+url = "https://harispaartan.github.io"
+source_url = "https://github.com/HARISPAARTAN/HARISPAARTAN.github.io"
+owner = "Harithas Harikaran"
+
+# Header ---------------------------------------------------------------------------------------------------------------
+[nav]
+skip = { en = "Skip to content", de = "Zum Inhalt springen" }
+brand_label = { en = "Harithas Harikaran, portfolio home", de = "Harithas Harikaran, Startseite des Portfolios" }
+crumb_label = { en = "Breadcrumb", de = "Brotkrumen-Navigation" }
+crumb_work = { en = "work", de = "projekte" }
+lang_label = { en = "Language", de = "Sprache" }
+theme_to_light = { en = "Switch to light theme", de = "Zum hellen Design wechseln" }
+theme_to_dark = { en = "Switch to dark theme", de = "Zum dunklen Design wechseln" }
+theme_title = { en = "Toggle theme", de = "Design wechseln" }
+
+# Section labels: shown as "01 / why it exists" above each section heading.
+[section]
+why = { en = "why it exists", de = "warum es das gibt" }
+how = { en = "how it works", de = "so funktioniert es" }
+model = { en = "data model", de = "datenmodell" }
+decisions = { en = "decisions", de = "entscheidungen" }
+role = { en = "my part", de = "mein beitrag" }
+result = { en = "result", de = "ergebnis" }
+
+# Headings used when a content file does not set decisions.heading or role.heading.
+[default]
+decisions_heading = { en = "Trade-offs that shaped the build", de = "Abwägungen, die den Aufbau bestimmt haben" }
+role_heading = { en = "What I did", de = "Was ich gemacht habe" }
+
+# Hero -----------------------------------------------------------------------------------------------------------------
+[hero]
+case_study = { en = "case study", de = "Fallstudie" }
+glance = { en = "At a glance", de = "Auf einen Blick" }
+demo = { en = "Open the live demo", de = "Live-Demo öffnen" }
+how = { en = "How it works", de = "So funktioniert es" }
+
+# The exact status words (meta.status): shown at the end of the eyebrow line.
+[status]
+in_production = { en = "in production", de = "im Einsatz" }
+pilot = { en = "pilot", de = "Pilot" }
+prototype = { en = "prototype", de = "Prototyp" }
+
+# Architecture diagram -------------------------------------------------------------------------------------------------
+[flow]
+title = { en = "Architecture diagram: {title}", de = "Architekturdiagramm: {title}" }
+steps_label = { en = "Steps", de = "Schritte" }
+caption = { en = "Step {n} of {total} · {title}", de = "Schritt {n} von {total} · {title}" }
+play = { en = "Play", de = "Abspielen" }
+pause = { en = "Pause", de = "Pause" }
+
+# Data model -----------------------------------------------------------------------------------------------------------
+[model]
+title = { en = "Data model: {title}", de = "Datenmodell: {title}" }
+cards_label = { en = "Entities of the data model", de = "Objekte des Datenmodells" }
+legend_dashed = { en = "Dashed border: document library or file store.", de = "Gestrichelter Rahmen: Dokumentbibliothek oder Dateiablage." }
+key_pk = { en = "primary key", de = "Primärschlüssel" }
+key_fk = { en = "foreign key", de = "Fremdschlüssel" }
+kind_list = { en = "list", de = "Liste" }
+kind_library = { en = "library", de = "Bibliothek" }
+kind_object = { en = "object", de = "Objekt" }
+
+# Pager at the end of a page. home_* are used by the first page (previous) and the last page (next).
+[pager]
+label = { en = "Case studies", de = "Fallstudien" }
+prev = { en = "← previous case study", de = "← vorherige Fallstudie" }
+next = { en = "next case study →", de = "nächste Fallstudie →" }
+home_prev = { en = "← portfolio", de = "← Portfolio" }
+home_next = { en = "portfolio →", de = "Portfolio →" }
+home_title = { en = "Selected work at S01", de = "Ausgewählte Projekte bei S01" }
+
+[result]
+facts_as_of = { en = "Facts as of {date}", de = "Stand der Angaben: {date}" }
+
+# Footer: the copyright line is built from site.owner; meta.notice in a content file replaces footer.notice.
+[footer]
+generated = { en = "Generated from one content file per project. No trackers, no cookies.", de = "Aus einer Inhaltsdatei pro Projekt erzeugt. Keine Tracker, keine Cookies." }
+source = { en = "Source", de = "Quellcode" }
+notice = { en = "Simplified description of an internal system. No client data, internal addresses or source code are shown. The demos use the fictional Nordstern Projektmanagement GmbH.", de = "Vereinfachte Beschreibung eines internen Systems. Es werden weder Kundendaten noch interne Adressen oder Quellcode gezeigt. Die Demos nutzen die fiktive Nordstern Projektmanagement GmbH." }
+
+# Dates ("Facts as of ..."): month names and the pattern per language.
+[date]
+format = { en = "{d} {month} {y}", de = "{d}. {month} {y}" }
+months = { en = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"], de = ["Januar", "Februar", "März", "April", "Mai", "Juni", "Juli", "August", "September", "Oktober", "November", "Dezember"] }
+
+# work/index.html: the short list of all case studies (English page; "open" is the link text for each language).
+[list]
+heading = { en = "Case studies", de = "Fallstudien" }
+lead = { en = "How the apps and tools behind the selected work at S01 are built: architecture, data model, decisions and my part. Every case study exists in English and German.", de = "Wie die Apps und Werkzeuge hinter den ausgewählten Projekten bei S01 gebaut sind: Architektur, Datenmodell, Entscheidungen und mein Beitrag. Jede Fallstudie gibt es auf Englisch und auf Deutsch." }
+open = { en = "Read in English", de = "Auf Deutsch lesen" }
