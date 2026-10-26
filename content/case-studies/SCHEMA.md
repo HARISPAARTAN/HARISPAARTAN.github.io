@@ -8,7 +8,7 @@ One TOML file per project: `content/case-studies/<slug>.toml`. The build script 
 | `work/<slug>/de/index.html` | German |
 | `work/index.html` | English list of all case studies (links to both languages) |
 
-The interface strings (labels, buttons, footer lines) live in `content/case-studies/ui.toml`. You only edit that file to change wording that is the same on every page.
+The interface strings (labels, buttons, footer lines) live in `content/case-studies/ui.toml`. You only edit that file to change wording that is the same on every page. Every other `*.toml` file in the folder is a project, so keep notes and drafts elsewhere.
 
 ```
 python tools/build_case_studies.py                  # build every project and the list page into work/
