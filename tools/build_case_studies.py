@@ -65,10 +65,11 @@ STRAIGHT_TOL = 0.5                        # anchors this close to being in line 
 PILL_H = 22
 
 # Average advance of one character in em, measured in Chrome on English and German strings of 12+ characters:
-# Inter 0.49 (95th percentile 0.55), Space Grotesk 600 0.51 (0.55). 0.52 accepts text that fits and still catches text
-# that is clearly too wide; JetBrains Mono is exactly 0.6 em wide.
+# Inter 0.49 (95th percentile 0.55), Space Grotesk 600 0.51 (0.55). 0.50 accepts text that fits and still catches text
+# that is clearly too wide; the 14 units of padding at the right of a box absorb the usual few percent of error.
+# JetBrains Mono is exactly 0.6 em wide.
 # Estimated width = characters x (em + letter-spacing) x font size.
-GLYPH_EM = {"sans": 0.52, "display": 0.52, "mono": 0.60}
+GLYPH_EM = {"sans": 0.50, "display": 0.50, "mono": 0.60}
 TAG_STYLE = ("mono", 10.0, 0.08)      # font, size, letter-spacing (em) of a box tag
 TITLE_STYLE = ("display", 16.0, 0.0)
 ROLE_STYLE = ("sans", 11.5, 0.0)
@@ -91,7 +92,7 @@ PLAY_ICON = '<svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><pa
 # ---------------------------------------------------------------- interface strings (ui.toml)
 
 UI_KEYS = {
-    "site.url": "str", "site.source_url": "str", "site.owner": "str",
+    "site.url": "str", "site.source_url": "str", "site.owner": "str", "site.copyright_year": "str",
     "nav.skip": "pair", "nav.brand_label": "pair", "nav.crumb_label": "pair", "nav.crumb_work": "pair",
     "nav.lang_label": "pair", "nav.theme_to_light": "pair", "nav.theme_to_dark": "pair", "nav.theme_title": "pair",
     "section.why": "pair", "section.how": "pair", "section.model": "pair", "section.decisions": "pair",
@@ -366,8 +367,8 @@ def check_fit(r: Report, path: str, pair: dict | None, style: tuple[str, float, 
             per_char = (GLYPH_EM[style[0]] + style[2]) * style[1]
             limit = max(1, int(avail // per_char))
             target = path if same else f"{path}.{lang}"
-            r.error(target, f"text is about {width:.0f} units wide ({len(text)} characters x {per_char:.2f}) but the box "
-                            f"({where}) leaves {avail:.0f}; shorten it to about {limit} characters or make the box wider")
+            r.error(target, f"text is about {math.ceil(width)} units wide ({len(text)} characters x {per_char:.2f}) but the box "
+                            f"({where}) leaves {math.floor(avail)}; shorten it to about {limit} characters or make the box wider")
 
 
 # ---------------------------------------------------------------- data classes
@@ -623,6 +624,19 @@ def boxes_problems(r: Report, boxes: dict, width: int, path_of, label: str) -> N
                                        f'y {fmt(a.y)}, {fmt(a.w)} x {fmt(a.h)})')
 
 
+def outside_note(link: Link, width: int) -> str:
+    """'it reaches x = 412 but the viewBox is 400 wide' when a connector leaves the canvas, else an empty string."""
+    xs, ys = [px for px, _ in link.points], [py for _, py in link.points]
+    notes = []
+    if min(xs) < -0.01:
+        notes.append(f"it reaches x = {fmt(min(xs))}, left of 0")
+    if max(xs) > width + 0.01:
+        notes.append(f"it reaches x = {fmt(max(xs))} but the viewBox is {width} wide")
+    if min(ys) < -0.01:
+        notes.append(f"it reaches y = {fmt(min(ys))}, above 0")
+    return "; ".join(notes)
+
+
 def warn_crossings(r: Report, path: str, label: str, link: Link, boxes: dict, joined: tuple) -> None:
     """Warn when a connector runs through a box it does not join (the picture would suggest a connection)."""
     for ident, b in boxes.items():
@@ -680,8 +694,9 @@ def layout_flow(r: Report, nodes: list, edges: list, steps: list, which: str) ->
         link = connect(anchor_xy(boxes[a_from.node], a_from.side, a_from.t), SIDES[a_from.side],
                        anchor_xy(boxes[a_to.node], a_to.side, a_to.t), SIDES[a_to.side], gap=ARROW_GAP, head=True)
         links[e.id] = link
-        if any(px < -0.01 or px > width + 0.01 or py < -0.01 for px, py in link.points):
-            r.error(f"flow.edges[{e.id}].{which}", f"{label}: the arrow leaves the viewBox (width {width}); move the anchors or the boxes")
+        outside = outside_note(link, width)
+        if outside:
+            r.error(f"flow.edges[{e.id}].{which}", f"{label}: the arrow leaves the viewBox ({outside}); move the anchors or the boxes, or use sides that leave more room")
         warn_crossings(r, f"flow.edges[{e.id}].{which}", label, link, boxes, (a_from.node, a_to.node))
         lowest = max(lowest, max(py for _, py in link.points))
     for s in steps:
@@ -692,6 +707,13 @@ def layout_flow(r: Report, nodes: list, edges: list, steps: list, which: str) ->
                 if x < 0 or x + w > width or y < 0:
                     r.error(f"flow.steps[{s.id}].badge", f"{label}: the badge pill (x {fmt(x)} to {fmt(x + w)}, top {fmt(y)}) lies outside "
                                                           f"the viewBox on node \"{box.id}\"; move the node or set badge.pos to \"left\" or \"center\"")
+                for e in edges:  # the pill straddles the top edge of its box: keep it clear of arrows that meet that edge
+                    for anchor in getattr(e, which):
+                        if anchor.node == box.id and anchor.side == "top" and x - 6 <= anchor_xy(box, "top", anchor.t)[0] <= x + w + 6:
+                            message = (f'{label}: the badge pill sits where arrow "{e.id}" meets the top of "{box.id}"; '
+                                       f'set badge.pos to another position or move the anchor')
+                            if not any(w_.message == message and w_.path == f"flow.steps[{s.id}].badge" for w_ in r.warnings):
+                                r.warn(f"flow.steps[{s.id}].badge", message)
     return FlowLayout(width, int(math.ceil(lowest + MARGIN_BOTTOM)), boxes, links)
 
 
@@ -718,8 +740,9 @@ def layout_model(r: Report, entities: list, relations: list) -> ModelLayout:
                        anchor_xy(boxes[a_to.node], a_to.side, a_to.t), SIDES[a_to.side])
         links.append(link)
         where = f"model.relations[{rel.src}->{rel.dst}].wide"
-        if any(px < -0.01 or px > MODEL_WIDTH + 0.01 or py < -0.01 for px, py in link.points):
-            r.error(where, f"data model: the line leaves the viewBox (width {MODEL_WIDTH}); move the anchors or the boxes")
+        outside = outside_note(link, MODEL_WIDTH)
+        if outside:
+            r.error(where, f"data model: the line leaves the viewBox ({outside}); move the anchors or the boxes, or use sides that leave more room")
         warn_crossings(r, where, "data model", link, boxes, (rel.src, rel.dst))
         lowest = max(lowest, max(py for _, py in link.points))
     return ModelLayout(MODEL_WIDTH, int(math.ceil(lowest + MARGIN_BOTTOM)), boxes, links)
@@ -1095,7 +1118,7 @@ def read_steps(r: Report, flow_in: dict, node_ids: list, edge_ids: list) -> list
                 b_text = get_pair(r, badge_in, "text", f"{p}.badge.text", plain_ok=True)
                 pos = get_str(r, badge_in, "pos", f"{p}.badge.pos", required=False, choices=["left", "center", "right"]) or "right"
                 if b_node and b_text:
-                    badge = Badge(b_node, b_text, pos)
+                    badge = Badge(b_node, {lang: b_text[lang].upper() for lang in LANGS}, pos)  # shown in capitals, like the tags
         if ident and title and text:
             steps.append(Step(ident, title, text, nodes, edges, badge))
     return steps
@@ -1302,7 +1325,7 @@ def footer_html(ctx: PageContext, notice: Pair | None) -> list[str]:
     text = (notice or {}).get(lang) or tr(ui, "footer.notice", lang)
     return [
         '<footer class="wrap site-footer cs-footer">',
-        f'  <span>&copy; <span id="year">2026</span> {esc(ui["site"]["owner"])}</span>',
+        f'  <span>&copy; <span id="year">{esc(ui["site"]["copyright_year"])}</span> {esc(ui["site"]["owner"])}</span>',
         f'  <span>{esc(tr(ui, "footer.generated", lang))} <a href="{esc(ui["site"]["source_url"])}">{esc(tr(ui, "footer.source", lang))}</a></span>',
         f'  <p class="cs-notice">{esc(text)}</p>',
         "</footer>",
@@ -1384,7 +1407,7 @@ def render_flow_svg(p: Project, which: str, ctx: PageContext) -> list[str]:
     title = tr(ui, "flow.title", lang).replace("{title}", p.hero["title"][lang])
     lines = [
         f'<svg class="flow flow-{which}" viewBox="0 0 {layout.width} {layout.height}" width="{layout.width}" height="{layout.height}" '
-        f'role="img" aria-labelledby="{uid}-title {uid}-desc" focusable="false">',
+        f'role="img" aria-labelledby="{uid}-title {uid}-desc">',
         f'  <title id="{uid}-title">{esc(title)}</title>',
         f'  <desc id="{uid}-desc">{esc(p.flow_description[lang])}</desc>',
         '  <g class="edges">',
@@ -1446,7 +1469,7 @@ def render_model_svg(p: Project, ctx: PageContext) -> list[str]:
     title = tr(ui, "model.title", lang).replace("{title}", p.hero["title"][lang])
     lines = [
         f'<svg class="er" viewBox="0 0 {layout.width} {layout.height}" width="{layout.width}" height="{layout.height}" '
-        f'role="img" aria-labelledby="cs-er-title cs-er-desc" focusable="false">',
+        f'role="img" aria-labelledby="cs-er-title cs-er-desc">',
         f'  <title id="cs-er-title">{esc(title)}</title>',
         f'  <desc id="cs-er-desc">{esc(p.model_description[lang])}</desc>',
         '  <g class="rels">',

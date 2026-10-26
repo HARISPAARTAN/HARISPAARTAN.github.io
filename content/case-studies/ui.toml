@@ -7,6 +7,7 @@
 url = "https://harispaartan.github.io"
 source_url = "https://github.com/HARISPAARTAN/HARISPAARTAN.github.io"
 owner = "Harithas Harikaran"
+copyright_year = "2026"   # static fallback; assets/js/site.js writes the current year
 
 # Header ---------------------------------------------------------------------------------------------------------------
 [nav]

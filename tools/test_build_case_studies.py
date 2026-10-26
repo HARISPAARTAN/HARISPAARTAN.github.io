@@ -344,6 +344,8 @@ class ValidBuild(unittest.TestCase):
                      "data-nodes", "data-edges", "data-title", "data-caption", "data-play", "data-pause", "data-interval",
                      "data-node", "data-edge", "'.steps > li'", "svg.flow"):
             self.assertIn(hook, js, f"case-study.js does not use {hook}")
+        self.assertIn("is-ready", js, "the toolbar appears only once the player has started")
+        self.assertIn(".is-ready .toolbar", css)
         for cls in (".flow", ".node", ".edge", ".pill", ".steps", ".step", ".toolbar", ".er", ".er-card", ".cards", ".pager", ".chip"):
             self.assertIn(cls, css, f"case-study.css has no rule for {cls}")
 
@@ -566,6 +568,20 @@ class Validation(unittest.TestCase):
         self.assertEqual(messages(result.errors), [])
         self.assertTrue(any("model.relations[stations->files].wide" in str(w) and 'passes through "readings"' in str(w) for w in result.warnings),
                         messages(result.warnings))
+
+    def test_badge_text_is_shown_in_capitals(self):
+        ws, result = built(self, mutate(fixture_text(), 'text.en = "NIGHTLY", text.de = "NÄCHTLICH"', 'text.en = "nightly", text.de = "nächtlich"'))
+        self.assertEqual(messages(result.errors), [])
+        self.assertIn(">NIGHTLY</text>", html_of(result, ws, "en"))
+        self.assertIn('<span class="chip">NÄCHTLICH</span>', html_of(result, ws, "de"))
+
+    def test_a_badge_pill_on_top_of_an_arrow_is_warned_about(self):
+        # the e3 arrow meets the top of "summary" at its middle; the pill with pos = "center" would cover it
+        ws, result = built(self, mutate(fixture_text(), 'badge = { node = "summary", text.en', 'badge = { node = "summary", pos = "center", text.en'))
+        self.assertEqual(messages(result.errors), [])
+        hits = [str(w) for w in result.warnings if "flow.steps[summarise].badge" in str(w) and 'arrow "e3"' in str(w)]
+        self.assertEqual(len(hits), 2, "once per layout, not once per language: " + str(hits))
+        self.assertFalse(any("badge pill sits" in str(w) for w in built(self)[1].warnings))
 
     def test_badge_on_a_dimmed_node_is_warned_about(self):
         ws, result = built(self, mutate(fixture_text(), 'badge = { node = "summary"', 'badge = { node = "sensors"'))
@@ -1065,8 +1081,8 @@ class Geometry(unittest.TestCase):
         self.assertEqual(link.head.count("L"), 2)
 
     def test_text_width_estimate(self):
-        self.assertAlmostEqual(bcs.text_width("x" * 10, bcs.ROLE_STYLE), 10 * 0.52 * 11.5)
-        self.assertAlmostEqual(bcs.text_width("x" * 10, bcs.TITLE_STYLE), 10 * 0.52 * 16)
+        self.assertAlmostEqual(bcs.text_width("x" * 10, bcs.ROLE_STYLE), 10 * 0.50 * 11.5)
+        self.assertAlmostEqual(bcs.text_width("x" * 10, bcs.TITLE_STYLE), 10 * 0.50 * 16)
         self.assertAlmostEqual(bcs.text_width("x" * 10, bcs.TAG_STYLE), 10 * 0.68 * 10)
         self.assertAlmostEqual(bcs.text_width("x" * 10, bcs.ENOTE_STYLE), 10 * 0.6 * 10.5)
 
@@ -1144,9 +1160,15 @@ class SchemaDocument(unittest.TestCase):
                 w2 = int(w2)
                 self.assertEqual((int(name), int(note), int(field)),
                                  (int((w2 - 24) // per(bcs.ENAME_STYLE)), int((w2 - 24) // per(bcs.ENOTE_STYLE)), int((w2 - 52) // per(bcs.EFIELD_STYLE))), f"entity {w2}")
-        self.assertIn("| Node title | Space Grotesk 16 px | 8.32 |", self.doc)
-        self.assertIn("| Node role | Inter 11.5 px | 5.98 |", self.doc)
+        self.assertIn("| Node title | Space Grotesk 16 px | 8.0 |", self.doc)
+        self.assertIn("| Node role | Inter 11.5 px | 5.75 |", self.doc)
         self.assertIn("| Node tag (capitals) | JetBrains Mono 10 px, letter-spacing 0.08 em | 6.8 |", self.doc)
+
+    def test_the_documented_text_fit_message_is_the_real_one(self):
+        quoted = re.search(r"`(text is about [^`]+)`", self.doc)
+        self.assertIsNotNone(quoted)
+        ws, result = built(self, mutate(fixture_text(), 'role.en = "one file per hour"', f'role.en = "{"a" * 30}"'))
+        self.assertTrue(any(quoted.group(1) in str(e) for e in result.errors), messages(result.errors))
 
     def test_geometry_constants_quoted_in_the_document(self):
         self.assertEqual((bcs.NODE_H, bcs.ER_HEAD, bcs.ER_ROW, bcs.ER_PAD, bcs.MARGIN_BOTTOM, bcs.CLEARANCE), (88, 46, 24, 8, 20, 4))

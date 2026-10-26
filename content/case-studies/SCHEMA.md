@@ -149,6 +149,21 @@ Each relation:
 | `result.heading` | pair | required | The H2 of the section. |
 | `result.text` | pair, rich | required | One paragraph with the measured effect and the status. Shown with the demo button when `meta.demo_url` is set, then the "facts as of" line and the pager. |
 
+## What the build checks
+
+**Errors** (nothing is written until they are fixed):
+
+* a text pair without `en` or `de`, or with an empty text; a plain string where a pair is needed; an unknown language key;
+* a step, edge or relation that names an unknown node, edge or entity; a bad anchor (`app.rght`, `@1.5`); two anchors on the same box;
+* not exactly four stat tiles; more than five fields in an entity; more than three notes; missing sections or keys; unknown keys; a `slug` that differs from the file name; duplicate ids;
+* a text estimated wider than its box (both languages, both layouts); a box outside the canvas or less than 4 units from another box; an arrow or relation line that leaves the canvas; a badge pill outside the canvas;
+* a link target that is not `https://`, `http://`, a site path or an anchor; any link inside a step text;
+* in a full build: orders that are not exactly 1..N.
+
+**Warnings** (advice, the build still succeeds): a count outside the recommended range (paragraphs, side notes, steps, decision cards, bullets); a node or arrow no step lights up; a badge on a box the step dims; a badge pill that covers the place where an arrow meets the box; an arrow or relation line that runs through a box it does not join; a stat value longer than 12 characters; an `og_image` file that does not exist; in `--only` a neighbour that cannot be read.
+
+The other options of the script are for tests and previews: `--content-dir DIR`, `--ui FILE` and `--out-dir DIR` build from and into other folders.
+
 ## Coordinates: how to place boxes
 
 * The diagram is drawn on a canvas of **user units**. Origin top left, x to the right, y downward. The canvas is **1000 units wide in the `wide` layout** (screens from 700 px) and **400 units wide in the `tall` layout** (phones). The page scales the canvas to the width of the column: 1000 units become about 1060 px on screens of 1280 px and wider, 840 px at 900 px, 710 px at 768 px and 640 px at 700 px; 400 units become 300 to 330 px on a phone (360 to 390 px). Keep this in mind for the smallest sizes: a role line of 11.5 units is drawn about 8 px high on a 768 px tablet.
@@ -160,29 +175,27 @@ Each relation:
 
 ### Text must fit its box
 
-The build estimates the width of every text in the diagrams as *characters × average glyph width of its font size* and fails when it is wider than the room inside its box. The estimate is slightly conservative for English and about right for German. All texts are checked in both languages and in both layouts. Characters that fit (box width in units, less the padding):
+The build estimates the width of every text in the diagrams as *characters × average glyph width of its font size* and fails when it is wider than the room inside its box. The average glyph widths were measured in Chrome on English and German strings: 0.50 em for Inter and Space Grotesk, exactly 0.6 em for JetBrains Mono. Real text varies by a few percent either way (German compounds and capitals run wider, lower-case with many i, l, t narrower), so a text that just fits may touch the right padding of its box: leave a little room. All texts are checked in both languages and in both layouts. Characters that fit (box width in units, less the padding):
 
 | Where | Font | Units per character | Room inside a box |
 |---|---|---|---|
 | Node tag (capitals) | JetBrains Mono 10 px, letter-spacing 0.08 em | 6.8 | width − 28 |
-| Node title | Space Grotesk 16 px | 8.32 | width − 28 |
-| Node role | Inter 11.5 px | 5.98 | width − 28 |
-| Entity name | Space Grotesk 14 px | 7.28 | width − 24 |
+| Node title | Space Grotesk 16 px | 8.0 | width − 28 |
+| Node role | Inter 11.5 px | 5.75 | width − 28 |
+| Entity name | Space Grotesk 14 px | 7.0 | width − 24 |
 | Entity note | JetBrains Mono 10.5 px | 6.3 | width − 24 |
-| Entity field | Inter 12 px | 6.24 | width − 52 |
+| Entity field | Inter 12 px | 6.0 | width − 52 |
 | Badge pill | JetBrains Mono 10 px, letter-spacing 0.1 em | 7.0 | the pill grows with its text |
 
 | Box width | tag | title | role | | Box width | name | note | field |
 |---|---|---|---|---|---|---|---|---|
-| 160 | 19 | 15 | 22 | | 160 | 18 | 21 | 17 |
-| 180 | 22 | 18 | 25 | | 180 | 21 | 24 | 20 |
-| 200 | 25 | 20 | 28 | | 200 | 24 | 27 | 23 |
-| 210 | 26 | 21 | 30 | | 220 | 26 | 31 | 26 |
-| 240 | 31 | 25 | 35 | | 250 | 31 | 35 | 31 |
-| 300 | 40 | 32 | 45 | | 300 | 37 | 43 | 39 |
-| 340 | 45 | 37 | 52 | | | | | |
-
-(the average glyph widths are 0.52 em for Inter and Space Grotesk, 0.6 em for JetBrains Mono; real text varies by a few percent either way, so leave a little room.)
+| 160 | 19 | 16 | 22 | | 160 | 19 | 21 | 18 |
+| 180 | 22 | 19 | 26 | | 180 | 22 | 24 | 21 |
+| 200 | 25 | 21 | 29 | | 200 | 25 | 27 | 24 |
+| 210 | 26 | 22 | 31 | | 220 | 28 | 31 | 28 |
+| 240 | 31 | 26 | 36 | | 250 | 32 | 35 | 33 |
+| 300 | 40 | 34 | 47 | | 300 | 39 | 43 | 41 |
+| 340 | 45 | 39 | 54 | | | | | |
 
 ## Anchors and arrows
 
@@ -457,7 +470,7 @@ text.de = "**Die gemessene Wirkung** und der Stand in einem Satz."
 | `must be a pair of texts: write hero.subtitle.en = ... and hero.subtitle.de = ...` | A plain string was given where a pair is needed. Only `tag`, a stat `value` and a badge `text` may be plain. |
 | `unknown node "ingset" (did you mean "ingest"?)` | A step or anchor names a box that does not exist. Ids are case-sensitive. |
 | `a page needs exactly 4 stat tiles, found 3` | `[[hero.stats]]` must appear four times. |
-| `text is about 214 units wide (29 characters x 5.98) but the box (wide layout, box 200 wide) leaves 172; shorten it to about 28 characters or make the box wider` | See "Text must fit its box". Shorten the text or widen the box in that layout. |
+| `text is about 173 units wide (30 characters x 5.75) but the box (wide layout, box 200 wide) leaves 172; shorten it to about 29 characters or make the box wider` | See "Text must fit its box". Shorten the text or widen the box in that layout. |
 | `box lies outside its viewBox: the box ends at x = 1040 but the viewBox is only 1000 wide` | `x + width` is larger than the canvas. |
 | `box overlaps "store" or lies closer than 4 units to it` | Move one of the two boxes. |
 | `bad anchor "app.rght"` | The anchor syntax is `id.side` or `id.side@0.3`; sides are top, right, bottom, left. |
