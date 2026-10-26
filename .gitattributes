@@ -1,0 +1,5 @@
+# Generated case-study pages and their sources keep LF line endings on every platform, so that
+# `python tools/build_case_studies.py --check` compares the same bytes the generator writes.
+work/** text eol=lf
+content/case-studies/** text eol=lf
+tools/fixtures/** text eol=lf
