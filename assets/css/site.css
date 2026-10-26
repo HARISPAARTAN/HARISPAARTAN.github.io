@@ -138,6 +138,8 @@ p { margin: 0; }
 .links a { display: inline-flex; align-items: center; gap: 6px; font-size: 0.9rem; font-weight: 500; padding: 7px 12px; border-radius: var(--radius-sm); border: 1px solid var(--border); background: var(--surface-2); color: var(--text); }
 .links a:hover { border-color: var(--accent); text-decoration: none; }
 .links a.primary { background: var(--accent); color: var(--accent-fg); border-color: var(--accent); }
+.card h3 a { color: inherit; }
+.card h3 a:hover { color: var(--accent); }
 .links svg { width: 15px; height: 15px; }
 
 /* Timeline */

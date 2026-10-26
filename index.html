@@ -103,11 +103,12 @@
             </a>
             <div class="body">
               <div class="meta"><span>website redesign demos</span><span class="badge live">live</span></div>
-              <h3>S01 website demos</h3>
-              <p>Six fully navigable redesign demos of s01-pm.de in German and English, generated from one bilingual content source by a Node static generator with a component kit and a motion system. Playwright scripts check links, translations, contrast and layout at seven viewport widths; GitHub Actions builds and deploys every push.</p>
+              <h3><a href="work/s01-website-demos/">S01 website demos</a></h3>
+              <p>Six fully navigable redesign demos of s01-pm.de in German and English, generated from one bilingual content source by a Node static generator with a component kit and a motion system. Unit tests and an output checker validate links, translations and colour contrast on every push to main; Playwright scripts measure the layout at up to seven viewport widths.</p>
               <div class="tags"><span>Node 22</span><span>static generator</span><span>Playwright</span><span>GitHub Actions</span><span>GitHub Pages</span></div>
               <div class="links">
-                <a class="primary" href="https://harispaartan.github.io/s01-demos/">Open the gallery</a>
+                <a class="primary" href="work/s01-website-demos/">Case study</a>
+                <a href="https://harispaartan.github.io/s01-demos/">Open the gallery</a>
                 <a href="https://github.com/HARISPAARTAN/s01-demos">Source</a>
               </div>
             </div>
@@ -115,40 +116,41 @@
 
           <article class="card reveal">
             <div class="body">
-              <div class="meta"><span>power apps · in production</span><span class="badge">internal</span></div>
-              <h3>QS Baustelle, site inspection app</h3>
-              <p>Offline-capable Power Apps canvas app used by site inspectors for quality inspections and schedule tracking: photo and video capture, automatic SharePoint sync, 45+ releases driven by inspector and supervisor feedback, and about 70% less manual inspection work. Behind it: a SharePoint data model of 10 lists and a document library, and 12 Power Automate flows for inspection numbering, photo filing, Excel imports, GPS route export and Word reports sent to stakeholders.</p>
+              <div class="meta"><span>power apps · in use since september 2026</span><span class="badge">internal</span></div>
+              <h3><a href="work/qs-baustelle/">QS Baustelle, site inspection app</a></h3>
+              <p>Offline-capable Power Apps canvas app for site inspectors, covering quality inspections and schedule tracking: photo capture, video upload, automatic SharePoint sync, and 45 app revisions shaped by supervisor feedback. Behind it: a SharePoint data model of 9 lists and a document library, and 11 Power Automate flows for observation numbering, photo and video filing, Excel imports, route export and Word reports e-mailed to a chosen recipient.</p>
               <div class="tags"><span>Power Apps</span><span>Power Fx</span><span>Power Automate</span><span>SharePoint</span><span>Power Platform CLI</span></div>
-              <div class="links"><a class="primary" href="demos/qs-baustelle/">Live demo of the current version</a></div>
+              <div class="links"><a class="primary" href="work/qs-baustelle/">Case study</a><a href="demos/qs-baustelle/">Live demo of the current version</a></div>
             </div>
           </article>
 
           <article class="card reveal">
             <div class="body">
               <div class="meta"><span>spfx · in production</span><span class="badge">internal</span></div>
-              <h3>CRM as a SharePoint Framework web part</h3>
-              <p>A full CRM built with SPFx in TypeScript and React on SharePoint lists: leads pipeline, companies, contacts, tasks, KPI reporting, lead creation from a pasted email, CSV and vCard import and export, English and German interface. Versioned releases that the supervisor deploys by dropping one file into a library.</p>
-              <div class="tags"><span>SPFx</span><span>TypeScript</span><span>React</span><span>SharePoint REST</span><span>PnP PowerShell</span></div>
-              <div class="links"><a class="primary" href="demos/crm/">Live demo of the current version</a><a href="demos/nordmark-crm/">Earlier pitch demo</a></div>
+              <h3><a href="work/crm-web-part/">CRM as a SharePoint Framework web part</a></h3>
+              <p>A full CRM built with SPFx in TypeScript on SharePoint lists: leads pipeline, companies, contacts, tasks, reports (hit ratio, activity, quarter results) and OKR scoring, lead creation from a pasted email, CSV, Excel-paste and vCard import, CSV export, English and German interface. Versioned releases that the supervisor deploys by dropping one file into a library.</p>
+              <div class="tags"><span>SPFx</span><span>TypeScript</span><span>SharePoint REST</span><span>PnP PowerShell</span></div>
+              <div class="links"><a class="primary" href="work/crm-web-part/">Case study</a><a href="demos/crm/">Demo of version 2</a><a href="demos/nordmark-crm/">Earlier pitch demo</a></div>
             </div>
           </article>
 
           <article class="card reveal">
             <div class="body">
               <div class="meta"><span>python desktop</span><span class="badge">internal</span></div>
-              <h3>Document anonymization tool</h3>
-              <p>Portable, offline Windows app that permanently removes client names, personal data, logos and signatures from PDF, Word, PowerPoint and Excel files before they leave the company. Automatic client-name detection, German NLP for person names, an interactive preview to keep or redact single spots, and an OCR-based quality check that marks every output PASS or FAILED. 106 automated tests; the full client sample set passed.</p>
+              <h3><a href="work/anonymizer/">Document anonymization tool</a></h3>
+              <p>Portable, offline Windows app that permanently removes client names, personal data, logos and signatures from PDF, Word, PowerPoint and Excel files before they leave the company: signature lines automatically, signature images on request. Automatic client-name detection, German NLP for person names, an interactive preview to keep or redact single spots, and a four-part quality check, including OCR, that marks every output PASS or FAIL. 106 automated tests.</p>
               <div class="tags"><span>Python</span><span>PySide6</span><span>PyMuPDF</span><span>spaCy</span><span>Tesseract</span><span>PyInstaller</span></div>
-              <div class="links"><a class="primary" href="demos/anonymizer/">Click demo</a></div>
+              <div class="links"><a class="primary" href="work/anonymizer/">Case study</a><a href="demos/anonymizer/">Click demo</a></div>
             </div>
           </article>
 
           <article class="card reveal">
             <div class="body">
-              <div class="meta"><span>copilot studio · ai</span><span class="badge">internal</span></div>
-              <h3>Standards assistant for inspectors</h3>
-              <p>A Copilot Studio assistant that answers inspectors' questions on technical standards and cites the exact chapter and page, built on a self-made section index of the standard documents. Evaluated Copilot Studio, Azure OpenAI, the Claude API and SharePoint agents against licence and data-residency limits and wrote the decision paper. Also automated invoice archiving with Power Automate and fixed the root cause of its recurring failures.</p>
-              <div class="tags"><span>Copilot Studio</span><span>RAG</span><span>SharePoint</span><span>Power Automate</span></div>
+              <div class="meta"><span>copilot studio · prototype</span><span class="badge">internal</span></div>
+              <h3><a href="work/standards-assistant/">Standards assistant for inspectors</a></h3>
+              <p>A Copilot Studio assistant that answers inspectors' questions on technical standards and cites chapter and page, built on a self-made chapter index of the standard documents. Compared five routes (Copilot Studio, Microsoft 365 Copilot with a SharePoint agent, Azure AI Foundry with Azure OpenAI and AI Search, the Claude API, and AI Builder) against licence and data-residency limits and wrote the decision paper. Also repaired an existing invoice-archiving flow in Power Automate and fixed the root cause of its failures.</p>
+              <div class="tags"><span>Copilot Studio</span><span>RAG</span><span>SharePoint</span></div>
+              <div class="links"><a class="primary" href="work/standards-assistant/">Case study</a></div>
             </div>
           </article>
 
