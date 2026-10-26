@@ -64,7 +64,7 @@
     "New lead": "Neuer Lead",
     "Refresh": "Aktualisieren",
     "Export backup": "Backup exportieren",
-    "All changes saved to SharePoint.": "Alle \xC4nderungen in SharePoint gespeichert.",
+    "Saved in this browser (demo).": "Im Browser gespeichert (Demo).",
     "Saving\u2026": "Speichern\u2026",
     "Reloaded from SharePoint": "Aus SharePoint neu geladen",
     "Reload failed:": "Neu laden fehlgeschlagen:",
@@ -8675,7 +8675,7 @@ input.inp[type="date"]{padding-top:0;padding-bottom:0}
     if (typeof navigator !== "undefined" && navigator.onLine === false) return "Not connected \u2014 changes cannot be saved right now.";
     if (SYNC.lastError) return "Last save failed: " + SYNC.lastError;
     if (SYNC.pending) return "Saving " + SYNC.pending + " change" + (SYNC.pending === 1 ? "" : "s") + "\u2026";
-    return "All changes saved to SharePoint.";
+    return "Saved in this browser (demo).";
   }
   function paintSync() {
     const el = $id("sync");
