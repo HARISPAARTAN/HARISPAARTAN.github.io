@@ -1,0 +1,795 @@
+# QS Baustelle: content of the case-study page (English and German).
+# Format reference: content/case-studies/SCHEMA.md. The page describes the app in simplified form: no client names,
+# no people, no internal addresses, no source code. The demo uses a fictional company and invented data.
+
+[meta]
+slug = "qs-baustelle"
+order = 2
+status.en = "in use since September 2026"
+status.de = "im Einsatz seit September 2026"
+tech = ["Power Apps", "Power Fx", "Power Automate", "SharePoint", "Office Scripts", "PnP PowerShell", "Power Platform CLI"]
+demo_url = "/demos/qs-baustelle/"
+facts_as_of = 2026-10-26
+
+[hero]
+eyebrow.en = "power apps"
+eyebrow.de = "power apps"
+title.en = "QS Baustelle"
+title.de = "QS Baustelle"
+subtitle.en = "Site inspections that keep working offline, with a Word report on one tap"
+subtitle.de = "Baustellenbegehungen, die auch offline funktionieren, mit Word-Bericht per Fingertipp"
+lead.en = """
+QS Baustelle is a Power Apps canvas app for site inspections on construction sites. It lets inspectors record
+observations, photos and schedule progress on the phone, with or without signal; when the phone is online the data
+syncs to SharePoint, and one tap sends a Word report by e-mail. I developed it as a working student at S01
+Projektmanagement GmbH, from the first plan to revision 45, based on the supervisor's concept.
+"""
+lead.de = """
+QS Baustelle ist eine Canvas-App in Power Apps für Begehungen auf Baustellen. Mit ihr erfassen Prüfende Beobachtungen,
+Fotos und Terminfortschritt auf dem Smartphone, mit oder ohne Netz; sobald das Gerät online ist, werden die Daten nach
+SharePoint synchronisiert, und ein Fingertipp verschickt den Word-Bericht per E-Mail. Ich habe sie als Werkstudent bei
+der S01 Projektmanagement GmbH entwickelt, vom ersten Plan bis zur Revision 45, nach dem Konzept der Führungskraft.
+"""
+
+[[hero.stats]]
+value = "11"
+label.en = "Power Automate flows"
+label.de = "Power-Automate-Flows"
+
+[[hero.stats]]
+value = "12"
+label.en = "app screens, phone layout"
+label.de = "App-Bildschirme, Smartphone-Layout"
+
+[[hero.stats]]
+value = "9 + 1"
+label.en = "SharePoint lists plus one document library"
+label.de = "SharePoint-Listen plus eine Dokumentbibliothek"
+
+[[hero.stats]]
+value = "45"
+label.en = "app revisions"
+label.de = "App-Revisionen"
+
+[[hero.facts]]
+label.en = "Role"
+label.de = "Rolle"
+value.en = "development, as a working student at S01 Projektmanagement GmbH: planning, build and release"
+value.de = "Entwicklung, als Werkstudent bei S01 Projektmanagement GmbH: Planung, Umsetzung und Veröffentlichung"
+
+[[hero.facts]]
+label.en = "Concept"
+label.de = "Konzept"
+value.en = "the supervisor supplied the concept (two modules, folder tree, naming scheme) and the feedback"
+value.de = "die Führungskraft lieferte das Konzept (zwei Module, Ordnerbaum, Namensschema) und das Feedback"
+
+[[hero.facts]]
+label.en = "Users"
+label.de = "Nutzende"
+value.en = "site inspectors (Prüfer in the app); project managers and external clients receive the reports"
+value.de = "Prüfende auf der Baustelle; Projektleitungen und externe Auftraggebende erhalten die Berichte"
+
+[[hero.facts]]
+label.en = "Platform"
+label.de = "Plattform"
+value.en = "Power Apps mobile player on phones (portrait); SharePoint and Power Automate in the company's Microsoft 365"
+value.de = "Power-Apps-Player auf dem Smartphone (Hochformat); SharePoint und Power Automate im Microsoft 365 des Unternehmens"
+
+[[hero.facts]]
+label.en = "Language"
+label.de = "Sprache"
+value.en = "German interface and German reports"
+value.de = "deutsche Oberfläche und deutsche Berichte"
+
+[why]
+heading.en = "Paper sheets, photos on private phones, reports built by hand"
+heading.de = "Papierbögen, Fotos auf privaten Handys und Berichte in Handarbeit"
+
+[[why.paragraphs]]
+en = """
+Inspection sheets were printed, filled in and typed in again, so every site inspection (Begehung) was recorded twice.
+Photos sat on private phones, in e-mails and in chat threads, apart from the finding they belonged to. Reports were
+assembled by hand: photos exported to a PC and inserted into a Word document one by one.
+"""
+de = """
+Prüfbögen wurden ausgedruckt, ausgefüllt und anschließend abgetippt, sodass jede Begehung doppelt erfasst wurde. Fotos
+lagen auf privaten Handys, in E-Mails und in Chatverläufen, getrennt von der Beobachtung, zu der sie gehörten. Berichte
+entstanden von Hand: Die Fotos wurden auf einen PC exportiert und einzeln in ein Word-Dokument eingefügt.
+"""
+
+[[why.paragraphs]]
+en = """
+There was no central, traceable record. Sheets get lost, and construction clients in Germany expect auditable
+documentation. Sites often have no signal, in basements and tunnels, so capture had to work offline and sync later.
+The comparison of planned and actual progress per activity of the Terminplan (schedule), called Terminabgleich
+(schedule review), had no structured place either.
+"""
+de = """
+Es gab keine zentrale, nachvollziehbare Ablage. Bögen gehen verloren, und Auftraggebende im Bauwesen erwarten in
+Deutschland eine prüffähige Dokumentation. Auf Baustellen gibt es oft keinen Empfang, etwa in Kellern und Tunneln;
+die Erfassung musste also offline funktionieren und später synchronisieren. Auch der Vergleich von geplantem und
+tatsächlichem Fortschritt je Vorgang des Terminplans, der Terminabgleich, hatte keinen strukturierten Platz.
+"""
+
+[[why.paragraphs]]
+en = """
+**The specification asked for the app to replace the paper sheets.** In QS Baustelle an observation, its category, its
+photos and the schedule progress stay together as records in SharePoint, and the report is built from those records.
+"""
+de = """
+**Die Vorgabe lautete, die Papierbögen zu ersetzen.** In QS Baustelle bleiben eine Beobachtung, ihre Kategorie, ihre
+Fotos und der Terminfortschritt als Datensätze in SharePoint beisammen, und der Bericht entsteht aus diesen Datensätzen.
+"""
+
+[[why.notes]]
+title.en = "Who uses it"
+title.de = "Wer sie nutzt"
+text.en = """
+Built for site inspectors, who walk a site and often have no signal. Project managers and external clients receive the
+reports. The supervisor ran the test rounds and the recorded inspections.
+"""
+text.de = """
+Gebaut für Prüfende, die über die Baustelle gehen und oft keinen Empfang haben. Projektleitungen und externe
+Auftraggebende erhalten die Berichte. Die Führungskraft hat die Testrunden und die dokumentierten Begehungen
+durchgeführt.
+"""
+
+[[why.notes]]
+title.en = "What it costs to run"
+title.de = "Was der Betrieb kostet"
+text.en = "No servers of its own: the app, the lists and the flows all run inside the company's Microsoft 365."
+text.de = "Keine eigenen Server: App, Listen und Flows laufen im Microsoft 365 des Unternehmens."
+
+[flow]
+heading.en = "How an inspection travels from the phone to the Word report"
+heading.de = "Wie eine Begehung vom Smartphone zum Word-Bericht kommt"
+description.en = """
+A canvas app on the phone starts inspections and schedule reviews and keeps captured data in a phone store, which writes
+to SharePoint lists and, through filing flows (numbering, filing media, route export), to the project library. Import
+flows turn Excel files into rows; report flows build the Word report from lists and library and e-mail it.
+"""
+description.de = """
+Eine Canvas-App auf dem Smartphone startet Begehungen und Terminabgleiche und legt erfasste Daten in einem Gerätespeicher
+ab, der in SharePoint-Listen und über Ablage-Flows (Nummerieren, Medien ablegen, Routen-Export) in die Projektablage
+schreibt. Import-Flows machen aus Excel-Dateien Zeilen; Bericht-Flows erstellen aus Listen und Projektablage den
+Word-Bericht und versenden ihn per E-Mail.
+"""
+
+[[flow.nodes]]
+id = "app"
+tag = "POWER APPS"
+title.en = "Canvas app"
+title.de = "Canvas-App"
+role.en = "12 phone screens"
+role.de = "12 Handy-Bildschirme"
+wide = [20, 290, 195]
+tall = [240, 140, 150]
+
+[[flow.nodes]]
+id = "store"
+tag = "POWER FX"
+title.en = "Phone store"
+title.de = "Gerätespeicher"
+role.en = "offline queue"
+role.de = "Offline-Warteschlange"
+wide = [275, 30, 195]
+tall = [40, 20, 150]
+
+[[flow.nodes]]
+id = "lists"
+tag = "SHAREPOINT"
+title.en = "Lists"
+title.de = "Listen"
+role.en = "nine lists of records"
+role.de = "neun Datenlisten"
+wide = [530, 290, 195]
+tall = [40, 140, 150]
+
+[[flow.nodes]]
+id = "library"
+tag = "SHAREPOINT"
+title.en = "Project library"
+title.de = "Projektablage"
+role.en = "media and reports"
+role.de = "Medien und Berichte"
+wide = [785, 430, 195]
+tall = [240, 380, 150]
+
+[[flow.nodes]]
+id = "filing"
+tag = "POWER AUTOMATE"
+title.en = "Filing flows"
+title.de = "Ablage-Flows"
+role.en = "numbering and filing"
+role.de = "Nummern und Ablage"
+wide = [785, 290, 195]
+tall = [40, 260, 150]
+
+[[flow.nodes]]
+id = "import"
+tag = "POWER AUTOMATE"
+title.en = "Import flows"
+title.de = "Import-Flows"
+role.en = "Excel files to rows"
+role.de = "Excel zu Zeilen"
+wide = [275, 150, 195]
+tall = [240, 20, 150]
+
+[[flow.nodes]]
+id = "report"
+tag = "POWER AUTOMATE"
+title.en = "Report flows"
+title.de = "Bericht-Flows"
+role.en = "Word report by e-mail"
+role.de = "Word-Bericht per Mail"
+wide = [275, 430, 195]
+tall = [240, 260, 150]
+
+[[flow.edges]]
+id = "start"
+wide = ["app.right@0.5", "lists.left@0.5"]
+tall = ["app.left@0.6", "lists.right@0.6"]
+
+[[flow.edges]]
+id = "upload"
+wide = ["app.top@0.7", "import.left@0.5"]
+tall = ["app.top@0.5", "import.bottom@0.5"]
+
+[[flow.edges]]
+id = "rows"
+wide = ["import.right@0.5", "lists.top@0.25"]
+tall = ["import.left@0.9", "lists.right@0.1"]
+
+[[flow.edges]]
+id = "capture"
+wide = ["app.top@0.25", "store.left@0.5"]
+tall = ["app.left@0.1", "store.right@0.85"]
+
+[[flow.edges]]
+id = "sync"
+wide = ["store.right@0.7", "lists.top@0.85"]
+tall = ["store.bottom@0.5", "lists.top@0.5"]
+
+[[flow.edges]]
+id = "photos"
+wide = ["store.right@0.3", "filing.top@0.5"]
+tall = ["store.left@0.5", "filing.left@0.5"]
+
+[[flow.edges]]
+id = "number"
+wide = ["lists.right@0.3", "filing.left@0.3"]
+tall = ["lists.bottom@0.3", "filing.top@0.3"]
+
+[[flow.edges]]
+id = "numberback"
+wide = ["filing.left@0.7", "lists.right@0.7"]
+tall = ["filing.top@0.7", "lists.bottom@0.7"]
+
+[[flow.edges]]
+id = "file"
+wide = ["filing.bottom@0.5", "library.top@0.5"]
+tall = ["filing.bottom@0.5", "library.left@0.5"]
+
+[[flow.edges]]
+id = "tap"
+wide = ["app.bottom@0.5", "report.left@0.5"]
+tall = ["app.bottom@0.25", "report.top@0.25"]
+
+[[flow.edges]]
+id = "read"
+wide = ["lists.bottom@0.5", "report.right@0.2"]
+tall = ["lists.right@0.9", "report.left@0.1"]
+
+[[flow.edges]]
+id = "readphotos"
+wide = ["library.left@0.5", "report.right@0.5"]
+tall = ["library.top@0.3", "report.bottom@0.3"]
+
+[[flow.edges]]
+id = "save"
+wide = ["report.right@0.8", "library.left@0.8"]
+tall = ["report.bottom@0.7", "library.top@0.7"]
+
+[[flow.steps]]
+id = "start"
+title.en = "Start online"
+title.de = "Online starten"
+text.en = """
+The inspector opens a project and creates the inspection (Begehung) while online. The app gives it the next number in
+that project.
+"""
+text.de = """
+Die prüfende Person öffnet ein Projekt und legt die Begehung online an. Die App vergibt die nächste Nummer in diesem
+Projekt.
+"""
+nodes = ["app", "lists"]
+edges = ["start"]
+
+[[flow.steps]]
+id = "plan"
+title.en = "Load the plan"
+title.de = "Plan laden"
+text.en = """
+For a schedule review the Excel schedule is uploaded from the app. A flow files it and reads it with an **Office
+Script**, and every lowest-level activity becomes a row of the review. For an inspection, an Excel checklist becomes
+prepared observations the same way.
+"""
+text.de = """
+Für einen Terminabgleich wird der Excel-Terminplan aus der App hochgeladen. Ein Flow legt ihn ab und liest ihn mit einem
+**Office Script**, und jeder Vorgang der untersten Ebene wird zu einer Zeile des Abgleichs. Für eine Begehung werden aus
+einer Excel-Checkliste auf demselben Weg vorbereitete Beobachtungen.
+"""
+nodes = ["app", "import", "lists"]
+edges = ["upload", "rows"]
+badge = { node = "import", text = "EXCEL" }
+
+[[flow.steps]]
+id = "capture"
+title.en = "Capture on site, offline"
+title.de = "Vor Ort erfassen, offline"
+text.en = """
+Observations with category and text, photos and schedule progress are saved on the phone and queued, with or without
+signal.
+"""
+text.de = """
+Beobachtungen mit Kategorie und Text, Fotos und Terminfortschritt werden auf dem Smartphone gespeichert und eingereiht,
+mit oder ohne Netz.
+"""
+nodes = ["app", "store"]
+edges = ["capture"]
+badge = { node = "store", text = "OFFLINE" }
+
+[[flow.steps]]
+id = "sync"
+title.en = "Sync every 30 seconds"
+title.de = "Alle 30 Sekunden synchronisieren"
+text.en = """
+When online, the queue writes the records to the lists and sends each photo through a flow into the library. Videos and
+full-size photos are attached to an upload row and filed by a flow; they need a connection.
+"""
+text.de = """
+Sobald das Gerät online ist, schreibt die Warteschlange die Datensätze in die Listen und schickt jedes Foto über einen
+Flow in die Projektablage. Videos und Originalfotos hängen an einer Upload-Zeile und werden von einem Flow abgelegt;
+sie brauchen eine Verbindung.
+"""
+nodes = ["store", "lists", "filing", "library"]
+edges = ["sync", "photos", "file"]
+badge = { node = "store", text.en = "EVERY 30 S", text.de = "ALLE 30 S" }
+
+[[flow.steps]]
+id = "number"
+title.en = "Number and file"
+title.de = "Nummerieren und ablegen"
+text.en = """
+A new observation starts a flow that runs **one at a time**. It gives the observation its final number and renames and
+moves its photos and videos into the inspection folder by naming convention.
+"""
+text.de = """
+Eine neue Beobachtung startet einen Flow, der **immer nur einen Datensatz** bearbeitet. Er vergibt die endgültige
+Nummer und benennt die Fotos und Videos nach der Namenskonvention um und verschiebt sie in den Ordner der Begehung.
+"""
+nodes = ["lists", "filing", "library"]
+edges = ["number", "numberback", "file"]
+
+[[flow.steps]]
+id = "report"
+title.en = "One tap, one report"
+title.de = "Ein Fingertipp, ein Bericht"
+text.en = """
+The report flow reads the records and photos, fills the HTML template, saves the Word file in the inspection folder and
+e-mails it to the chosen recipient with links to the file and the media folder. The button stays disabled until all
+media are synced.
+"""
+text.de = """
+Der Bericht-Flow liest Datensätze und Fotos, füllt die HTML-Vorlage, speichert die Word-Datei im Ordner der Begehung und
+versendet sie an die gewählte Adresse, mit Links zur Datei und zum Medienordner. Der Knopf bleibt gesperrt, bis alle
+Medien synchronisiert sind.
+"""
+nodes = ["app", "report", "lists", "library"]
+edges = ["tap", "read", "readphotos", "save"]
+badge = { node = "report", text.en = "ONE TAP", text.de = "EIN TIPP" }
+
+[model]
+heading.en = "Six lists and a project library"
+heading.de = "Sechs Listen und die Projektablage"
+description.en = """
+A project has many inspections, many schedule reviews and many categories. An inspection has many observations, and each
+observation has one category. A schedule review has many schedule items. Files in the project library point to their
+observation, schedule item, inspection or review through plain columns.
+"""
+description.de = """
+Ein Projekt hat viele Begehungen, viele Terminabgleiche und viele Kategorien. Eine Begehung hat viele Beobachtungen, und
+jede Beobachtung hat eine Kategorie. Ein Terminabgleich hat viele Terminplaneinträge. Dateien in der Projektablage
+verweisen über einfache Spalten auf ihre Beobachtung, ihren Terminplaneintrag, ihre Begehung oder ihren Terminabgleich.
+"""
+caption.en = """
+Simplified: 7 of 10 SharePoint objects (6 of the 9 lists plus the library). Left out: the activity master list that the
+import flow keeps, the upload-request list (a work queue for attachments) and the list behind the route export. Rows are
+keyed by their SharePoint item ID unless a business key is named. Files in the library point to the record they belong to
+through plain columns, not lookups.
+"""
+caption.de = """
+Vereinfacht: 7 von 10 SharePoint-Objekten (6 der 9 Listen plus die Bibliothek). Weggelassen: die Stammliste der Vorgänge,
+die der Import-Flow pflegt, die Liste der Upload-Anfragen (eine Arbeitswarteschlange für Anhänge) und die Liste hinter dem
+Routen-Export. Zeilen werden über ihre SharePoint-Element-ID identifiziert, sofern kein Geschäftsschlüssel genannt ist.
+Dateien in der Bibliothek verweisen über einfache Spalten auf den zugehörigen Datensatz, nicht über Nachschlagefelder.
+"""
+
+[[model.entities]]
+id = "projects"
+kind = "list"
+name.en = "Projects"
+name.de = "Projekte"
+note.en = "one per project"
+note.de = "eines pro Projekt"
+wide = [360, 30, 280]
+fields = [
+  { key = "PK", name.en = "Project code (in every file name)", name.de = "Projektabkürzung (in jedem Dateinamen)" },
+  { name.en = "Title", name.de = "Titel" },
+  { name.en = "Client name, printed in reports", name.de = "Kundenname, im Bericht gedruckt" },
+  { name.en = "Report template per report type", name.de = "Berichtsvorlage je Berichtsart" },
+  { name.en = "Active flag", name.de = "Aktiv-Kennzeichen" },
+]
+
+[[model.entities]]
+id = "inspections"
+kind = "list"
+name.en = "Inspections"
+name.de = "Begehungen"
+note.en = "one per site inspection"
+note.de = "eine pro Begehung"
+wide = [360, 264, 280]
+fields = [
+  { key = "PK", name.en = "Item ID (SharePoint)", name.de = "Element-ID (SharePoint)" },
+  { key = "FK", name.en = "Project", name.de = "Projekt" },
+  { name.en = "Number per project (QS-###)", name.de = "Nummer je Projekt (QS-###)" },
+  { name.en = "Date, period, inspector", name.de = "Datum, Zeitraum, Prüfperson" },
+  { name.en = "Status (open, closed, exported)", name.de = "Status (offen/geschlossen/exportiert)" },
+]
+
+[[model.entities]]
+id = "observations"
+kind = "list"
+name.en = "Observations"
+name.de = "Beobachtungen"
+note.en = "many per inspection"
+note.de = "viele pro Begehung"
+wide = [20, 264, 280]
+fields = [
+  { key = "PK", name.en = "Local ID (made on the phone)", name.de = "Lokale ID (auf dem Gerät erzeugt)" },
+  { key = "FK", name.en = "Inspection", name.de = "Begehung" },
+  { key = "FK", name.en = "Category", name.de = "Kategorie" },
+  { name.en = "Number (written by a flow)", name.de = "Nummer (von einem Flow vergeben)" },
+  { name.en = "Checkpoint name", name.de = "Prüfpunkt" },
+]
+
+[[model.entities]]
+id = "categories"
+kind = "list"
+name.en = "Categories"
+name.de = "Kategorien"
+note.en = "configuration, not code"
+note.de = "Konfiguration, kein Code"
+wide = [20, 30, 280]
+fields = [
+  { key = "PK", name.en = "Item ID (SharePoint)", name.de = "Element-ID (SharePoint)" },
+  { name.en = "Name", name.de = "Name" },
+  { name.en = "Colour", name.de = "Farbe" },
+  { name.en = "Active flag, sort order", name.de = "Aktiv-Kennzeichen, Reihenfolge" },
+  { key = "FK", name.en = "Project (empty: all projects)", name.de = "Projekt (leer: alle Projekte)" },
+]
+
+[[model.entities]]
+id = "reviews"
+kind = "list"
+name.en = "Schedule reviews"
+name.de = "Terminabgleiche"
+note.en = "one per schedule review"
+note.de = "einer pro Terminabgleich"
+wide = [700, 264, 280]
+fields = [
+  { key = "PK", name.en = "Item ID (SharePoint)", name.de = "Element-ID (SharePoint)" },
+  { key = "FK", name.en = "Project", name.de = "Projekt" },
+  { name.en = "Number per project (T-###)", name.de = "Nummer je Projekt (T-###)" },
+  { name.en = "Date and period", name.de = "Datum und Zeitraum" },
+  { name.en = "Status, item count", name.de = "Status, Anzahl Einträge" },
+]
+
+[[model.entities]]
+id = "items"
+kind = "list"
+name.en = "Schedule items"
+name.de = "Terminplaneinträge"
+note.en = "write-once rows of a review"
+note.de = "einmal geschriebene Zeilen"
+wide = [700, 498, 280]
+fields = [
+  { key = "PK", name.en = "Item ID (SharePoint)", name.de = "Element-ID (SharePoint)" },
+  { key = "FK", name.en = "Schedule review", name.de = "Terminabgleich" },
+  { name.en = "Activity ID", name.de = "Vorgangs-ID" },
+  { name.en = "Planned start and finish", name.de = "Geplanter Start und Ende" },
+  { name.en = "Actual progress 0 to 100, remark", name.de = "Ist-Fortschritt 0 bis 100, Bemerkung" },
+]
+
+[[model.entities]]
+id = "library"
+kind = "library"
+name.en = "Project library"
+name.de = "Projektablage"
+note.en = "photos, videos, reports, templates"
+note.de = "Fotos, Videos, Berichte, Vorlagen"
+wide = [360, 498, 280]
+fields = [
+  { name.en = "Project code", name.de = "Projektabkürzung" },
+  { name.en = "Inspection or review number", name.de = "Nummer der Begehung oder des Abgleichs" },
+  { name.en = "Parent: observation or activity ID", name.de = "Bezug: Beobachtung oder Vorgangs-ID" },
+  { name.en = "Media type (photo or video)", name.de = "Medientyp (Foto oder Video)" },
+  { name.en = "Report type and status", name.de = "Berichtsart und Status" },
+]
+
+[[model.relations]]
+from = "projects"
+to = "inspections"
+cardinality = "one-to-many"
+wide = ["projects.bottom", "inspections.top"]
+text.en = "1 project → many inspections"
+text.de = "1 Projekt → viele Begehungen"
+
+[[model.relations]]
+from = "projects"
+to = "reviews"
+cardinality = "one-to-many"
+wide = ["projects.right", "reviews.top"]
+text.en = "1 project → many schedule reviews"
+text.de = "1 Projekt → viele Terminabgleiche"
+
+[[model.relations]]
+from = "projects"
+to = "categories"
+cardinality = "one-to-many"
+wide = ["projects.left", "categories.right"]
+text.en = "1 project → many categories (empty: all projects)"
+text.de = "1 Projekt → viele Kategorien (leer: alle Projekte)"
+
+[[model.relations]]
+from = "inspections"
+to = "observations"
+cardinality = "one-to-many"
+wide = ["inspections.left", "observations.right"]
+text.en = "1 inspection → many observations"
+text.de = "1 Begehung → viele Beobachtungen"
+
+[[model.relations]]
+from = "inspections"
+to = "library"
+cardinality = "one-to-many"
+wide = ["inspections.bottom", "library.top"]
+text.en = "1 inspection → many report files"
+text.de = "1 Begehung → viele Berichtsdateien"
+
+[[model.relations]]
+from = "categories"
+to = "observations"
+cardinality = "one-to-many"
+wide = ["categories.bottom", "observations.top"]
+text.en = "1 category → many observations"
+text.de = "1 Kategorie → viele Beobachtungen"
+
+[[model.relations]]
+from = "reviews"
+to = "items"
+cardinality = "one-to-many"
+wide = ["reviews.bottom", "items.top"]
+text.en = "1 schedule review → many schedule items"
+text.de = "1 Terminabgleich → viele Terminplaneinträge"
+
+[[model.relations]]
+from = "reviews"
+to = "library"
+cardinality = "one-to-many"
+wide = ["reviews.left@0.8", "library.right@0.25"]
+text.en = "1 schedule review → many report files"
+text.de = "1 Terminabgleich → viele Berichtsdateien"
+
+[[model.relations]]
+from = "observations"
+to = "library"
+cardinality = "one-to-many"
+wide = ["observations.bottom", "library.left"]
+text.en = "1 observation → many photos and videos"
+text.de = "1 Beobachtung → viele Fotos und Videos"
+
+[[model.relations]]
+from = "items"
+to = "library"
+cardinality = "one-to-many"
+wide = ["items.left@0.7", "library.right@0.7"]
+text.en = "1 schedule item (activity) → many photos and videos"
+text.de = "1 Terminplaneintrag (Vorgang) → viele Fotos und Videos"
+
+[[model.notes]]
+title.en = "Categories and templates are data"
+title.de = "Kategorien und Vorlagen sind Daten"
+text.en = """
+A new category or report layout is a change in SharePoint, not a new app version. The report flow refers to categories by
+name, so adding one still needed a flow change once.
+"""
+text.de = """
+Eine neue Kategorie oder ein neues Berichtslayout ist eine Änderung in SharePoint, keine neue App-Version. Der
+Bericht-Flow verweist auf Kategorien über ihren Namen, deshalb brauchte das Hinzufügen einer Kategorie einmal doch eine
+Änderung am Flow.
+"""
+
+[[model.notes]]
+title.en = "Lists can grow"
+title.de = "Listen dürfen wachsen"
+text.en = """
+The flows filter on indexed columns, created while the lists were still empty, so the lists can grow past SharePoint's
+5,000-item view threshold. The app itself reads at most 2,000 rows of a list.
+"""
+text.de = """
+Die Flows filtern auf indizierten Spalten, die angelegt wurden, als die Listen noch leer waren; so dürfen die Listen über
+den Schwellenwert von 5.000 Elementen für SharePoint-Ansichten hinauswachsen. Die App selbst liest höchstens 2.000 Zeilen
+einer Liste.
+"""
+
+[[model.notes]]
+title.en = "Numbers per project"
+title.de = "Nummern je Projekt"
+text.en = """
+Inspection and review numbers are plain numbers per project; the prefixes (QS-, T-) are added only for display, so the
+next number is the highest plus one.
+"""
+text.de = """
+Nummern von Begehungen und Abgleichen sind einfache Zahlen je Projekt; die Präfixe (QS-, T-) kommen nur für die Anzeige
+dazu, sodass die nächste Nummer die höchste plus eins ist.
+"""
+
+[decisions]
+heading.en = "Four trade-offs that shaped the build"
+heading.de = "Vier Abwägungen, die den Aufbau bestimmt haben"
+
+[[decisions.items]]
+title.en = "Offline capture as a queue on the phone"
+title.de = "Offline-Erfassung als Warteschlange auf dem Smartphone"
+text.en = """
+Sites often have no signal, and the built-in offline mode needs Dataverse, which would have made the app premium for every user. So captured
+records wait in a queue on the phone and are written to SharePoint every 30 seconds when online; a record counts as
+synced only after the write has succeeded. **Trade-off:** it works only in the Power Apps mobile player, not in a
+browser, the phone's storage is limited, and videos and full-size photos still need a connection.
+"""
+text.de = """
+Auf Baustellen fehlt oft der Empfang, und der eingebaute Offline-Modus braucht Dataverse, womit die App für alle Nutzenden Premium-Lizenzen gebraucht hätte. Deshalb warten erfasste Datensätze in einer Warteschlange auf dem Gerät und werden alle 30 Sekunden nach SharePoint
+geschrieben, sobald es online ist; ein Datensatz gilt erst als synchronisiert, wenn das Schreiben gelungen ist.
+**Abwägung:** Es funktioniert nur im Power-Apps-Player für Mobilgeräte, nicht im Browser, der Gerätespeicher ist
+begrenzt, und Videos und Originalfotos brauchen weiterhin eine Verbindung.
+"""
+
+[[decisions.items]]
+title.en = "Photos and videos go through flows, not list attachments"
+title.de = "Fotos und Videos laufen über Flows, nicht über Listenanhänge"
+text.en = """
+A canvas app cannot write attachments from offline data, and a phone video of 50 to 150 MB cannot travel through a flow
+as text. Photos wait in the queue and a flow files them; full-size photos and videos are attached to an upload row, and a
+second flow files them on the server. **Trade-off:** more moving parts (four flows touch media), a connection is needed
+for full-size photos and videos, and the SharePoint copy of a full-size photo appears after about a minute.
+"""
+text.de = """
+Eine Canvas-App kann aus Offline-Daten keine Anhänge schreiben, und ein Handyvideo von 50 bis 150 MB lässt sich nicht
+als Text durch einen Flow schicken. Fotos warten in der Warteschlange, und ein Flow legt sie ab; Originalfotos und Videos
+hängen an einer Upload-Zeile, und ein zweiter Flow legt sie auf dem Server ab. **Abwägung:** mehr bewegliche Teile (vier
+Flows berühren Medien), für Originalfotos und Videos ist eine Verbindung nötig, und die SharePoint-Kopie eines
+Originalfotos erscheint nach etwa einer Minute.
+"""
+
+[[decisions.items]]
+title.en = "Numbers are assigned on the server, one at a time"
+title.de = "Nummern vergibt der Server, eine nach der anderen"
+text.en = """
+The phone gives each observation a local ID, and a flow that handles one record at a time writes the final number,
+because two phones syncing together produced duplicate numbers when the app numbered observations itself. Inspections and
+reviews are numbered when they are created online. **Trade-off:** the final number exists only after sync (photo files
+carry 000 until the flow renames them), a deleted observation leaves a permanent gap that is accepted for traceability,
+and numbering happens on creation only.
+"""
+text.de = """
+Das Gerät gibt jeder Beobachtung eine lokale ID, und ein Flow, der jeweils nur einen Datensatz bearbeitet, schreibt die
+endgültige Nummer. Als die App die Beobachtungen selbst nummerierte, entstanden doppelte Nummern, wenn zwei Geräte
+gleichzeitig synchronisierten. Begehungen und Terminabgleiche werden beim Anlegen online nummeriert. **Abwägung:** Die
+endgültige Nummer gibt es erst nach der Synchronisierung (Fotodateien tragen bis dahin 000), eine gelöschte Beobachtung
+hinterlässt eine dauerhafte Lücke, die der Nachvollziehbarkeit wegen in Kauf genommen wird, und nummeriert wird nur beim
+Anlegen.
+"""
+
+[[decisions.items]]
+title.en = "A living schedule list plus write-once snapshots"
+title.de = "Eine lebende Terminplan-Liste und einmal geschriebene Momentaufnahmen"
+text.en = """
+Every Excel import updates one master list of activities per project, and creating a schedule review copies the
+lowest-level activities into rows that later imports never touch, so every past report regenerates unchanged.
+**Trade-off:** about 90 to 130 rows are copied per review, three flows (upload, import, snapshot) replace one, and the app
+reads only the first 2,000 rows of the snapshot list, a known limit that is still open.
+"""
+text.de = """
+Jeder Excel-Import aktualisiert eine Stammliste der Vorgänge je Projekt, und beim Anlegen eines Terminabgleichs werden
+die Vorgänge der untersten Ebene in Zeilen kopiert, die spätere Importe nie anfassen. So lässt sich jeder frühere
+Bericht unverändert neu erzeugen. **Abwägung:** Pro Abgleich werden etwa 90 bis 130 Zeilen kopiert, drei Flows (Upload,
+Import, Momentaufnahme) ersetzen einen, und die App liest nur die ersten 2.000 Zeilen der Momentaufnahme-Liste, eine
+bekannte Grenze, die noch offen ist.
+"""
+
+[role]
+[[role.bullets]]
+en = """
+**Gathered the requirements** with the supervisor and ran the feedback rounds from 24 August 2026, each answered by a
+written plan and a build.
+"""
+de = """
+**Anforderungen erhoben**, gemeinsam mit der Führungskraft, und ab dem 24. August 2026 die Feedbackrunden geführt; jede Runde wurde mit einem schriftlichen Plan und einem Build beantwortet.
+"""
+
+[[role.bullets]]
+en = """
+**Planned the project**, put the open questions to the supervisor and decided the technical design (the trade-offs above).
+"""
+de = """
+**Das Projekt geplant**, offene Fragen der Führungskraft vorgelegt und das technische Design entschieden (die
+Abwägungen oben).
+"""
+
+[[role.bullets]]
+en = """
+**Designed the data model** on top of the supervisor's concept (two modules, folder tree, naming scheme), then built and migrated it in SharePoint.
+"""
+de = """
+**Das Datenmodell entworfen**, aufbauend auf dem Konzept der Führungskraft (zwei Module, Ordnerbaum, Namensschema), und es anschließend in SharePoint aufgebaut und migriert.
+"""
+
+[[role.bullets]]
+en = """
+**Built the app, the flows and the backend** and released the revisions as versioned builds (numbered app revisions built
+with the Power Platform CLI, numbered flow packages), each app build error-checked.
+"""
+de = """
+**Die App, die Flows und das Backend gebaut** und die Revisionen als versionierte Builds veröffentlicht (nummerierte
+App-Revisionen, gebaut mit der Power Platform CLI, nummerierte Flow-Pakete), jeden App-Build auf Fehler geprüft.
+"""
+
+[[role.bullets]]
+en = """
+**Tested and fixed** faults found in flow runs and field tests, for example an import that reported success while loading
+no rows, and reports that lost their photos from the second review on.
+"""
+de = """
+**Fehler aus Flow-Läufen und Feldtests untersucht und behoben**, zum Beispiel einen Import, der Erfolg meldete, ohne
+Zeilen zu laden, und Berichte, die ab dem zweiten Abgleich ihre Fotos verloren.
+"""
+
+[[role.bullets]]
+en = """
+**Wrote and delivered the user guides** in German and English (version 1.1 of 18 August 2026, for the first build) and a
+bilingual handbook (2 September 2026).
+"""
+de = """
+**Die Anleitungen geschrieben und übergeben**, auf Deutsch und Englisch (Version 1.1 vom 18. August 2026, für den ersten
+Build), dazu ein zweisprachiges Handbuch (2. September 2026).
+"""
+
+[result]
+heading.en = "In use since September 2026, at revision 45"
+heading.de = "Seit September 2026 im Einsatz, Revision 45"
+text.en = """
+**Published on 1 September 2026.** The plan is dated 4 August 2026, and the first recorded inspection with photos is
+dated 9 September 2026. The revision counter reached 45 about eleven weeks after the plan, with the last build dated
+21 October 2026. In the Word report, photos appear as thumbnails and videos as links. A
+self-check stops the run if a template field is left unfilled, the report is marked as sent only at the very end, and a
+failed run mails an error instead. The demo shows the app's screens with a fictional company and invented data.
+"""
+text.de = """
+**Am 1. September 2026 veröffentlicht.** Der Plan datiert vom 4. August 2026, und die erste dokumentierte Begehung mit
+Fotos ist auf den 9. September 2026 datiert. Der Revisionszähler erreichte etwa elf Wochen nach dem Plan die 45, der
+letzte Build ist vom 21. Oktober 2026. Im Word-Bericht erscheinen Fotos als Vorschaubilder und Videos als Links. Eine Selbstprüfung stoppt den Lauf, wenn ein Feld
+der Vorlage unausgefüllt bleibt, der Bericht wird erst ganz am Ende als versendet markiert, und ein fehlgeschlagener Lauf
+verschickt stattdessen eine Fehlermeldung. Die Demo zeigt die Bildschirme der App mit einem fiktiven Unternehmen und
+erfundenen Daten.
+"""
