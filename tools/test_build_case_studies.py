@@ -153,6 +153,15 @@ class ValidBuild(unittest.TestCase):
             ["example-pipeline/de/index.html", "example-pipeline/index.html", "index.html"],
         )
 
+    def test_the_fixture_folder_itself_is_a_content_dir(self):
+        out = Path(tempfile.mkdtemp(prefix="cs-fixture-out-"))
+        self.addCleanup(shutil.rmtree, out, True)
+        result = bcs.build(FIXTURE.parent, UI, out / "work")
+        self.assertEqual(messages(result.errors), [])
+        self.assertEqual(len(result.outputs), 3)
+        self.assertTrue(all(out in p.parents for p in result.outputs), "every page goes below the folder given as out-dir")
+        self.assertFalse((REPO / "work").exists(), "the fixture never builds into the repository's work folder")
+
     def test_fixture_has_no_warnings(self):
         self.assertEqual(messages(self.result.warnings), [])
 
