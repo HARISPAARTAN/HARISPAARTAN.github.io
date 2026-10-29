@@ -8,7 +8,7 @@ Hand-written HTML, CSS and a little JavaScript; the case-study pages under `work
 
 | Path | Purpose |
 |---|---|
-| `index.html` | The whole page: hero, work at S01, open-source projects, experience, skills, education, contact |
+| `index.html` | The whole page: hero, work at S01, freelance projects, open-source projects, experience, skills, education, contact |
 | `assets/css/site.css` | Design tokens (dark default, light by toggle), layout, print styles |
 | `assets/js/site.js` | Theme toggle, mobile menu, scroll reveal |
 | `assets/fonts/` | Self-hosted variable fonts and their licences |
