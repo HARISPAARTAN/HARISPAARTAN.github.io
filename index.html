@@ -179,6 +179,18 @@
         </div>
         <div class="grid">
           <article class="card reveal">
+            <a class="thumb" href="https://harispaartan.github.io/sales-performance-dashboard/" aria-label="Open the Sales Performance Dashboard replica">
+              <img src="assets/img/sales-performance-dashboard.jpg" width="1440" height="900" alt="HTML replica of the Sales Performance Dashboard for an invented outdoor-equipment wholesaler: the Overview tab with five KPI tiles, revenue against the previous year and revenue by category" loading="lazy">
+            </a>
+            <div class="body">
+              <div class="meta"><span>power bi · dax · html replica</span><span class="badge live">live</span></div>
+              <h3>Sales Performance Dashboard</h3>
+              <p>A Power BI project in PBIP format for a fictional outdoor-equipment wholesaler: a star schema in TMDL with 22 measures, a time-intelligence calculation group, a field parameter and dynamic row-level security, and eight report pages with synced slicers and a tooltip page. Every headline number is reconciled with an independent pandas reference, and an HTML replica on GitHub Pages shows six of the pages with the same filters.</p>
+              <div class="tags"><span>Power BI</span><span>DAX</span><span>TMDL</span><span>PBIR</span><span>Python</span><span>pandas</span><span>ECharts</span></div>
+              <div class="links"><a class="primary" href="https://harispaartan.github.io/sales-performance-dashboard/">Live demo</a><a href="https://github.com/HARISPAARTAN/sales-performance-dashboard">Source</a></div>
+            </div>
+          </article>
+          <article class="card reveal">
             <a class="thumb" href="https://harispaartan.github.io/data-cleaning-tool/" aria-label="Open the Data-Cleaning Tool demo">
               <img src="assets/img/data-cleaning-tool.jpg" width="1440" height="900" alt="HTML cleaning report of the Data-Cleaning Tool for an invented survey export: KPI tiles, the row flow and the header mapping" loading="lazy">
             </a>
@@ -228,6 +240,30 @@
         </div>
         <div class="grid">
           <article class="card reveal">
+            <a class="thumb" href="https://github.com/HARISPAARTAN/energiewende-monitor" aria-label="Open the Energiewende-Monitor repository">
+              <img src="assets/img/energiewende-monitor.jpg" width="1440" height="900" alt="Energiewende-Monitor report in Power BI: the overview page with German electricity generation, renewable share, day-ahead price and installed capacity" loading="lazy">
+            </a>
+            <div class="body">
+              <div class="meta"><span>power bi · sql server · python</span><span class="badge">v0.3.0</span></div>
+              <h3>Energiewende-Monitor</h3>
+              <p>German electricity-market open data as a star schema in SQL Server: generation, load and residual load per quarter-hour since January 2023, day-ahead prices, and installed capacity from the Marktstammdatenregister. A Python pipeline loads the data, and a Power BI project in PBIP format sits on top; its model and report were checked in Power BI Desktop against SQL, including row-level security. Publishing the report online is the next milestone.</p>
+              <div class="tags"><span>Power BI</span><span>DAX</span><span>T-SQL</span><span>SQL Server</span><span>Python</span><span>Docker</span></div>
+              <div class="links"><a href="https://github.com/HARISPAARTAN/energiewende-monitor">Source</a></div>
+            </div>
+          </article>
+          <article class="card reveal">
+            <a class="thumb" href="https://github.com/HARISPAARTAN/e-rechnung-eingang" aria-label="Open the E-Rechnung-Eingang repository">
+              <img src="assets/img/e-rechnung-eingang.jpg" width="1440" height="900" alt="The live API documentation of the E-Rechnung-Eingang validation service, with the validate and health endpoints" loading="lazy">
+            </a>
+            <div class="body">
+              <div class="meta"><span>python · azure container apps</span><span class="badge">v0.2.0</span></div>
+              <h3>E-Rechnung-Eingang</h3>
+              <p>Validation service for German e-invoices: it checks XRechnung XML and ZUGFeRD PDFs with the KoSIT validator, extracts the invoice fields to EN 16931 and proposes an archive name. It runs in Docker on Azure Container Apps and deploys through GitHub Actions on each release tag; it scales to zero, so the API docs can take about half a minute to wake up. The approval flow in Dataverse and Power Automate and a Power BI page are the next milestones.</p>
+              <div class="tags"><span>Python</span><span>FastAPI</span><span>Docker</span><span>Azure</span><span>GitHub Actions</span></div>
+              <div class="links"><a href="https://ca-erechnung.icyriver-dc3b68c8.germanywestcentral.azurecontainerapps.io/docs">API docs</a><a href="https://github.com/HARISPAARTAN/e-rechnung-eingang">Source</a></div>
+            </div>
+          </article>
+          <article class="card reveal">
             <a class="thumb" href="https://github.com/HARISPAARTAN/orbit-career-workspace" aria-label="Open the Orbit repository">
               <img src="assets/img/orbit-today.png" width="1460" height="940" alt="Orbit desktop app, Today page in the dark Obsidian theme" loading="lazy">
             </a>
@@ -250,6 +286,15 @@
               <p>Six small machine-learning demos that run entirely client-side, each on its own page with the interactive part next to the maths: TF-IDF retrieval for RAG, a transformer attention heatmap, a LoRA parameter and memory calculator, an optimiser race on a loss surface, step-by-step k-means, and a naive Bayes sentiment classifier.</p>
               <div class="tags"><span>JavaScript</span><span>Canvas</span><span>KaTeX</span></div>
               <div class="links"><a class="primary" href="https://harispaartan.github.io/ml-demos/">Live demo</a><a href="https://github.com/HARISPAARTAN/ml-demos">Source</a></div>
+            </div>
+          </article>
+          <article class="card reveal">
+            <div class="body">
+              <div class="meta"><span>dataverse · power platform · python</span><span class="badge">milestone 1</span></div>
+              <h3>KI-Register</h3>
+              <p>EU AI Act register on Microsoft Dataverse for a fictional group with three companies, provisioned as code: tables, choices, relationships, security roles, forms and the model-driven app are built from TOML definitions through the Web API, and GitHub Actions deliver it as a managed solution to a test environment. Milestone 1, the register core, is done; the intake app with its approval flow and the agent come next. All data is invented, and it is not legal advice.</p>
+              <div class="tags"><span>Dataverse</span><span>Power Platform</span><span>Python</span><span>GitHub Actions</span></div>
+              <div class="links"><a href="https://github.com/HARISPAARTAN/ki-register">Source</a></div>
             </div>
           </article>
 
